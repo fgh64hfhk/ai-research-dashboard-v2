@@ -1,0 +1,175 @@
+// mock/modelVersionsData.ts
+
+import { ModelWithAllVersions } from "@/types/model";
+import { ModelParameters } from "@/types/parameters";
+import { TrainingSchedule } from "@/types/schedule";
+import { ModelStatus } from "@/types/model";
+
+export const mockModels: ModelWithAllVersions[] = [
+  {
+    modelId: "m001",
+    name: "GPT-Finance",
+    language: "Python",
+    description: "A large language model for financial data processing.",
+    modelVersion: [
+      {
+        modelId: "m001",
+        version: "v1.0",
+        modifiedDate: "2025-03-01",
+        modifiedType: "initial",
+        trainingTime: 3600,
+        buildDate: "2025-03-01",
+        status: ModelStatus.DEPLOYED,
+      },
+      {
+        modelId: "m001",
+        version: "v1.1",
+        modifiedDate: "2025-03-10",
+        modifiedType: "param update",
+        trainingTime: 4000,
+        buildDate: "2025-03-08",
+        status: ModelStatus.TRAINING,
+      },
+      {
+        modelId: "m001",
+        version: "v2.0",
+        modifiedDate: "2025-03-20",
+        modifiedType: "data upgrade",
+        trainingTime: 5000,
+        buildDate: "2025-03-18",
+        status: ModelStatus.SCHEDULED,
+      },
+    ],
+  },
+  {
+    modelId: "m002",
+    name: "MedQA-BERT",
+    language: "Java",
+    description: "BERT fine-tuned for Chinese medical QA datasets.",
+    modelVersion: [
+      {
+        modelId: "m002",
+        version: "v1.0",
+        modifiedDate: "2025-02-15",
+        modifiedType: "initial",
+        trainingTime: 2800,
+        buildDate: "2025-02-15",
+        status: ModelStatus.DEPLOYED,
+      },
+      {
+        modelId: "m002",
+        version: "v2.0",
+        modifiedDate: "2025-02-20",
+        modifiedType: "loss function tune",
+        trainingTime: 3000,
+        buildDate: "2025-02-18",
+        status: ModelStatus.TRAINING,
+      },
+      {
+        modelId: "m002",
+        version: "v2.1",
+        modifiedDate: "2025-03-01",
+        modifiedType: "dataset expansion",
+        trainingTime: 4500,
+        buildDate: "2025-02-28",
+        status: ModelStatus.SCHEDULED,
+      },
+    ],
+  },
+];
+
+export const mockModelParameters: Record<string, ModelParameters> = {
+  "m001_v1.0": {
+    modelVersionId: "m001_v1.0",
+    learningRate: 0.001,
+    batchSize: 32,
+    epochs: 10,
+    optimizer: "adam",
+    lossFunction: "crossentropy",
+    datasetVersion: "fin-v1",
+    pretrainedModel: true,
+    augmentation: false,
+  },
+  "m001_v1.1": {
+    modelVersionId: "m001_v1.1",
+    learningRate: 0.0005,
+    batchSize: 16,
+    epochs: 12,
+    optimizer: "sgd",
+    lossFunction: "mse",
+    datasetVersion: "fin-v2",
+    pretrainedModel: false,
+    augmentation: true,
+  },
+  "m001_v2.0": {
+    modelVersionId: "m001_v2.0",
+    learningRate: 0.0003,
+    batchSize: 24,
+    epochs: 15,
+    optimizer: "adam",
+    lossFunction: "crossentropy",
+    datasetVersion: "fin-v3",
+    pretrainedModel: true,
+    augmentation: true,
+  },
+  "m002_v1.0": {
+    modelVersionId: "m002_v1.0",
+    learningRate: 0.001,
+    batchSize: 32,
+    epochs: 8,
+    optimizer: "adam",
+    lossFunction: "crossentropy",
+    datasetVersion: "medqa-v1",
+    pretrainedModel: true,
+    augmentation: false,
+  },
+  "m002_v2.0": {
+    modelVersionId: "m002_v2.0",
+    learningRate: 0.0006,
+    batchSize: 16,
+    epochs: 10,
+    optimizer: "rmsprop",
+    lossFunction: "mse",
+    datasetVersion: "medqa-v1",
+    pretrainedModel: false,
+    augmentation: false,
+  },
+  "m002_v2.1": {
+    modelVersionId: "m002_v2.1",
+    learningRate: 0.0004,
+    batchSize: 20,
+    epochs: 12,
+    optimizer: "adam",
+    lossFunction: "crossentropy",
+    datasetVersion: "medqa-v2",
+    pretrainedModel: true,
+    augmentation: true,
+  },
+};
+
+export const mockSchedules: TrainingSchedule[] = [
+  {
+    id: "s001",
+    modelId: "m001",
+    version: "v1.1",
+    buildDate: "2025-03-08",
+    runDate: "2025-03-21T10:00:00Z",
+    status: "scheduled",
+  },
+  {
+    id: "s002",
+    modelId: "m001",
+    version: "v2.0",
+    buildDate: "2025-03-18",
+    runDate: "2025-03-25T09:00:00Z",
+    status: "running",
+  },
+  {
+    id: "s003",
+    modelId: "m002",
+    version: "v2.0",
+    buildDate: "2025-02-28",
+    runDate: "2025-03-10T08:00:00Z",
+    status: "completed",
+  },
+];

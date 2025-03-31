@@ -5,7 +5,7 @@ export interface TrainingSchedule {
   version: string; // 模型版本
   buildDate: string; // 建構日期（YYYY-MM-DD）
   runDate: string; // 執行排程時間（ISO 格式）
-  status: "scheduled" | "running" | "completed" | "failed";
+  status: ScheduleStatus;
   createdAt?: string; // 可選：建立時間
   updatedAt?: string; // 可選：更新時間
 }
