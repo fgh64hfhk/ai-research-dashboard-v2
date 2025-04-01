@@ -1,44 +1,40 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 import { Model } from "@/types/model";
 
-import { format } from "date-fns";
-
-import {
-  getModelStatusLabel,
-  getModelStatusBadgeVariant,
-} from "@/lib/utils/status.helper";
+import { ModelVersionStatusBadge } from "./ModelVersionStatusBadge";
+import { VersionPreview } from "./VersionPreview";
 
 import { ModelVersionAccordion } from "./ModelVersionAccordion";
 
 import { useModelStore } from "@/contexts/ModelContext";
+import { getNextScheduledTask } from "@/lib/utils/schedule.helper";
 
 interface ModelCardProps {
   model: Model;
 }
 
 export function ModelCard({ model }: ModelCardProps) {
-  const { versionMap } = useModelStore();
+  const { latestVersion, parameterMap, scheduleMap } = useModelStore();
 
-  const latestVersion = versionMap[model.modelId]?.at(-1);
+  const version = latestVersion[model.modelId];
+
+  const key = `${model.modelId}_${version.version}`;
+  const parameters = parameterMap[key];
+  const schedules = scheduleMap[key] || [];
+
+  // 找出最近的「未來任務」
+  const nextSchedule = getNextScheduledTask(schedules);
 
   return (
     <Card className="self-start">
       <CardHeader>
         <CardTitle className="text-lg flex items-center justify-between">
           {model.name}
-          {latestVersion && (
-            <Badge
-              variant={getModelStatusBadgeVariant(latestVersion.status ?? "")}
-              className="text-xs"
-            >
-              {getModelStatusLabel(latestVersion.status ?? "")}
-            </Badge>
-          )}
+          {version && <ModelVersionStatusBadge status={version.status || ""} />}
         </CardTitle>
       </CardHeader>
 
@@ -49,30 +45,12 @@ export function ModelCard({ model }: ModelCardProps) {
 
         <Separator className="my-2" />
 
-        {latestVersion ? (
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">
-              最新版本：
-              <span className="text-foreground font-medium">
-                {latestVersion.version}
-              </span>
-            </p>
-
-            <p className="text-xs text-muted-foreground">
-              修改摘要：{latestVersion.modifiedType} -{" "}
-              {format(new Date(latestVersion.modifiedDate), "yyyy-MM-dd HH:mm")}
-            </p>
-
-            <p className="text-xs text-muted-foreground">
-              創建日期：
-              {format(new Date(latestVersion.buildDate), "yyyy-MM-dd HH:mm")}
-            </p>
-
-            <p className="text-xs text-muted-foreground">
-              訓練時間：
-              {latestVersion.trainingTime} s
-            </p>
-          </div>
+        {version ? (
+          <VersionPreview
+            version={version}
+            parameters={parameters}
+            schedule={nextSchedule}
+          />
         ) : (
           <div className="text-muted-foreground text-center py-10">
             尚未建立任何版本
@@ -81,7 +59,6 @@ export function ModelCard({ model }: ModelCardProps) {
 
         {/* 懶加載顯示區塊 */}
         <ModelVersionAccordion modelId={model.modelId} />
-
       </CardContent>
     </Card>
   );

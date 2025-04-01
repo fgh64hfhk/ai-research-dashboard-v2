@@ -148,28 +148,83 @@ export const mockModelParameters: Record<string, ModelParameters> = {
 };
 
 export const mockSchedules: TrainingSchedule[] = [
+  // m001_v1.0
   {
     id: "s001",
     modelId: "m001",
-    version: "v1.1",
-    buildDate: "2025-03-08",
-    runDate: "2025-03-21T10:00:00Z",
+    version: "v1.0",
+    buildDate: "2024-12-10",
+    runDate: "2025-04-02T10:00:00",
     status: "scheduled",
+    createdAt: "2025-03-30T08:00:00",
   },
   {
     id: "s002",
     modelId: "m001",
-    version: "v2.0",
-    buildDate: "2025-03-18",
-    runDate: "2025-03-25T09:00:00Z",
-    status: "running",
+    version: "v1.0",
+    buildDate: "2024-12-10",
+    runDate: "2025-03-28T15:00:00",
+    status: "completed",
+    createdAt: "2025-03-26T10:00:00",
   },
+
+  // m001_v2.0 (最新版本)
   {
     id: "s003",
-    modelId: "m002",
+    modelId: "m001",
     version: "v2.0",
-    buildDate: "2025-02-28",
-    runDate: "2025-03-10T08:00:00Z",
+    buildDate: "2025-01-15",
+    runDate: "2025-04-02T16:00:00",
+    status: "running",
+    createdAt: "2025-03-31T12:00:00",
+  },
+  {
+    id: "s004",
+    modelId: "m001",
+    version: "v2.0",
+    buildDate: "2025-01-15",
+    runDate: "2025-04-05T10:00:00",
+    status: "scheduled",
+    createdAt: "2025-03-25T08:00:00",
+  },
+
+  // m002_v1.0
+  {
+    id: "s005",
+    modelId: "m002",
+    version: "v1.0",
+    buildDate: "2024-11-01",
+    runDate: "2025-04-01T09:00:00",
+    status: "running",
+    createdAt: "2025-03-31T08:30:00",
+  },
+  {
+    id: "s006",
+    modelId: "m002",
+    version: "v1.0",
+    buildDate: "2024-11-01",
+    runDate: "2025-03-25T10:00:00",
     status: "completed",
+    createdAt: "2025-03-20T10:00:00",
+  },
+
+  // m002_v2.1 (最新版本)
+  {
+    id: "s007",
+    modelId: "m002",
+    version: "v2.1",
+    buildDate: "2025-03-01",
+    runDate: "2025-04-03T11:00:00",
+    status: "running",
+    createdAt: "2025-03-30T15:00:00",
+  },
+  {
+    id: "s008",
+    modelId: "m002",
+    version: "v2.1",
+    buildDate: "2025-03-01",
+    runDate: "2025-04-29T13:00:00",
+    status: "scheduled",
+    createdAt: "2025-03-27T09:00:00",
   },
 ];
