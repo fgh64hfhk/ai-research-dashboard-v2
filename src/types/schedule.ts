@@ -5,10 +5,14 @@ export interface TrainingSchedule {
   version: string; // 模型版本
   buildDate: string; // 建構日期（YYYY-MM-DD）
   runDate: string; // 執行排程時間（ISO 格式）
-  status: ScheduleStatus;
+  status: ScheduleStatus; // 必選：排程狀態
+  type: ScheduleType; // 必選：排程類別
   createdAt?: string; // 可選：建立時間
   updatedAt?: string; // 可選：更新時間
 }
+// 更多任務型別（如：自動排程、週期性任務等）
+export type ScheduleStatus = "scheduled" | "running" | "completed" | "failed";
+export type ScheduleType = "manual" | "auto" | "recurring";
 
 // SchedulePayload（送出資料格式）
 // 用於表單送出：不含 id、status 預設為 scheduled
@@ -27,7 +31,3 @@ export type ScheduleResponse = {
   message: string;
   createdAt: string;
 };
-
-// 更多任務型別（如：自動排程、週期性任務等）
-export type ScheduleStatus = "scheduled" | "running" | "completed" | "failed";
-export type ScheduleType = "manual" | "auto" | "recurring";

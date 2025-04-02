@@ -21,7 +21,7 @@ export function getNextScheduledTask(
 ): TrainingSchedule | undefined {
   if (!schedules || schedules.length === 0) return undefined;
   return schedules
-    .filter((s) => s.status === "scheduled" && new Date(s.runDate) > new Date())
+    .filter((s) => s.status === "scheduled" && new Date(s.runDate) > new Date("2025-04-01T00:00:00"))
     .sort(
       (a, b) => new Date(a.runDate).getTime() - new Date(b.runDate).getTime()
     )[0];

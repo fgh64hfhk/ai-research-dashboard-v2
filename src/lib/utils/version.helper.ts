@@ -4,7 +4,6 @@
  * @param type 更新類型：major（大版本）或 minor（小版本）
  * @returns 下一個版本號字串
  */
-
 export function getNextVersion(
   current: string,
   type: "major" | "minor" = "minor"

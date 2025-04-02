@@ -11,7 +11,7 @@ interface Props {
   schedule?: TrainingSchedule;
 }
 
-export function VersionPreview({ version, parameters, schedule }: Props) {
+export function ModelVersionPreview({ version, parameters, schedule }: Props) {
   return (
     <div className="text-xs space-y-1">
       <p className="text-muted-foreground">

@@ -157,6 +157,7 @@ export const mockSchedules: TrainingSchedule[] = [
     runDate: "2025-04-02T10:00:00",
     status: "scheduled",
     createdAt: "2025-03-30T08:00:00",
+    type: "auto",
   },
   {
     id: "s002",
@@ -166,6 +167,7 @@ export const mockSchedules: TrainingSchedule[] = [
     runDate: "2025-03-28T15:00:00",
     status: "completed",
     createdAt: "2025-03-26T10:00:00",
+    type: "manual",
   },
 
   // m001_v2.0 (最新版本)
@@ -177,6 +179,7 @@ export const mockSchedules: TrainingSchedule[] = [
     runDate: "2025-04-02T16:00:00",
     status: "running",
     createdAt: "2025-03-31T12:00:00",
+    type: "recurring",
   },
   {
     id: "s004",
@@ -184,8 +187,9 @@ export const mockSchedules: TrainingSchedule[] = [
     version: "v2.0",
     buildDate: "2025-01-15",
     runDate: "2025-04-05T10:00:00",
-    status: "scheduled",
+    status: "failed",
     createdAt: "2025-03-25T08:00:00",
+    type: "auto",
   },
 
   // m002_v1.0
@@ -197,6 +201,7 @@ export const mockSchedules: TrainingSchedule[] = [
     runDate: "2025-04-01T09:00:00",
     status: "running",
     createdAt: "2025-03-31T08:30:00",
+    type: "manual",
   },
   {
     id: "s006",
@@ -206,6 +211,7 @@ export const mockSchedules: TrainingSchedule[] = [
     runDate: "2025-03-25T10:00:00",
     status: "completed",
     createdAt: "2025-03-20T10:00:00",
+    type: "recurring",
   },
 
   // m002_v2.1 (最新版本)
@@ -217,6 +223,7 @@ export const mockSchedules: TrainingSchedule[] = [
     runDate: "2025-04-03T11:00:00",
     status: "running",
     createdAt: "2025-03-30T15:00:00",
+    type: "auto",
   },
   {
     id: "s008",
@@ -226,5 +233,6 @@ export const mockSchedules: TrainingSchedule[] = [
     runDate: "2025-04-29T13:00:00",
     status: "scheduled",
     createdAt: "2025-03-27T09:00:00",
+    type: "manual",
   },
 ];
