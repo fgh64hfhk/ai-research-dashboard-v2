@@ -1,5 +1,15 @@
+import { mockSchedules } from "@/mock/modelVersionsData";
+import { TrainingSchedule } from "@/types/schedule";
+
+export async function fetchMockSchedules(): Promise<
+  Record<string, TrainingSchedule[]>
+> {
+  return groupSchedulesByKey(mockSchedules);
+}
+
 import { SchedulePayload } from "@/types/schedule";
 import { ScheduleResponse } from "@/types/schedule";
+import { groupSchedulesByKey } from "../utils/schedule.helper";
 
 // const API_BASE = "";
 
