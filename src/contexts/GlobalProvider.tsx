@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { ModelProvider } from "./ModelContext";
+import { ModelProvider } from "@/contexts/model/ModelContext";
 import { ScheduleProvider } from "./ScheduleContext";
 
 import { Toaster } from "@/components/ui/sonner";
