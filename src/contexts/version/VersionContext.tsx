@@ -26,7 +26,7 @@ const initialState: VersionState = {
   loadingMap: {},
 };
 
-type VersionAction =
+export type VersionAction =
   | { type: "SET_VERSIONS"; modelId: string; versions: ModelVersion[] }
   | { type: "SET_LOADING"; modelId: string; loading: boolean };
 

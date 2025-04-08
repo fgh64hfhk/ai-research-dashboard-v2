@@ -2,13 +2,13 @@
 
 import { useModelList, useModelListLoading } from "@/hooks/model/model.hooks";
 
-import { ModelListSkeleton } from "./ModelListSkeleton";
-import { EmptyState } from "./EmptyState";
+import { ModelListSkeleton } from "@/components/models/ModelListSkeleton";
+import { EmptyState } from "@/components/models/EmptyState";
+
+import { ModelCard } from "@/components/models/ModelCard";
 
 import { FileWarning } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-import { ModelVersionDebug } from "../debug/ModelVersionDebug";
 
 export function ModelList() {
   const models = useModelList();
@@ -32,10 +32,7 @@ export function ModelList() {
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 auto-rows-min">
       {models.map((model) => (
-        <div key={model.modelId}>
-          <div>{JSON.stringify(model)}</div>
-          <ModelVersionDebug modelId={model.modelId} />
-        </div>
+        <ModelCard key={model.modelId} model={model} />
       ))}
     </div>
   );

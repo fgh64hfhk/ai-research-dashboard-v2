@@ -16,6 +16,8 @@ export function useParameterByVersionKey(
     state: { parameterMap },
   } = useParameterContext();
 
+  if (!modelId || !version) return undefined;
+
   const key = getParameterKey(modelId, version);
   return parameterMap[key];
 }

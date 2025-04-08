@@ -6,25 +6,40 @@ import { ParameterView } from "@/components/models/ParameterView";
 import { TrainingScheduleView } from "@/components/models/TrainingScheduleView";
 import { BackButton } from "@/components/models/BackButton";
 
-import { useModelStore } from "@/contexts/ModelContext";
-
 import { useParams } from "next/navigation";
 import { mapParametersToItems } from "@/lib/utils/mapParametersToItems";
 import { SlidersHorizontal } from "lucide-react";
 import { EmptyState } from "@/components/models/EmptyState";
+
+import { useModelList } from "@/hooks/model/model.hooks";
+import { useVersionsByModelId } from "@/hooks/version/version.hooks";
+import {
+  useParameterByVersionKey,
+  getParameterKey,
+} from "@/hooks/parameter/parameter.hooks";
+import {
+  useSchedulesByVersionKey,
+} from "@/hooks/schedule/schedule.hooks";
 
 export default function ModelVersionDetailPage() {
   const { modelId, versionId } = useParams<{
     modelId: string;
     versionId: string;
   }>();
-  const { models, versionMap, parameterMap, scheduleMap } = useModelStore();
+
+  const models = useModelList();
+
+  const versions = useVersionsByModelId(modelId);
 
   const model = models.find((m) => m.modelId === modelId);
 
-  const modelVersion = versionMap[modelId]?.find(
-    (v) => v.version === versionId
-  );
+  const modelVersion = versions.find((v) => v.version === versionId);
+
+  const key = getParameterKey(modelId, versionId);
+
+  const parameters = useParameterByVersionKey(modelId, versionId);
+
+  const schedules = useSchedulesByVersionKey(modelId, versionId);
 
   if (!model || !modelVersion) {
     return (
@@ -33,12 +48,6 @@ export default function ModelVersionDetailPage() {
       </p>
     );
   }
-
-  const key = `${model?.modelId}_${modelVersion?.version}`;
-
-  const parameters = parameterMap[key];
-
-  const schedules = scheduleMap[key];
 
   return (
     <div className="container max-w-4xl py-8 px-8 space-y-8">
@@ -53,7 +62,7 @@ export default function ModelVersionDetailPage() {
           description="該版本尚未設定任何模型參數"
         />
       )}
-      <TrainingScheduleView schedules={schedules} />
+      {schedules && <TrainingScheduleView schedules={schedules} />}
       <div className="pt-4 flex justify-end">
         <BackButton />
       </div>

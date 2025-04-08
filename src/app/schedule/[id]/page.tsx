@@ -1,11 +1,20 @@
+// app/schedule/[id]/page.tsx
 "use client";
 
-import { useParams, useRouter, notFound } from "next/navigation";
-import { useScheduleContext } from "@/contexts/ScheduleContext";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { format } from "date-fns";
+import { useParams, notFound } from "next/navigation";
+
+import { useModelList } from "@/hooks/model/model.hooks";
+import { useScheduleById } from "@/hooks/schedule/schedule.hooks";
+
 import { ScheduleStatusBadge } from "@/components/schedule/ScheduleStatusBadge";
+// import { typeLabels } from "@/lib/utils/schedule.helper";
+
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { format } from "date-fns";
 
 import { InfoRowGroup } from "@/components/schedule/InfoRowGroup";
 import { InfoRow } from "@/components/schedule/InfoRow";
@@ -13,35 +22,31 @@ import { InfoRow } from "@/components/schedule/InfoRow";
 import { Info, CalendarClock, Cpu } from "lucide-react";
 
 export default function ScheduleDetailPage() {
-  const { state } = useScheduleContext();
-  const router = useRouter();
-  const params = useParams();
-  const scheduleId = params.id as string;
+  const { id } = useParams<{ id: string }>();
 
-  const schedule = state.schedules.find((s) => s.id === scheduleId);
+  const models = useModelList();
+  const schedule = useScheduleById(id);
 
-  if (!schedule) {
-    return (
-      <div className="p-6 space-y-4">
-        <h1 className="text-xl font-semibold">任務詳細資訊</h1>
-        <p className="text-destructive">
-          找不到該任務，請確認任務 ID 是否正確。
-        </p>
-        <Button onClick={() => router.back()}>返回清單</Button>
-      </div>
-    );
-  }
+  if (!schedule) return notFound();
+
+  const model = models.find((m) => m.modelId === schedule.modelId);
+  const version = schedule.version;
+  // const type = schedule.type ? typeLabels[schedule.type] : null;
 
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-xl font-semibold">任務詳細資訊</h1>
-        <Button variant="outline" onClick={() => router.push("/schedule")}>
-          返回清單
-        </Button>
+    <div className="container max-w-2xl py-10 space-y-6">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Link href="/models">
+          <Button variant="ghost" size="sm" className="px-2">
+            <ArrowLeft className="h-4 w-4 mr-1" /> 返回模型列表
+          </Button>
+        </Link>
       </div>
 
       <Card>
+        <CardTitle>
+          <h1 className="text-xl font-bold">排程詳情</h1>
+        </CardTitle>
         <CardContent className="space-y-4 p-6">
           <InfoRowGroup columns={2}>
             <InfoRow

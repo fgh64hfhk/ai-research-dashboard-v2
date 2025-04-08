@@ -33,16 +33,22 @@ export function ModelVersionPreview({ version, parameters, schedule }: Props) {
         訓練時間：
         {version.trainingTime} s
       </p>
-      {parameters && (
+      
+      {parameters ? (
         <p className="text-muted-foreground">
-          訓練參數摘要：LR: {parameters.learningRate}, Epochs: {parameters.epochs}
+          訓練參數摘要：LR: {parameters.learningRate}, Epochs:{" "}
+          {parameters.epochs}
         </p>
+      ) : (
+        <p className="text-muted-foreground">查無資料</p>
       )}
       {schedule ? (
         <p className="text-muted-foreground">
           下次訓練：{format(new Date(schedule.runDate), "MM-dd HH:mm")}
         </p>
-      ): <p className="text-muted-foreground">查無資料</p>}
+      ) : (
+        <p className="text-muted-foreground">查無資料</p>
+      )}
     </div>
   );
 }

@@ -4,30 +4,47 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 
-import { RefreshCw } from "lucide-react";
+import { FileClock, RefreshCw } from "lucide-react";
 
 import { Model } from "@/types/model";
 
-import { ModelVersionStatusBadge } from "./ModelVersionStatusBadge";
-import { ModelVersionPreview } from "./ModelVersionPreview";
-import { ModelVersionAccordion } from "./ModelVersionAccordion";
+import { ModelVersionStatusBadge } from "@/components/models/ModelVersionStatusBadge";
+import { ModelVersionPreview } from "@/components/models/ModelVersionPreview";
+import { ModelVersionAccordion } from "@/components/models/ModelVersionAccordion";
+import { ModelVersionPreviewSkeleton } from "@/components/models/ModelVersionPreviewSkeleton";
+import { EmptyState } from "@/components/models/EmptyState";
 
-import { useModelStore } from "@/contexts/ModelContext";
-import { Skeleton } from "../ui/skeleton";
+import {
+  useLatestVersionByModelId,
+  useVersionLoading,
+  fetchModelVersions,
+} from "@/hooks/version/version.hooks";
+import { useParameterByVersionKey } from "@/hooks/parameter/parameter.hooks";
+import { useSchedulesByVersionKey } from "@/hooks/schedule/schedule.hooks";
+
+import { useVersionContext } from "@/contexts/version/VersionContext";
+
+import { getNextScheduledTask } from "@/lib/utils/schedule.helper";
 
 interface ModelCardProps {
   model: Model;
 }
 
 export function ModelCard({ model }: ModelCardProps) {
-  const { latestVersion, latestVersionLoadingMap, reloadLatestVersion } = useModelStore();
+  const version = useLatestVersionByModelId(model.modelId);
+  const parameters = useParameterByVersionKey(
+    model.modelId,
+    version?.version || ""
+  );
+  const schedules = useSchedulesByVersionKey(
+    model.modelId,
+    version?.version || ""
+  );
+  const schedule = getNextScheduledTask(schedules);
 
-  const data = latestVersion[model.modelId];
-  const isLoading = latestVersionLoadingMap[model.modelId] ?? false;
+  const isLoading = useVersionLoading(model.modelId);
 
-  const version = data.version;
-  const parameters = data.parameters;
-  const schedules = data.nextSchedule;
+  const { dispatch } = useVersionContext();
 
   return (
     <Card className="self-start">
@@ -44,7 +61,7 @@ export function ModelCard({ model }: ModelCardProps) {
               variant="ghost"
               size="icon"
               className="h-6 w-6"
-              onClick={() => reloadLatestVersion(model.modelId)}
+              onClick={() => fetchModelVersions(model.modelId, dispatch)}
               disabled={isLoading}
             >
               <RefreshCw
@@ -63,21 +80,20 @@ export function ModelCard({ model }: ModelCardProps) {
         <Separator className="my-2" />
 
         {isLoading ? (
-          <>
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-4 w-2/3 mt-2" />
-            <Skeleton className="h-4 w-1/2 mt-2" />
-          </>
+          <ModelVersionPreviewSkeleton />
         ) : version ? (
           <ModelVersionPreview
             version={version}
             parameters={parameters}
-            schedule={schedules}
+            schedule={schedule}
           />
         ) : (
-          <div className="text-muted-foreground text-center py-10">
-            尚未建立任何版本
-          </div>
+          <EmptyState
+            icon={<FileClock className="w-10 h-10" />}
+            title="尚未建立任何版本"
+            description="建立版本後即可開始設定參數與排程訓練流程。"
+            action={<Button>立即新增版本</Button>}
+          />
         )}
 
         {/* 懶加載顯示區塊 */}

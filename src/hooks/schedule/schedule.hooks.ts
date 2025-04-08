@@ -11,11 +11,27 @@ export function getScheduleKey(modelId: string, version: string): string {
 export function useSchedulesByVersionKey(
   modelId: string,
   version: string
-): TrainingSchedule[] {
+): TrainingSchedule[] | undefined {
   const {
     state: { scheduleMap },
   } = useScheduleContext();
 
+  if (!modelId || !version) return undefined;
+
   const key = getScheduleKey(modelId, version);
   return scheduleMap[key] ?? [];
+}
+
+// ✅ 根據 id 全域搜尋排程資料
+export function useScheduleById(id: string): TrainingSchedule | undefined {
+  const {
+    state: { scheduleMap },
+  } = useScheduleContext();
+
+  for (const key in scheduleMap) {
+    const match = scheduleMap[key].find((s) => s.id === id);
+    if (match) return match;
+  }
+
+  return undefined;
 }
