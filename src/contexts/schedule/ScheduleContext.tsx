@@ -8,7 +8,7 @@ import {
   ReactNode,
   useEffect,
 } from "react";
-import { TrainingSchedule } from "@/types/schedule";
+import { TrainingResult, TrainingSchedule } from "@/types/schedule";
 import { fetchMockSchedules } from "@/lib/api/schedule";
 import { wait } from "@/lib/utils/wait";
 
@@ -18,10 +18,12 @@ import { wait } from "@/lib/utils/wait";
 
 interface ScheduleState {
   scheduleMap: Record<string, TrainingSchedule[]>; // key = modelId_version
+  resultMap: Record<string, TrainingResult>;
 }
 
 const initialState: ScheduleState = {
   scheduleMap: {},
+  resultMap: {},
 };
 
 type ScheduleAction =
@@ -32,7 +34,8 @@ type ScheduleAction =
   | {
       type: "ADD_SCHEDULE";
       payload: TrainingSchedule;
-    };
+    }
+  | { type: "SET_RESULT"; payload: TrainingResult };
 
 function scheduleReducer(
   state: ScheduleState,
@@ -58,6 +61,15 @@ function scheduleReducer(
           [key]: [schedule, ...existing],
         },
       };
+    }
+    case "SET_RESULT": {
+      return {
+        ...state,
+        resultMap: {
+          ...state.resultMap,
+          [action.payload.scheduleId]: action.payload,
+        }
+      }
     }
     default:
       return state;

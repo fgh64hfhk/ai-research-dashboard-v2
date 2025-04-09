@@ -1,6 +1,6 @@
 // contexts/schedule/schedule.hooks.ts
 import { useScheduleContext } from "@/contexts/schedule/ScheduleContext";
-import { TrainingSchedule } from "@/types/schedule";
+import { TrainingResult, TrainingSchedule } from "@/types/schedule";
 
 // ✅ 工具函數：取得排程資料的 map key
 export function getScheduleKey(modelId: string, version: string): string {
@@ -34,4 +34,11 @@ export function useScheduleById(id: string): TrainingSchedule | undefined {
   }
 
   return undefined;
+}
+
+export function useScheduleResult(
+  scheduleId: string
+): TrainingResult | undefined {
+  const { state } = useScheduleContext();
+  return state.resultMap[scheduleId];
 }

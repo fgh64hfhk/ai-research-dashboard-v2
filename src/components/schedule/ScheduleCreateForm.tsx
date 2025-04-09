@@ -48,6 +48,8 @@ import { transformToSchedulePayload } from "@/lib/utils/transformToSchedulePaylo
 
 import { v4 as uuidv4 } from "uuid";
 import { TrainingSchedule } from "@/types/schedule";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   modelId: z.string().min(1, "請選擇模型"),
@@ -62,6 +64,8 @@ export function ScheduleCreateForm() {
   const models = useModelList();
   const router = useRouter();
   const { dispatch } = useScheduleContext();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -79,6 +83,8 @@ export function ScheduleCreateForm() {
   const versions = useVersionsByModelId(selectedModelId);
 
   function onSubmit(values: ScheduleFormData) {
+    setIsSubmitting(true);
+
     const payload = transformToSchedulePayload(values);
 
     const schedule = {
@@ -94,6 +100,7 @@ export function ScheduleCreateForm() {
       payload: schedule as TrainingSchedule,
     });
 
+    toast.success("已成功建立訓練排程！");
     router.push(`/models/${schedule.modelId}/version/${schedule.version}`);
   }
 
@@ -221,7 +228,9 @@ export function ScheduleCreateForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">建立排程</Button>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "提交中..." : "建立排程"}
+        </Button>
       </form>
     </Form>
   );
