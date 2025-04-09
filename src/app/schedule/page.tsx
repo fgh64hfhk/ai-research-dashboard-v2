@@ -1,24 +1,24 @@
 "use client";
 
-import { useScheduleContext } from "@/contexts/ScheduleContext";
-
-import { AddScheduleLogic } from "@/components/schedule/AddScheduleLogic";
+import { useScheduleContext } from "@/contexts/schedule/ScheduleContext";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScheduleCard } from "@/components/schedule/ScheduleCard";
 import { useState } from "react";
 
 export default function TaskListPage() {
-  const { state } = useScheduleContext();
+  const {
+    state: { scheduleMap },
+  } = useScheduleContext();
 
   const [loading] = useState(false);
   const [error] = useState(false);
 
+  const allSchedules = Object.values(scheduleMap).flat();
+
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-semibold">排程任務清單</h1>
-
-      <AddScheduleLogic />
 
       {loading && (
         <div className="space-y-4">
@@ -34,16 +34,12 @@ export default function TaskListPage() {
         </p>
       )}
 
-      {!loading && !error && state.schedules.length === 0 && (
-        <p className="text-muted-foreground">目前沒有任何的排程任務。</p>
-      )}
-
-      {state.schedules.length === 0 && (
+      {!loading && !error && allSchedules.length === 0 && (
         <p className="text-muted-foreground">目前沒有任何的排程任務。</p>
       )}
 
       <div className="space-y-4">
-        {state.schedules.map((schedule) => (
+        {allSchedules.map((schedule) => (
           <ScheduleCard key={schedule.id} schedule={schedule} />
         ))}
       </div>

@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 import { format } from "date-fns";
-import { ScheduleStatusBadge } from "../schedule/ScheduleStatusBadge";
+import { ScheduleStatusBadge } from "@/components/schedule/ScheduleStatusBadge";
 
 import {
   TrainingSchedule,
@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
 import { useState } from "react";
-import { EmptyState } from "./EmptyState";
+import { EmptyState } from "@/components/models/EmptyState";
 
 const statusConfig: Record<
   ScheduleStatus,
@@ -54,7 +54,7 @@ const statusConfig: Record<
   },
 };
 
-const typeLabels: Record<
+export const typeLabels: Record<
   ScheduleType,
   { label: string; icon: React.ReactNode }
 > = {
@@ -78,7 +78,7 @@ export function TrainingScheduleView({ schedules }: Props) {
         title="尚無訓練排程"
         description="當你建立排程後，會在這裡看到排程清單"
         action={
-          <Button onClick={() => router.push("/schedule/new")}>建立排程</Button>
+          <Button onClick={() => router.push("/schedule/create")}>建立排程</Button>
         }
       />
     );

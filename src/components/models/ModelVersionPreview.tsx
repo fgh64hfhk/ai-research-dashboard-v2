@@ -44,7 +44,7 @@ export function ModelVersionPreview({ version, parameters, schedule }: Props) {
       )}
       {schedule ? (
         <p className="text-muted-foreground">
-          下次訓練：{format(new Date(schedule.runDate), "MM-dd HH:mm")}
+          下次訓練摘要：{format(new Date(schedule.runDate), "MM-dd HH:mm")}
         </p>
       ) : (
         <p className="text-muted-foreground">查無資料</p>

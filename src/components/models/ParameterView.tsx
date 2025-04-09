@@ -17,7 +17,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../ui/tooltip";
+} from "@/components/ui/tooltip";
 
 export interface ModelParameterItem {
   key: string;

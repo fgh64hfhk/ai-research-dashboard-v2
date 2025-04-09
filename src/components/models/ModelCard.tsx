@@ -97,7 +97,7 @@ export function ModelCard({ model }: ModelCardProps) {
         )}
 
         {/* 懶加載顯示區塊 */}
-        <ModelVersionAccordion modelId={model.modelId} />
+        {version && <ModelVersionAccordion modelId={model.modelId} />}
       </CardContent>
     </Card>
   );

@@ -2,9 +2,9 @@
 
 import { ReactNode } from "react";
 import { ModelProvider } from "@/contexts/model/ModelContext";
-import { VersionProvider } from "./version/VersionContext";
-import { ParameterProvider } from "./parameter/ParameterContext";
-import { ScheduleProvider } from "./schedule/ScheduleContext";
+import { VersionProvider } from "@/contexts/version/VersionContext";
+import { ParameterProvider } from "@/contexts/parameter/ParameterContext";
+import { ScheduleProvider } from "@/contexts/schedule/ScheduleContext";
 
 import { Toaster } from "@/components/ui/sonner";
 

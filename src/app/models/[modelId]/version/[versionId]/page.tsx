@@ -3,7 +3,7 @@
 import { ModelHeader } from "@/components/models/ModelHeader";
 import { VersionInfoCard } from "@/components/models/VersionInfoCard";
 import { ParameterView } from "@/components/models/ParameterView";
-import { TrainingScheduleView } from "@/components/models/TrainingScheduleView";
+import { TrainingScheduleView } from "@/components/schedule/TrainingScheduleView";
 import { BackButton } from "@/components/models/BackButton";
 
 import { useParams } from "next/navigation";
@@ -13,13 +13,8 @@ import { EmptyState } from "@/components/models/EmptyState";
 
 import { useModelList } from "@/hooks/model/model.hooks";
 import { useVersionsByModelId } from "@/hooks/version/version.hooks";
-import {
-  useParameterByVersionKey,
-  getParameterKey,
-} from "@/hooks/parameter/parameter.hooks";
-import {
-  useSchedulesByVersionKey,
-} from "@/hooks/schedule/schedule.hooks";
+import { useParameterByVersionKey } from "@/hooks/parameter/parameter.hooks";
+import { useSchedulesByVersionKey } from "@/hooks/schedule/schedule.hooks";
 
 export default function ModelVersionDetailPage() {
   const { modelId, versionId } = useParams<{
@@ -34,8 +29,6 @@ export default function ModelVersionDetailPage() {
   const model = models.find((m) => m.modelId === modelId);
 
   const modelVersion = versions.find((v) => v.version === versionId);
-
-  const key = getParameterKey(modelId, versionId);
 
   const parameters = useParameterByVersionKey(modelId, versionId);
 

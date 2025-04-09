@@ -1,9 +1,9 @@
 // components/model/ModelHeader.tsx
 import { Brain } from "lucide-react";
-import { Card, CardContent } from "../ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 import { Model } from "@/types/model";
-import { ModelDescription } from "./ModelDescription";
+import { ModelDescription } from "@/components/models/ModelDescription";
 
 export function ModelHeader({ name, language, description }: Model) {
   return (

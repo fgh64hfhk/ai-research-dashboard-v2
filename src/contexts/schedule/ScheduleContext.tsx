@@ -24,10 +24,15 @@ const initialState: ScheduleState = {
   scheduleMap: {},
 };
 
-type ScheduleAction = {
-  type: "SET_SCHEDULES";
-  payload: Record<string, TrainingSchedule[]>;
-};
+type ScheduleAction =
+  | {
+      type: "SET_SCHEDULES";
+      payload: Record<string, TrainingSchedule[]>;
+    }
+  | {
+      type: "ADD_SCHEDULE";
+      payload: TrainingSchedule;
+    };
 
 function scheduleReducer(
   state: ScheduleState,
@@ -42,6 +47,18 @@ function scheduleReducer(
           ...action.payload, // 可合併多組 key
         },
       };
+    case "ADD_SCHEDULE": {
+      const schedule = action.payload;
+      const key = `${schedule.modelId}_${schedule.version}`;
+      const existing = state.scheduleMap[key] ?? [];
+      return {
+        ...state,
+        scheduleMap: {
+          ...state.scheduleMap,
+          [key]: [schedule, ...existing],
+        },
+      };
+    }
     default:
       return state;
   }
