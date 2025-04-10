@@ -3,7 +3,7 @@
 import { useModelList, useModelListLoading } from "@/hooks/model/model.hooks";
 
 import { ModelListSkeleton } from "@/components/models/ModelListSkeleton";
-import { EmptyState } from "@/components/models/EmptyState";
+import { EmptyState } from "@/components/common/EmptyState";
 
 import { ModelCard } from "@/components/models/ModelCard";
 

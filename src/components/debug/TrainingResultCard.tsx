@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { TrainingResult } from "@/types/schedule";
 import { format } from "date-fns";
 import { BarChart3, CheckCircle2, FileQuestion, XCircle } from "lucide-react";
-import { EmptyState } from "../models/EmptyState";
+import { EmptyState } from "../common/EmptyState";
 
 interface Props {
   result: TrainingResult;

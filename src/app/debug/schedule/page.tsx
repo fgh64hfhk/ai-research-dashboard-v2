@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { useScheduleContext } from "@/contexts/schedule/ScheduleContext";
 import { DebugTriggerResultButton } from "@/components/debug/DebugTriggerResultButton";
@@ -9,17 +10,20 @@ import { TrainingProgressCard } from "@/components/schedule/TrainingProgressCard
 
 import { useTrainingSocket } from "@/hooks/socket/useTrainingSocket";
 import { startMockTrainingSocket } from "@/mock/socketMock";
-import { DebugStartTrainingButton } from "./DebugStartTrainingButton";
+import { DebugStartTrainingButton } from "@/components/debug/DebugStartTrainingButton";
 import { mockTrainingResult } from "@/lib/api/mockTrainingResult";
 import { useScheduleById } from "@/hooks/schedule/schedule.hooks";
 
 import { toast } from "sonner";
+
+import { Button } from '@/components/ui/button'
 
 export default function DebugSchedulePage() {
   const {
     state: { scheduleMap, resultMap },
     dispatch,
   } = useScheduleContext();
+  const router = useRouter();
 
   const allSchedules = Object.values(scheduleMap).flat();
   const [runningScheduleId, setRunningScheduleId] = useState<string | null>(
@@ -90,6 +94,7 @@ export default function DebugSchedulePage() {
   return (
     <div className="p-6 space-y-6">
       <h2 className="text-xl font-semibold">訓練排程測試區</h2>
+      <Button onClick={() => router.push(`/models/m001/compare`)} >查看</Button>
       {schedulesWithResult.map(({ schedule, result }) => {
         const isRunning = schedule.id === runningScheduleId;
         const isScheduled = schedule.status === "scheduled";

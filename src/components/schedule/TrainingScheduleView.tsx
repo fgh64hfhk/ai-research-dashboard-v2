@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
 import { useState } from "react";
-import { EmptyState } from "@/components/models/EmptyState";
+import { EmptyState } from "@/components/common/EmptyState";
 
 const statusConfig: Record<
   ScheduleStatus,

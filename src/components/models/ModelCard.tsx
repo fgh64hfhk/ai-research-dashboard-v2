@@ -12,7 +12,7 @@ import { ModelVersionStatusBadge } from "@/components/models/ModelVersionStatusB
 import { ModelVersionPreview } from "@/components/models/ModelVersionPreview";
 import { ModelVersionAccordion } from "@/components/models/ModelVersionAccordion";
 import { ModelVersionPreviewSkeleton } from "@/components/models/ModelVersionPreviewSkeleton";
-import { EmptyState } from "@/components/models/EmptyState";
+import { EmptyState } from "@/components/common/EmptyState";
 
 import {
   useLatestVersionByModelId,

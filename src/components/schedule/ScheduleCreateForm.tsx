@@ -101,7 +101,8 @@ export function ScheduleCreateForm() {
     });
 
     toast.success("已成功建立訓練排程！");
-    router.push(`/models/${schedule.modelId}/version/${schedule.version}`);
+    // router.push(`/models/${schedule.modelId}/version/${schedule.version}`);
+    router.push(`/debug/schedule`);
   }
 
   return (

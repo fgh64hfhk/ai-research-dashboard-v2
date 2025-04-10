@@ -9,7 +9,7 @@ import { BackButton } from "@/components/models/BackButton";
 import { useParams } from "next/navigation";
 import { mapParametersToItems } from "@/lib/utils/mapParametersToItems";
 import { SlidersHorizontal } from "lucide-react";
-import { EmptyState } from "@/components/models/EmptyState";
+import { EmptyState } from "@/components/common/EmptyState";
 
 import { useModelList } from "@/hooks/model/model.hooks";
 import { useVersionsByModelId } from "@/hooks/version/version.hooks";
