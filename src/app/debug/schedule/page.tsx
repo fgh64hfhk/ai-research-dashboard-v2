@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useScheduleContext } from "@/contexts/schedule/ScheduleContext";
 import { DebugTriggerResultButton } from "@/components/debug/DebugTriggerResultButton";
@@ -9,23 +9,78 @@ import { TrainingProgressCard } from "@/components/schedule/TrainingProgressCard
 
 import { useTrainingSocket } from "@/hooks/socket/useTrainingSocket";
 import { startMockTrainingSocket } from "@/mock/socketMock";
+import { DebugStartTrainingButton } from "./DebugStartTrainingButton";
+import { mockTrainingResult } from "@/lib/api/mockTrainingResult";
+import { useScheduleById } from "@/hooks/schedule/schedule.hooks";
+
+import { toast } from "sonner";
 
 export default function DebugSchedulePage() {
   const {
     state: { scheduleMap, resultMap },
+    dispatch,
   } = useScheduleContext();
 
   const allSchedules = Object.values(scheduleMap).flat();
-  const runningSchedule = allSchedules.find((s) => s.status === "running");
+  const [runningScheduleId, setRunningScheduleId] = useState<string | null>(
+    null
+  );
 
-  // 組件掛載階段（Componet Mounted）時模擬 WebSocket 連線
+  const schedule = useScheduleById(runningScheduleId || "");
+  const modelId = schedule?.modelId ?? "";
+  const version = schedule?.version ?? "";
+
+  // 在 dispatch 改變狀態後，同步設定 runningScheduleId
+  // 追蹤目前的 running schedule id
   useEffect(() => {
-    if (runningSchedule?.id) {
-      startMockTrainingSocket(runningSchedule.id);
+    const running = allSchedules.find((s) => s.status === "running");
+    if (running?.id !== runningScheduleId) {
+      setRunningScheduleId(running?.id || null);
     }
-  }, [runningSchedule?.id]);
+  }, [allSchedules, runningScheduleId]);
 
-  const { progress, connected, isCompleted } = useTrainingSocket(runningSchedule?.id);
+  // 組件掛載階段（Componet Mounted）時模擬 WebSocket 連線 --> 專門監聽 ID 的變化
+  // 建立模擬的 socket server 的通道
+  useEffect(() => {
+    if (runningScheduleId) {
+      startMockTrainingSocket(runningScheduleId);
+    }
+  }, [runningScheduleId]);
+
+  // 根據 running schedule id 啟動客戶端的 socket 請求
+  const { progress, connected, isCompleted, setIsCompleted } =
+    useTrainingSocket(runningScheduleId || "");
+
+  // 當 progress 完成，寫入結果與狀態
+  useEffect(() => {
+    if (isCompleted && runningScheduleId) {
+      const result = mockTrainingResult({
+        scheduleId: runningScheduleId,
+        modelId: modelId,
+        version: version,
+      });
+      dispatch({
+        type: "SET_SCHEDULE_STATUS",
+        id: runningScheduleId,
+        status: "completed",
+      });
+      dispatch({
+        type: "SET_RESULT",
+        payload: result,
+      });
+      toast.success(
+        `模擬訓練完成：${result.status === "completed" ? "成功" : "失敗"}`
+      );
+      setIsCompleted(false);
+    }
+  }, [
+    isCompleted,
+    runningScheduleId,
+    dispatch,
+    setIsCompleted,
+    modelId,
+    version,
+  ]);
 
   const schedulesWithResult = allSchedules.map((s) => ({
     schedule: s,
@@ -36,7 +91,8 @@ export default function DebugSchedulePage() {
     <div className="p-6 space-y-6">
       <h2 className="text-xl font-semibold">訓練排程測試區</h2>
       {schedulesWithResult.map(({ schedule, result }) => {
-        const isRunning = schedule.id === runningSchedule?.id;
+        const isRunning = schedule.id === runningScheduleId;
+        const isScheduled = schedule.status === "scheduled";
 
         return (
           <div key={schedule.id} className="border rounded-lg p-4 space-y-4">
@@ -49,13 +105,21 @@ export default function DebugSchedulePage() {
                   排程 ID：{schedule.id}
                 </p>
               </div>
-              <DebugTriggerResultButton scheduleId={schedule.id} />
+              <div className="flex gap-2">
+                {isScheduled && (
+                  <DebugStartTrainingButton scheduleId={schedule.id} />
+                )}
+                <DebugTriggerResultButton scheduleId={schedule.id} />
+              </div>
             </div>
+
             {/* 判斷該排程是否為目前進行中的，渲染對應進度卡 */}
             {isRunning && !isCompleted ? (
               <TrainingProgressCard progress={progress} connected={connected} />
-            ) : (
+            ) : result ? (
               <TrainingResultCard result={result} />
+            ) : (
+              <p className="text-xs text-muted-foreground">尚無訓練結果</p>
             )}
           </div>
         );

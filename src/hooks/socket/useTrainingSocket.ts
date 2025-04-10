@@ -26,6 +26,7 @@ export function useTrainingSocket(scheduleId: string | undefined) {
           setProgress(data.progress);
           if (data.progress >= 100) {
             setIsCompleted(true);
+            setProgress(0);
           }
         }
       } catch (err) {
@@ -46,5 +47,5 @@ export function useTrainingSocket(scheduleId: string | undefined) {
     };
   }, [scheduleId]);
 
-  return { progress, connected, isCompleted };
+  return { progress, connected, isCompleted, setIsCompleted };
 }

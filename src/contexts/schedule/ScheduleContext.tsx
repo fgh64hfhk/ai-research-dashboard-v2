@@ -8,7 +8,11 @@ import {
   ReactNode,
   useEffect,
 } from "react";
-import { TrainingResult, TrainingSchedule } from "@/types/schedule";
+import {
+  ScheduleStatus,
+  TrainingResult,
+  TrainingSchedule,
+} from "@/types/schedule";
 import { fetchMockSchedules } from "@/lib/api/schedule";
 import { wait } from "@/lib/utils/wait";
 
@@ -35,7 +39,8 @@ type ScheduleAction =
       type: "ADD_SCHEDULE";
       payload: TrainingSchedule;
     }
-  | { type: "SET_RESULT"; payload: TrainingResult };
+  | { type: "SET_RESULT"; payload: TrainingResult }
+  | { type: "SET_SCHEDULE_STATUS"; id: string; status: ScheduleStatus };
 
 function scheduleReducer(
   state: ScheduleState,
@@ -62,14 +67,26 @@ function scheduleReducer(
         },
       };
     }
+    case "SET_SCHEDULE_STATUS": {
+      const updateMap = { ...state.scheduleMap };
+      for (const key in updateMap) {
+        updateMap[key] = updateMap[key].map((s) =>
+          s.id === action.id ? { ...s, status: action.status } : s
+        );
+      }
+      return {
+        ...state,
+        scheduleMap: updateMap,
+      };
+    }
     case "SET_RESULT": {
       return {
         ...state,
         resultMap: {
           ...state.resultMap,
           [action.payload.scheduleId]: action.payload,
-        }
-      }
+        },
+      };
     }
     default:
       return state;
