@@ -8,56 +8,19 @@ import {
   ReactNode,
   useEffect,
 } from "react";
-import { ModelVersion } from "@/types/model";
-import { fetchMockModelVersions } from "@/lib/api/model";
-import { wait } from "@/lib/utils/wait";
+
+import {
+  VersionState,
+  initialVersionState,
+  VersionAction,
+  versionReducer,
+} from "@/reducers/version.reducer";
+
+import { fetchMockModelVersions } from "@/lib/api/model.api";
+import { wait } from "@/lib/utils/async.helper";
 
 // ---------------------------
-// 1. State 與 Reducer 定義
-// ---------------------------
-
-interface VersionState {
-  versionMap: Record<string, ModelVersion[]>; // key = modelId
-  loadingMap: Record<string, boolean>;
-}
-
-const initialState: VersionState = {
-  versionMap: {},
-  loadingMap: {},
-};
-
-export type VersionAction =
-  | { type: "SET_VERSIONS"; modelId: string; versions: ModelVersion[] }
-  | { type: "SET_LOADING"; modelId: string; loading: boolean };
-
-function versionReducer(
-  state: VersionState,
-  action: VersionAction
-): VersionState {
-  switch (action.type) {
-    case "SET_VERSIONS":
-      return {
-        ...state,
-        versionMap: {
-          ...state.versionMap,
-          [action.modelId]: action.versions,
-        },
-      };
-    case "SET_LOADING":
-      return {
-        ...state,
-        loadingMap: {
-          ...state.loadingMap,
-          [action.modelId]: action.loading,
-        },
-      };
-    default:
-      return state;
-  }
-}
-
-// ---------------------------
-// 2. Context 建立與 Hook
+// Context 建立與 Hook
 // ---------------------------
 
 const VersionContext = createContext<{
@@ -73,11 +36,11 @@ export function useVersionContext() {
 }
 
 // ---------------------------
-// 3. Provider
+// Provider
 // ---------------------------
 
 export function VersionProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(versionReducer, initialState);
+  const [state, dispatch] = useReducer(versionReducer, initialVersionState);
 
   // 初始載入：模擬載入所有版本資料
   useEffect(() => {

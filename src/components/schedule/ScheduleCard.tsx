@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 import type { TrainingSchedule } from "@/types/schedule";
-import { ScheduleStatusBadge } from "./ScheduleStatusBadge";
+import { ScheduleStatusBadge } from "@/components/schedule/ScheduleStatusBadge";
 
 export function ScheduleCard({ schedule }: { schedule: TrainingSchedule }) {
   const router = useRouter();

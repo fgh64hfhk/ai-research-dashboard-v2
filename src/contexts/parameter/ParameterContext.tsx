@@ -8,48 +8,19 @@ import {
   ReactNode,
   useEffect,
 } from "react";
-import { ModelParameters } from "@/types/parameters";
-import { wait } from "@/lib/utils/wait";
-import { fetchMockParameters } from "@/lib/api/parameter";
+
+import {
+  ParameterState,
+  initialParameterState,
+  ParameterAction,
+  parameterReducer,
+} from "@/reducers/parameter.reducer";
+
+import { wait } from "@/lib/utils/async.helper";
+import { fetchMockParameters } from "@/lib/api/parameter.api";
 
 // ---------------------------
-// 1. State 與 Reducer 定義
-// ---------------------------
-
-interface ParameterState {
-  parameterMap: Record<string, ModelParameters>; // key = modelId_version
-}
-
-const initialState: ParameterState = {
-  parameterMap: {},
-};
-
-type ParameterAction = {
-  type: "SET_PARAMETERS";
-  key: string;
-  parameters: ModelParameters;
-};
-
-function parameterReducer(
-  state: ParameterState,
-  action: ParameterAction
-): ParameterState {
-  switch (action.type) {
-    case "SET_PARAMETERS":
-      return {
-        ...state,
-        parameterMap: {
-          ...state.parameterMap,
-          [action.key]: action.parameters,
-        },
-      };
-    default:
-      return state;
-  }
-}
-
-// ---------------------------
-// 2. Context 建立與 Hook
+// Context 建立與 Hook
 // ---------------------------
 
 const ParameterContext = createContext<{
@@ -65,11 +36,11 @@ export function useParameterContext() {
 }
 
 // ---------------------------
-// 3. Provider
+// Provider
 // ---------------------------
 
 export function ParameterProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(parameterReducer, initialState);
+  const [state, dispatch] = useReducer(parameterReducer, initialParameterState);
 
   // 初始載入：模擬載入所有版本資料
   useEffect(() => {

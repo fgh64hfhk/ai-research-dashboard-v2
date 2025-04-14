@@ -41,10 +41,10 @@ import { cn } from "@/lib/utils";
 
 import { useRouter } from "next/navigation";
 import { useScheduleContext } from "@/contexts/schedule/ScheduleContext";
-import { getScheduleKey } from "@/hooks/schedule/schedule.hooks";
+import { getScheduleKey } from "@/lib/utils/schedule.helper";
 
 import { ScheduleFormData } from "@/types/form";
-import { transformToSchedulePayload } from "@/lib/utils/transformToSchedulePayload";
+import { transformToSchedulePayload } from "@/lib/utils/schedule.helper";
 
 import { v4 as uuidv4 } from "uuid";
 import { TrainingSchedule } from "@/types/schedule";

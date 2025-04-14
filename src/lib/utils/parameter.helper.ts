@@ -1,6 +1,8 @@
+// lib/utils/parameter.helper.ts
 import { ModelParameters } from "@/types/parameters";
 import { ModelParameterItem } from "@/components/models/ParameterView";
 
+// ✅ 參數描述：用於 UI 顯示說明
 const PARAMETER_DESCRIPTIONS: Record<string, string> = {
   learningRate: "模型學習率，控制每次參數更新的步伐。",
   batchSize: "每次訓練所使用的樣本數量。",
@@ -12,6 +14,7 @@ const PARAMETER_DESCRIPTIONS: Record<string, string> = {
   augmentation: "是否在訓練過程中使用資料增強技術。",
 };
 
+// ✅ 群組對應設定：用於 UI 分群顯示
 const PARAMETER_GROUPS: Record<string, string> = {
   learningRate: "優化器設定",
   optimizer: "優化器設定",
@@ -23,15 +26,30 @@ const PARAMETER_GROUPS: Record<string, string> = {
   augmentation: "資料設定",
 };
 
+// ✅ 主要轉換工具：將參數轉為 UI 顯示用的結構
 export function mapParametersToItems(
   parameters: ModelParameters
 ): ModelParameterItem[] {
   return Object.entries(parameters)
-    .filter(([key]) => key !== "modelVersionId") // 避免顯示 metadata
+    .filter(([key]) => key !== "modelVersionId")
     .map(([key, value]) => ({
       key,
       value,
       description: PARAMETER_DESCRIPTIONS[key] || "",
       group: PARAMETER_GROUPS[key] || "其他參數",
     }));
+}
+
+// 🚧（可擴充）：格式化參數值，例如布林值轉換
+export function formatParameterValue(
+  value: string | number | boolean | object | null | undefined
+): string {
+  if (typeof value === "boolean") return value ? "是" : "否";
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
+
+// ✅ 工具函數：取得參數的 map key
+export function getParameterKey(modelId: string, version: string): string {
+  return `${modelId}_${version}`;
 }

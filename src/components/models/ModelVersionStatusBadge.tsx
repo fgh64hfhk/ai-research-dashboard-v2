@@ -1,13 +1,16 @@
 import { Badge } from "@/components/ui/badge";
 import {
-  getModelStatusLabel,
-  getModelStatusBadgeVariant,
-} from "@/lib/utils/status.helper";
+  getModelStatusText,
+  getModelStatusBadge,
+} from "@/lib/utils/modelStatus.helper";
+import { ModelStatus } from "@/types/model";
 
-export function ModelVersionStatusBadge({ status }: { status: string }) {
-  return (
-    <Badge variant={getModelStatusBadgeVariant(status)}>
-      {getModelStatusLabel(status)}
-    </Badge>
-  );
+interface Props {
+  status?: ModelStatus;
+}
+
+export function ModelVersionStatusBadge({ status }: Props) {
+  const label = getModelStatusText(status || ModelStatus.INACTIVE);
+  const variant = getModelStatusBadge(status || ModelStatus.INACTIVE);
+  return <Badge variant={variant}>{label}</Badge>;
 }

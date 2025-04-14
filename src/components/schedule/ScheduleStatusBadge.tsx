@@ -1,13 +1,16 @@
 import { Badge } from "@/components/ui/badge";
 import {
-  getStatusLabel,
-  getStatusBadgeVariant,
-} from "@/lib/utils/status.helper";
+  getScheduleStatusLabel,
+  getScheduleStatusBadgeVariant,
+} from "@/lib/utils/scheduleStatus.helper";
+import { ScheduleStatus } from "@/types/schedule";
 
-export function ScheduleStatusBadge({ status }: { status: string }) {
-  return (
-    <Badge variant={getStatusBadgeVariant(status)}>
-      {getStatusLabel(status)}
-    </Badge>
-  );
+interface Props {
+  status?: ScheduleStatus;
+}
+
+export function ScheduleStatusBadge({ status }: Props) {
+  const label = getScheduleStatusLabel(status || "scheduled");
+  const variant = getScheduleStatusBadgeVariant(status || "scheduled");
+  return <Badge variant={variant}>{label}</Badge>;
 }

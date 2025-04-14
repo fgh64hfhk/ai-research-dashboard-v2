@@ -1,10 +1,9 @@
-// lib/api/mockTrainingResult.ts
+// lib/mock/mockTrainingResult.ts
 
 import { TrainingResult } from "@/types/schedule";
-import { v4 as uuidv4 } from "uuid";
 
 // 模擬結果資料（隨機成功或失敗）
-export function mockTrainingResult(params: {
+export function generateMockTrainingResult(params: {
   scheduleId: string;
   modelId: string;
   version: string;

@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CalendarClock, PencilLine, Hash, Timer } from "lucide-react";
 
 import { ModelVersion } from "@/types/model";
-import { ModelVersionStatusBadge } from "./ModelVersionStatusBadge";
+import { ModelVersionStatusBadge } from "@/components/models/ModelVersionStatusBadge";
 
 export function VersionInfoCard({
   version,
@@ -19,7 +19,7 @@ export function VersionInfoCard({
       <CardContent className="py-4 space-y-4">
         <h2 className="text-xl font-medium border-b pb-2 flex justify-between">
           版本資訊
-          <ModelVersionStatusBadge status={status || ""} />
+          <ModelVersionStatusBadge status={status} />
         </h2>
 
         <div className="grid sm:grid-cols-2 gap-4 text-sm text-muted-foreground">

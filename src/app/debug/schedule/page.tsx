@@ -11,7 +11,7 @@ import { TrainingProgressCard } from "@/components/schedule/TrainingProgressCard
 import { useTrainingSocket } from "@/hooks/socket/useTrainingSocket";
 import { startMockTrainingSocket } from "@/mock/socketMock";
 import { DebugStartTrainingButton } from "@/components/debug/DebugStartTrainingButton";
-import { mockTrainingResult } from "@/lib/api/mockTrainingResult";
+import { generateMockTrainingResult } from "@/lib/mock/result.mock";
 import { useScheduleById } from "@/hooks/schedule/schedule.hooks";
 
 import { toast } from "sonner";
@@ -58,7 +58,7 @@ export default function DebugSchedulePage() {
   // 當 progress 完成，寫入結果與狀態
   useEffect(() => {
     if (isCompleted && runningScheduleId) {
-      const result = mockTrainingResult({
+      const result = generateMockTrainingResult({
         scheduleId: runningScheduleId,
         modelId: modelId,
         version: version,

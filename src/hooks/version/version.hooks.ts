@@ -1,9 +1,10 @@
 // contexts/version/version.hooks.ts
-import { useVersionContext, VersionAction } from "@/contexts/version/VersionContext";
+import { useVersionContext } from "@/contexts/version/VersionContext";
+import { VersionAction } from "@/reducers/version.reducer";
 import { ModelVersion } from "@/types/model";
 
-import { fetchMockModelVersions } from "@/lib/api/model";
-import { wait } from "@/lib/utils/wait";
+import { fetchMockModelVersions } from "@/lib/api/model.api";
+import { wait } from "@/lib/utils/async.helper";
 
 // ✅ 取得指定模型的所有版本清單
 export function useVersionsByModelId(modelId: string): ModelVersion[] {

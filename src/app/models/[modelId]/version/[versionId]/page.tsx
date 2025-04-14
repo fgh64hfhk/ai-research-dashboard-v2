@@ -4,10 +4,10 @@ import { ModelHeader } from "@/components/models/ModelHeader";
 import { VersionInfoCard } from "@/components/models/VersionInfoCard";
 import { ParameterView } from "@/components/models/ParameterView";
 import { TrainingScheduleView } from "@/components/schedule/TrainingScheduleView";
-import { BackButton } from "@/components/models/BackButton";
+import { BackButton } from "@/components/common/BackButton";
 
 import { useParams } from "next/navigation";
-import { mapParametersToItems } from "@/lib/utils/mapParametersToItems";
+import { mapParametersToItems } from "@/lib/utils/parameter.helper";
 import { SlidersHorizontal } from "lucide-react";
 import { EmptyState } from "@/components/common/EmptyState";
 

@@ -8,93 +8,19 @@ import {
   ReactNode,
   useEffect,
 } from "react";
+
 import {
-  ScheduleStatus,
-  TrainingResult,
-  TrainingSchedule,
-} from "@/types/schedule";
-import { fetchMockSchedules } from "@/lib/api/schedule";
-import { wait } from "@/lib/utils/wait";
+  ScheduleState,
+  initialScheduleState,
+  ScheduleAction,
+  scheduleReducer,
+} from "@/reducers/schedule.reducer";
+
+import { fetchMockSchedules } from "@/lib/api/schedule/fetch.api";
+import { wait } from "@/lib/utils/async.helper";
 
 // ---------------------------
-// 1. State 與 Reducer 定義
-// ---------------------------
-
-interface ScheduleState {
-  scheduleMap: Record<string, TrainingSchedule[]>; // key = modelId_version
-  resultMap: Record<string, TrainingResult>;
-}
-
-const initialState: ScheduleState = {
-  scheduleMap: {},
-  resultMap: {},
-};
-
-type ScheduleAction =
-  | {
-      type: "SET_SCHEDULES";
-      payload: Record<string, TrainingSchedule[]>;
-    }
-  | {
-      type: "ADD_SCHEDULE";
-      payload: TrainingSchedule;
-    }
-  | { type: "SET_RESULT"; payload: TrainingResult }
-  | { type: "SET_SCHEDULE_STATUS"; id: string; status: ScheduleStatus };
-
-function scheduleReducer(
-  state: ScheduleState,
-  action: ScheduleAction
-): ScheduleState {
-  switch (action.type) {
-    case "SET_SCHEDULES":
-      return {
-        ...state,
-        scheduleMap: {
-          ...state.scheduleMap,
-          ...action.payload, // 可合併多組 key
-        },
-      };
-    case "ADD_SCHEDULE": {
-      const schedule = action.payload;
-      const key = `${schedule.modelId}_${schedule.version}`;
-      const existing = state.scheduleMap[key] ?? [];
-      return {
-        ...state,
-        scheduleMap: {
-          ...state.scheduleMap,
-          [key]: [schedule, ...existing],
-        },
-      };
-    }
-    case "SET_SCHEDULE_STATUS": {
-      const updateMap = { ...state.scheduleMap };
-      for (const key in updateMap) {
-        updateMap[key] = updateMap[key].map((s) =>
-          s.id === action.id ? { ...s, status: action.status } : s
-        );
-      }
-      return {
-        ...state,
-        scheduleMap: updateMap,
-      };
-    }
-    case "SET_RESULT": {
-      return {
-        ...state,
-        resultMap: {
-          ...state.resultMap,
-          [action.payload.scheduleId]: action.payload,
-        },
-      };
-    }
-    default:
-      return state;
-  }
-}
-
-// ---------------------------
-// 2. Context 建立與 Hook
+// Context 建立與 Hook
 // ---------------------------
 
 const ScheduleContext = createContext<{
@@ -110,11 +36,11 @@ export function useScheduleContext() {
 }
 
 // ---------------------------
-// 3. Provider
+// Provider
 // ---------------------------
 
 export function ScheduleProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(scheduleReducer, initialState);
+  const [state, dispatch] = useReducer(scheduleReducer, initialScheduleState);
 
   // 初始載入：模擬載入所有排程資料
   useEffect(() => {

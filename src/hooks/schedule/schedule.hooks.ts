@@ -2,10 +2,7 @@
 import { useScheduleContext } from "@/contexts/schedule/ScheduleContext";
 import { TrainingResult, TrainingSchedule } from "@/types/schedule";
 
-// ✅ 工具函數：取得排程資料的 map key
-export function getScheduleKey(modelId: string, version: string): string {
-  return `${modelId}_${version}`;
-}
+import { getScheduleKey } from "@/lib/utils/schedule.helper";
 
 // ✅ 查詢指定模型版本的所有排程
 export function useSchedulesByVersionKey(
@@ -16,13 +13,17 @@ export function useSchedulesByVersionKey(
     state: { scheduleMap },
   } = useScheduleContext();
 
-  if (!modelId || !version) return undefined;
+  if (!modelId || !version) {
+    console.warn("useSchedulesByVersionKey: modelId/version 缺失");
+    return undefined;
+  }
 
   const key = getScheduleKey(modelId, version);
   return scheduleMap[key] ?? [];
 }
 
 // ✅ 根據 id 全域搜尋排程資料
+// 注意：此 hook 會遍歷所有版本排程列表進行查找（O(n)）
 export function useScheduleById(id: string): TrainingSchedule | undefined {
   const {
     state: { scheduleMap },

@@ -1,9 +1,13 @@
-import { toast } from 'sonner'
+import { toast } from "sonner";
 
-export const useToastNotify = () => {
-  const success = (message: string, actionLabel?: string, onAction?: () => void) => {
+export const useNotifyToast = () => {
+  const success = (
+    message: string,
+    actionLabel?: string,
+    onAction?: () => void
+  ) => {
     toast.success(message, {
-      icon: '✅',
+      icon: "✅",
       ...(actionLabel && onAction
         ? {
             action: {
@@ -12,14 +16,14 @@ export const useToastNotify = () => {
             },
           }
         : {}),
-    })
-  }
+    });
+  };
 
   const error = (message: string) => {
     toast.error(message, {
-      icon: '⚠️',
-    })
-  }
+      icon: "⚠️",
+    });
+  };
 
-  return { success, error }
-}
+  return { success, error };
+};

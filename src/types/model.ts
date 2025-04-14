@@ -1,3 +1,5 @@
+// types/model.ts
+
 // 模型本體（Model, ModelVersion）
 export type Model = {
   modelId: string;
@@ -26,10 +28,12 @@ export enum ModelStatus {
   INACTIVE = "Inactive",
 }
 
+// 用於首頁快速列出模型 + 最新版本摘要
 export type ModelWithVersion = Model & {
-  modelVersion?: ModelVersion; // 最新版本
+  modelVersion?: ModelVersion;
 };
 
+// 用於詳細頁或版本列表完整查詢
 export type ModelWithAllVersions = Model & {
   modelVersion?: ModelVersion[];
 };

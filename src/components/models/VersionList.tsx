@@ -1,25 +1,18 @@
 // components/models/VersionList.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
-import { ArrowDownWideNarrow, ArrowUpWideNarrow } from "lucide-react";
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import { getSortedVersions } from "@/lib/utils/getSortedVersions";
+
+import { getSortedVersions } from "@/lib/utils/version.helper";
 import { ModelVersion } from "@/types/model";
-import {
-  getModelStatusBadgeVariant,
-  getModelStatusLabel,
-} from "@/lib/utils/status.helper";
+import { ModelVersionStatusBadge } from "@/components/models/ModelVersionStatusBadge";
+import { Badge } from "@/components/ui/badge";
+
+import { VersionListActionPanel } from "./VersionListActionPanel";
 
 interface Props {
   modelId: string;
@@ -30,8 +23,24 @@ interface Props {
 export function VersionList({ modelId, versions, isLoading }: Props) {
   const router = useRouter();
   const [isDescending, setIsDescending] = useState(true);
+  const [selectedType, setSelectedType] = useState("__all__");
 
-  const sortedVersions = getSortedVersions(versions || [], isDescending);
+  const availableTypes = Array.from(
+    new Set(versions.map((v) => v.modifiedType))
+  );
+
+  const filteredSortedVersions = useMemo(() => {
+    // ✅ 過濾
+    const filtered =
+      selectedType === "__all__"
+        ? versions
+        : versions.filter((v) => v.modifiedType === selectedType);
+
+    // ✅ 排序（沿用既有邏輯）
+    const sortedVersions = getSortedVersions(filtered, isDescending);
+
+    return sortedVersions;
+  }, [versions, isDescending, selectedType]);
 
   useEffect(() => {
     // 若資料為空，預設關閉排序按鈕
@@ -54,30 +63,15 @@ export function VersionList({ modelId, versions, isLoading }: Props) {
 
   return (
     <div className="space-y-2">
-      <div className="flex justify-end">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsDescending((prev) => !prev)}
-              >
-                {isDescending ? (
-                  <ArrowDownWideNarrow className="h-4 w-4" />
-                ) : (
-                  <ArrowUpWideNarrow className="h-4 w-4" />
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{isDescending ? "改為升序" : "改為降序"}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
+      <VersionListActionPanel
+        isDescending={isDescending}
+        onToggleSort={() => setIsDescending((prev) => !prev)}
+        availableTypes={availableTypes}
+        selectedType={selectedType}
+        onTypeChange={setSelectedType}
+      />
 
-      {sortedVersions.map((version) => {
+      {filteredSortedVersions.map((version) => {
         const key = `${version.modelId}_${version.version}`;
 
         return (
@@ -87,9 +81,7 @@ export function VersionList({ modelId, versions, isLoading }: Props) {
                 版本-{version.version}{" "}
                 {version.isLatest && <Badge variant="outline">最新版本</Badge>}
               </strong>
-              <Badge variant={getModelStatusBadgeVariant(version.status || "")}>
-                {getModelStatusLabel(version.status || "")}
-              </Badge>
+              <ModelVersionStatusBadge status={version.status} />
             </p>
             <p className="text-xs text-muted-foreground">
               修改摘要：{version.modifiedType} -{" "}

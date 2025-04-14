@@ -5,7 +5,7 @@
 import { Button } from "@/components/ui/button";
 import { useScheduleContext } from "@/contexts/schedule/ScheduleContext";
 import { useScheduleById } from "@/hooks/schedule/schedule.hooks";
-import { mockTrainingResult } from "@/lib/api/mockTrainingResult";
+import { generateMockTrainingResult } from "@/lib/mock/result.mock";
 import { toast } from "sonner";
 
 interface Props {
@@ -19,7 +19,7 @@ export function DebugTriggerResultButton({ scheduleId }: Props) {
   if (!schedule) return null;
 
   function handleTrigger() {
-    const result = mockTrainingResult({
+    const result = generateMockTrainingResult({
       scheduleId,
       modelId: schedule?.modelId || "",
       version: schedule?.version || "",

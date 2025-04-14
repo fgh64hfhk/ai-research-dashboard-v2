@@ -1,4 +1,7 @@
-export function getModelStatusLabel(status: string): string {
+import { ModelStatus } from "@/types/model";
+
+// ✅ 模型狀態文字顯示
+export function getModelStatusText(status: ModelStatus): string {
   switch (status) {
     case "Training":
       return "訓練中";
@@ -19,8 +22,9 @@ export function getModelStatusLabel(status: string): string {
   }
 }
 
-export function getModelStatusBadgeVariant(
-  status: string
+// ✅ 模型狀態對應 badge 樣式
+export function getModelStatusBadge(
+  status: ModelStatus
 ): "default" | "secondary" | "destructive" | "outline" {
   switch (status) {
     case "Deployed":
@@ -37,34 +41,3 @@ export function getModelStatusBadgeVariant(
       return "outline";
   }
 }
-
-export const getStatusLabel = (status: string) => {
-  switch (status) {
-    case "scheduled":
-      return "已排程";
-    case "running":
-      return "執行中";
-    case "completed":
-      return "已完成";
-    case "failed":
-      return "失敗";
-
-    default:
-      return status;
-  }
-};
-
-export const getStatusBadgeVariant = (status: string) => {
-  switch (status) {
-    case "scheduled":
-      return "secondary";
-    case "running":
-      return "default";
-    case "completed":
-      return "outline";
-    case "failed":
-      return "destructive";
-    default:
-      return "default";
-  }
-};

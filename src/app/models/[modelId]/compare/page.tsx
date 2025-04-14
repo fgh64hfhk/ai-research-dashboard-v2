@@ -8,7 +8,7 @@ import { useVersionContext } from "@/contexts/version/VersionContext";
 import { useParameterContext } from "@/contexts/parameter/ParameterContext";
 import { useScheduleContext } from "@/contexts/schedule/ScheduleContext";
 
-import { getParameterKey } from "@/hooks/parameter/parameter.hooks";
+import { getParameterKey } from "@/lib/utils/parameter.helper";
 
 import { Separator } from "@/components/ui/separator";
 import { VersionSummaryCard } from "@/components/compare/VersionSummaryCard";

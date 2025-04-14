@@ -15,7 +15,7 @@ import {
   useVersionsByModelId,
 } from "@/hooks/version/version.hooks";
 import { useVersionContext } from "@/contexts/version/VersionContext";
-import { VersionList } from "./VersionList";
+import { VersionList } from "@/components/models/VersionList";
 
 interface Props {
   modelId: string;

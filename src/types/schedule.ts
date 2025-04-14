@@ -21,7 +21,7 @@ export interface TrainingSchedule {
   updatedAt?: string; // 可選：更新時間
 }
 
-// 前端建立排程時送出的資料
+// 前端建立排程時送出的資料：用於前端建立新排程的表單提交格式
 export interface SchedulePayload {
   modelId: string;
   version: string;
@@ -32,7 +32,7 @@ export interface SchedulePayload {
   status?: ScheduleStatus; // 可選，預設為 "scheduled"
 }
 
-// 後端訓練完成後的回應（可搭配 TrainingResult 模型）
+// 後端訓練完成後的回應：後端訓練結束後給前端的簡要狀態回傳（非儲存格式）
 export interface ScheduleResponse {
   scheduleId: string;
   modelId: string;
@@ -43,7 +43,7 @@ export interface ScheduleResponse {
   completedAt?: string;
 }
 
-// 訓練結果儲存模型
+// 訓練結果儲存模型：訓練完成後儲存於資料庫的詳細結果（含 metrics / logs）
 export interface TrainingResult {
   scheduleId: string;
   modelId: string;

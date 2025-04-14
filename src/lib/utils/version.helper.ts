@@ -1,3 +1,26 @@
+// lib/utils/version.helper.ts
+import { ModelVersion } from "@/types/model";
+
+export function getSortedVersions(
+  versions: ModelVersion[],
+  isDescending: boolean
+): (ModelVersion & { isLatest: boolean })[] {
+  const sorted = [...versions].sort((a, b) =>
+    isDescending
+      ? new Date(b.buildDate).getTime() - new Date(a.buildDate).getTime()
+      : new Date(a.buildDate).getTime() - new Date(b.buildDate).getTime()
+  );
+
+  const latestVersionId = isDescending
+    ? sorted[0]?.version
+    : sorted[sorted.length - 1]?.version;
+
+  return sorted.map((v) => ({
+    ...v,
+    isLatest: v.version === latestVersionId,
+  }));
+}
+
 /**
  * 根據當前版本與更新類型回傳下一版號
  * @param current 當前版本號，如 "v1.0"
