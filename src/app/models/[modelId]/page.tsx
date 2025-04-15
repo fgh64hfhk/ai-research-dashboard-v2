@@ -36,18 +36,31 @@ import { VersionFormData } from "@/types/form";
 import { createVersion } from "@/lib/api/version/create";
 import { toast } from "sonner";
 import { VersionCreateDialog } from "@/components/version/VersionCreateDialog";
+import { useIncompleteParams } from "@/hooks/useIncompleteParams";
+import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { getParameterKey } from "@/lib/utils/parameter.helper";
 
 export default function ModelDetailPage() {
   const { modelId } = useParams<{ modelId: string }>();
   const router = useRouter();
 
   const { dispatch } = useVersionContext();
+
   const addVersion = useAddVersion(); // 取得 dispatch 函式
+  const { markIncomplete } = useIncompleteParams();
 
   const model = useModelById(modelId);
   const latestVersion = useLatestVersionByModelId(modelId);
+  const key = getParameterKey(modelId, latestVersion?.version || "");
 
   const versions = useVersionsByModelId(modelId);
+  const { isIncomplete } = useIncompleteParams();
 
   const [openAccordion, setOpenAccordion] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -129,13 +142,23 @@ export default function ModelDetailPage() {
       // ✅ 加入版本到全域狀態
       addVersion(modelId, result);
 
-      toast.success(`版本 ${result.version} 建立成功！`);
+      // ✅ 標記該版本參數尚未設定
+      const versionKey = `${modelId}_${result.version}`;
+      markIncomplete(versionKey);
+
+      toast.success(`版本 ${result.version} 建立成功！`, {
+        action: {
+          label: "前往設定參數",
+          onClick: () =>
+            router.push(`/models/${modelId}/version/${result.version}`),
+        },
+      });
 
       setTimeout(() => {
         const anchor = document.getElementById("version-list");
         anchor?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 200); // 略為延遲，確保動畫開始
-      
+
       // ✅ 高亮新版本
       setNewlyCreatedVersion(result.version);
     } catch (err) {
@@ -175,14 +198,32 @@ export default function ModelDetailPage() {
 
       {/* ✅ 操作卡片四格 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <ActionCard
-          icon={<SlidersHorizontal className="w-5 h-5" />}
-          label="查看最新版本"
-          onClick={() =>
-            router.push(`/models/${modelId}/version/${latestVersion?.version}`)
-          }
-          disabled={!latestVersion}
-        />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <ActionCard
+                  icon={<SlidersHorizontal className="w-5 h-5" />}
+                  label="查看最新版本"
+                  onClick={() =>
+                    router.push(
+                      `/models/${modelId}/version/${latestVersion?.version}`
+                    )
+                  }
+                  disabled={!latestVersion}
+                  className={cn(
+                    isIncomplete(key) && "bg-green-50 hover:bg-green-100"
+                  )}
+                />
+              </div>
+            </TooltipTrigger>
+            {versions.length !== 0 && isIncomplete(key) && (
+              <TooltipContent>
+                <p className="text-sm font-medium">最新版本尚未完成參數設定</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
         <ActionCard
           icon={<ListChecks className="w-5 h-5" />}
           label="展開版本列表"
@@ -227,20 +268,29 @@ function ActionCard({
   label,
   onClick,
   disabled,
+  className,
 }: {
   icon: React.ReactNode;
   label: string;
   onClick?: () => void;
   disabled?: boolean;
+  className?: string;
 }) {
   return (
     <Card
       onClick={!disabled ? onClick : undefined}
-      className={`group cursor-pointer transition border hover:shadow-md p-4 flex items-center gap-4 rounded-xl ${
-        disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-accent"
-      }`}
+      className={cn(
+        "group cursor-pointer transition border hover:shadow-md p-4 flex items-center gap-4 rounded-xl",
+        disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-accent",
+        className
+      )}
     >
-      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-muted">
+      <div
+        className={cn(
+          "w-10 h-10 flex items-center justify-center rounded-full",
+          className ? "bg-green-100" : "bg-muted"
+        )}
+      >
         {icon}
       </div>
       <span className="text-sm font-medium text-foreground group-hover:underline">

@@ -9,6 +9,9 @@ import { cn } from "@/lib/utils";
 import { ModelVersion } from "@/types/model";
 import { ModelVersionStatusBadge } from "@/components/models/ModelVersionStatusBadge";
 import { useEffect, useState } from "react";
+import { useIncompleteParams } from "@/hooks/useIncompleteParams";
+
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface VersionCardProps {
   version: ModelVersion & { isLatest?: boolean };
@@ -23,6 +26,7 @@ export function VersionCard({
 }: VersionCardProps) {
   const router = useRouter();
   const [isHighlight, setIsHighlight] = useState(highlight);
+  const { isIncomplete } = useIncompleteParams();
 
   useEffect(() => {
     if (isHighlight) {
@@ -51,15 +55,25 @@ export function VersionCard({
       )}
     >
       <CardContent className="py-4 space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="text-sm font-semibold">
-            版本 <span className="text-primary">{versionId}</span>
-            {isLatest && (
-              <Badge variant="outline" className="ml-2">
-                最新
-              </Badge>
+        <div className="flex items-center gap-2 justify-between">
+          <div className="text-sm font-semibold flex items-center gap-1">
+            版本-<span className="text-primary">{versionId}</span>
+            {isLatest && <Badge variant="outline">最新版本</Badge>}
+            {isIncomplete(`${version.modelId}_${version.version}`) && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="relative">
+                    <span className="absolute top-0 right-0 w-2 h-2 bg-green-300 rounded-full animate-ping"></span>
+                    <span className="absolute top-0 right-0 w-2 h-2 bg-green-300 rounded-full"></span>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  尚未完成參數設定，點擊查看詳情進入編輯。
+                </TooltipContent>
+              </Tooltip>
             )}
           </div>
+
           <ModelVersionStatusBadge status={status} />
         </div>
 

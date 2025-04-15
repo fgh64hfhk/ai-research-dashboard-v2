@@ -47,7 +47,7 @@ export function VersionCardListAccordion({
     }
   }, [openByDefault]);
 
-  const versionData = getSortedVersions(versions, true);
+  const sortedVersions = getSortedVersions(versions, true);
 
   return (
     <Accordion
@@ -66,7 +66,7 @@ export function VersionCardListAccordion({
           查看所有版本（{versions.length}）
         </AccordionTrigger>
         <AccordionContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 px-2">
-          {versionData.map((v) => (
+          {sortedVersions.map((v) => (
             <VersionCard
               key={v.version}
               modelId={modelId}
