@@ -32,16 +32,28 @@ export function useLatestVersionByModelId(
 }
 
 // ✅ 觸發版本清單載入（用於懶加載）
-export async function fetchModelVersions(modelId: string, dispatch: React.Dispatch<VersionAction>) {
+export async function fetchModelVersions(
+  modelId: string,
+  dispatch: React.Dispatch<VersionAction>
+) {
   dispatch({ type: "SET_LOADING", modelId, loading: true });
 
-  const [mockData] = await Promise.all([
-    fetchMockModelVersions(),
-    wait(500),
-  ]);
+  const [mockData] = await Promise.all([fetchMockModelVersions(), wait(500)]);
 
   const versions = mockData[modelId] ?? [];
 
   dispatch({ type: "SET_VERSIONS", modelId, versions });
   dispatch({ type: "SET_LOADING", modelId, loading: false });
+}
+
+export function useAddVersion() {
+  const { dispatch } = useVersionContext();
+
+  return (modelId: string, version: ModelVersion) => {
+    dispatch({
+      type: "ADD_VERSION",
+      modelId,
+      version,
+    });
+  };
 }

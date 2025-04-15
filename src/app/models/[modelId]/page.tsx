@@ -10,6 +10,7 @@ import {
   useLatestVersionByModelId,
   fetchModelVersions,
   useVersionsByModelId,
+  useAddVersion,
 } from "@/hooks/version/version.hooks";
 
 import { ModelHeader } from "@/components/models/ModelHeader";
@@ -41,6 +42,7 @@ export default function ModelDetailPage() {
   const router = useRouter();
 
   const { dispatch } = useVersionContext();
+  const addVersion = useAddVersion(); // 取得 dispatch 函式
 
   const model = useModelById(modelId);
   const latestVersion = useLatestVersionByModelId(modelId);
@@ -48,12 +50,13 @@ export default function ModelDetailPage() {
   const versions = useVersionsByModelId(modelId);
 
   const [openAccordion, setOpenAccordion] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const [newlyCreatedVersion, setNewlyCreatedVersion] = useState<string | null>(
     null
   );
 
-  const [openDialog, setOpenDialog] = useState(false);
+  const [fetched, setFetched] = useState(false);
 
   // ✅ 建立 local loading 狀態模擬 500ms 載入時間
   const [loading, setLoading] = useState(true);
@@ -68,10 +71,11 @@ export default function ModelDetailPage() {
 
   // 初次開啟版本列表時懶加載
   useEffect(() => {
-    if (openAccordion) {
+    if (openAccordion && !fetched) {
       fetchModelVersions(modelId, dispatch);
+      setFetched(true);
     }
-  }, [openAccordion, modelId, dispatch]);
+  }, [openAccordion, fetched, modelId, dispatch]);
 
   if (loading) {
     return (
@@ -113,20 +117,26 @@ export default function ModelDetailPage() {
         modifiedType: formData.modifiedType,
         modelFile: formData.modelFile,
 
-        buildDate: new Date().toISOString(),
+        buildDate: new Date("2025-04-10").toISOString(),
         trainingTime: 0,
         status: "inactive",
       };
 
       const result = await createVersion(payload);
+      // 模擬串接 API 得到提交結果，因此相當於已連接
+      setFetched(true);
 
-      // ✅ 模擬呼叫 API or localStorage
-      console.log("API Result:", result);
+      // ✅ 加入版本到全域狀態
+      addVersion(modelId, result);
 
       toast.success(`版本 ${result.version} 建立成功！`);
 
-      // ✅ 新增：展開 accordion 並高亮新版本
-      handleOpenVersionList(true);
+      setTimeout(() => {
+        const anchor = document.getElementById("version-list");
+        anchor?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 200); // 略為延遲，確保動畫開始
+      
+      // ✅ 高亮新版本
       setNewlyCreatedVersion(result.version);
     } catch (err) {
       toast.error("版本建立失敗，請稍後再試");
@@ -177,6 +187,7 @@ export default function ModelDetailPage() {
           icon={<ListChecks className="w-5 h-5" />}
           label="展開版本列表"
           onClick={() => handleOpenVersionList(true)}
+          disabled={versions.length === 0}
         />
         <ActionCard
           icon={<GitCompare className="w-5 h-5" />}

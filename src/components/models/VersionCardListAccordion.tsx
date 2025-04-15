@@ -12,6 +12,7 @@ import { VersionCard } from "@/components/models/VersionCard";
 import { ModelVersion } from "@/types/model";
 
 import { useState, useEffect } from "react";
+import { getSortedVersions } from "@/lib/utils/version.helper";
 
 interface Props {
   modelId: string;
@@ -46,6 +47,8 @@ export function VersionCardListAccordion({
     }
   }, [openByDefault]);
 
+  const versionData = getSortedVersions(versions, true);
+
   return (
     <Accordion
       type="single"
@@ -56,13 +59,14 @@ export function VersionCardListAccordion({
         setAccordionValue(val);
         onOpenChange?.(val === "versions"); // ✅ 回報目前是否展開
       }}
+      disabled={versions.length === 0}
     >
       <AccordionItem value="versions">
         <AccordionTrigger className="text-base font-medium px-2">
           查看所有版本（{versions.length}）
         </AccordionTrigger>
         <AccordionContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 px-2">
-          {versions.map((v) => (
+          {versionData.map((v) => (
             <VersionCard
               key={v.version}
               modelId={modelId}

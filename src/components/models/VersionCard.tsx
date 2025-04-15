@@ -35,6 +35,7 @@ export function VersionCard({
 
   const {
     version: versionId,
+    modifiedDate,
     modifiedType,
     buildDate,
     trainingTime,
@@ -64,6 +65,10 @@ export function VersionCard({
 
         <p className="text-xs text-muted-foreground">
           修改摘要：{modifiedType}
+        </p>
+
+        <p className="text-xs text-muted-foreground">
+          修改時間：{format(new Date(modifiedDate), "yyyy-MM-dd HH:mm")}
         </p>
 
         <p className="text-xs text-muted-foreground">
