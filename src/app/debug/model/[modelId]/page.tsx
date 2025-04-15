@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
-import { useVersionContext } from "@/contexts/version/VersionContext";
-
 import { useModelById } from "@/hooks/model/model.hooks";
+import { useVersionContext } from "@/contexts/version/VersionContext";
 import {
   useLatestVersionByModelId,
   fetchModelVersions,
@@ -13,33 +12,24 @@ import {
 } from "@/hooks/version/version.hooks";
 
 import { ModelHeader } from "@/components/models/ModelHeader";
-import { VersionCardListAccordion } from "@/components/models/VersionCardListAccordion";
-
-import { EmptyState } from "@/components/common/EmptyState";
-
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-
 import {
   SlidersHorizontal,
   GitCompare,
   ListChecks,
   PlusCircle,
-  AlertCircle,
 } from "lucide-react";
-
 import Image from "next/image";
-import { VersionFormValues } from "@/schemas/versionCreateSchema";
-import { VersionFormData } from "@/types/form";
-import { createVersion } from "@/lib/api/version/create";
-import { toast } from "sonner";
-import { VersionCreateDialog } from "@/components/version/VersionCreateDialog";
+import { VersionCardListAccordion } from "@/components/debug/VersionCardListAccordion";
+
+import { EmptyState } from "@/components/common/EmptyState";
+import { AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ModelDetailPage() {
   const { modelId } = useParams<{ modelId: string }>();
   const router = useRouter();
-
   const { dispatch } = useVersionContext();
 
   const model = useModelById(modelId);
@@ -52,8 +42,6 @@ export default function ModelDetailPage() {
   const [newlyCreatedVersion, setNewlyCreatedVersion] = useState<string | null>(
     null
   );
-
-  const [openDialog, setOpenDialog] = useState(false);
 
   // ✅ 建立 local loading 狀態模擬 500ms 載入時間
   const [loading, setLoading] = useState(true);
@@ -97,41 +85,12 @@ export default function ModelDetailPage() {
   }
 
   // 在 onClick 中這樣寫：
-  const handleOpenVersionList = (open: boolean) => {
-    setOpenAccordion(open); // 先展開
+  const handleOpenVersionList = () => {
+    setOpenAccordion(true); // 先展開
     setTimeout(() => {
       const anchor = document.getElementById("version-list");
       anchor?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 200); // 略為延遲，確保動畫開始
-  };
-
-  const handleSubmit = async (formData: VersionFormValues) => {
-    try {
-      const payload: VersionFormData = {
-        modelId,
-        version: formData.version,
-        modifiedType: formData.modifiedType,
-        modelFile: formData.modelFile,
-
-        buildDate: new Date().toISOString(),
-        trainingTime: 0,
-        status: "inactive",
-      };
-
-      const result = await createVersion(payload);
-
-      // ✅ 模擬呼叫 API or localStorage
-      console.log("API Result:", result);
-
-      toast.success(`版本 ${result.version} 建立成功！`);
-
-      // ✅ 新增：展開 accordion 並高亮新版本
-      handleOpenVersionList(true);
-      setNewlyCreatedVersion(result.version);
-    } catch (err) {
-      toast.error("版本建立失敗，請稍後再試");
-      console.error(err);
-    }
   };
 
   return (
@@ -147,8 +106,6 @@ export default function ModelDetailPage() {
           width={200}
           height={200}
           className="rounded-md"
-          priority={true}
-          unoptimized
         />
         <div className="space-y-2 text-sm text-muted-foreground">
           <p className="text-base font-medium text-foreground">
@@ -176,7 +133,7 @@ export default function ModelDetailPage() {
         <ActionCard
           icon={<ListChecks className="w-5 h-5" />}
           label="展開版本列表"
-          onClick={() => handleOpenVersionList(true)}
+          onClick={handleOpenVersionList}
         />
         <ActionCard
           icon={<GitCompare className="w-5 h-5" />}
@@ -186,7 +143,7 @@ export default function ModelDetailPage() {
         <ActionCard
           icon={<PlusCircle className="w-5 h-5" />}
           label="建立新版本"
-          onClick={() => setOpenDialog(true)}
+          onClick={() => router.push(`/models/${modelId}/version/create`)}
         />
       </div>
 
@@ -200,13 +157,6 @@ export default function ModelDetailPage() {
           onOpenChange={handleOpenVersionList}
         />
       </div>
-
-      <VersionCreateDialog
-        open={openDialog}
-        onOpenChange={setOpenDialog}
-        modelId={modelId}
-        onSubmit={handleSubmit}
-      />
     </div>
   );
 }

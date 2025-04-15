@@ -31,12 +31,12 @@ export const VersionCreateDialog = ({
       // 延遲 1 秒才顯示 spinner，避免太快閃一下影響體驗
       setTimeout(() => {
         setShowLoading(true);
-      }, 1000);
+      }, 100);
 
       await onSubmit(values);
 
       // 模擬延遲後結束（可改為 props 控制關閉）
-      await new Promise((res) => setTimeout(res, 5000));
+      await new Promise((res) => setTimeout(res, 1000));
     } catch (err) {
       console.error("版本建立失敗：", err);
     } finally {
