@@ -5,6 +5,10 @@ import { ModelVersion } from "@/types/model";
 
 import { fetchMockModelVersions } from "@/lib/api/model.api";
 import { wait } from "@/lib/utils/async.helper";
+import { useParameterByVersionKey } from "@/hooks/parameter/parameter.hooks";
+import { useSchedulesByVersionKey } from "@/hooks/schedule/schedule.hooks";
+import { useIncompleteParams } from "@/hooks/useIncompleteParams";
+import { useEffect, useRef } from "react";
 
 // ✅ 取得指定模型的所有版本清單
 export function useVersionsByModelId(modelId: string): ModelVersion[] {
@@ -56,4 +60,35 @@ export function useAddVersion() {
       version,
     });
   };
+}
+
+/**
+ * 檢查指定版本是否已完成（參數與排程都存在），並更新 localStorage 狀態。
+ */
+export function useCheckVersionComplete(modelId: string, versionId: string) {
+  const key = `${modelId}_${versionId}`;
+  const parameters = useParameterByVersionKey(modelId, versionId);
+  const schedules = useSchedulesByVersionKey(modelId, versionId);
+  const { clearIncomplete, markIncomplete } = useIncompleteParams();
+
+  const isParamMissing = !parameters || Object.keys(parameters).length === 0;
+  const isScheduleMissing = !schedules || schedules.length === 0;
+
+  const isComplete = !isParamMissing && !isScheduleMissing;
+
+  // ✅ 用來追蹤上一次的同步狀態，避免無限更新
+  const prevStatusRef = useRef<boolean | null>(null);
+
+  useEffect(() => {
+    if (prevStatusRef.current === isComplete) return; // 若狀態未改變，跳過
+    prevStatusRef.current = isComplete;
+
+    if (isComplete) {
+      clearIncomplete(key);
+    } else {
+      markIncomplete(key);
+    }
+  }, [isComplete, key, clearIncomplete, markIncomplete]);
+
+  return { isComplete, isParamMissing, isScheduleMissing };
 }

@@ -4,45 +4,45 @@ import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "incompleteParams";
 
+// ✅ 工具函數：取得儲存在 localStorage 中的未完成版本記錄
+function getStoredIncomplete(): Record<string, boolean> {
+  if (typeof window === "undefined") return {};
+  const raw = localStorage.getItem(STORAGE_KEY);
+  return raw ? JSON.parse(raw) : {};
+}
+
+// ✅ 工具函數：寫入未完成狀態
+function saveIncompleteMap(map: Record<string, boolean>) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
+}
+
+// ✅ Hook：提供標記、檢查、刪除 未完成版本的工具
 export function useIncompleteParams() {
   const [map, setMap] = useState<Record<string, boolean>>({});
 
+  // ✅ 初次掛載時，讀取 localStorage 的記錄
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (typeof parsed === "object" && parsed !== null) {
-          setMap(parsed);
-        }
-      } catch (err) {
-        console.warn("無法解析 incompleteParams localStorage", err);
-      }
-    }
+    const stored = getStoredIncomplete();
+    setMap(stored);
   }, []);
 
   const markIncomplete = (key: string) => {
     const updated = { ...map, [key]: true };
     setMap(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    saveIncompleteMap(updated);
   };
 
-  const markComplete = (key: string) => {
+  const clearIncomplete = (key: string) => {
     const updated = { ...map };
     delete updated[key];
     setMap(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    saveIncompleteMap(updated);
   };
 
   const isIncomplete = (key: string) => {
-    return map[key] === true;
+    return !!map[key];
   };
 
-  return {
-    incompleteMap: map,
-    markIncomplete,
-    markComplete,
-    isIncomplete,
-  };
+  return { map, markIncomplete, clearIncomplete, isIncomplete };
 }

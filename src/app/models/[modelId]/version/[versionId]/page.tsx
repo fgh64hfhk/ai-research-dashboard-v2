@@ -12,7 +12,10 @@ import { ListChecks, SlidersHorizontal } from "lucide-react";
 import { EmptyState } from "@/components/common/EmptyState";
 
 import { useModelList } from "@/hooks/model/model.hooks";
-import { useVersionsByModelId } from "@/hooks/version/version.hooks";
+import {
+  useCheckVersionComplete,
+  useVersionsByModelId,
+} from "@/hooks/version/version.hooks";
 import { useParameterByVersionKey } from "@/hooks/parameter/parameter.hooks";
 import { useSchedulesByVersionKey } from "@/hooks/schedule/schedule.hooks";
 import { VersionActionPanel } from "@/components/version/VersionActionPanel";
@@ -36,8 +39,10 @@ export default function ModelVersionDetailPage() {
 
   const schedules = useSchedulesByVersionKey(modelId, versionId);
 
-  const isParamMissing = !parameters || Object.keys(parameters).length === 0;
-  const isScheduleMissing = !schedules || schedules.length === 0;
+  const { isParamMissing, isScheduleMissing } = useCheckVersionComplete(
+    modelId,
+    versionId
+  );
 
   if (!model || !modelVersion) {
     return (
