@@ -12,15 +12,15 @@ export const mockModels: ModelWithAllVersions[] = [
     language: "Python",
     description: "A large language model for financial data processing.",
     modelVersion: [
-      // {
-      //   modelId: "m001",
-      //   version: "v1.0",
-      //   modifiedDate: "2025-03-01",
-      //   modifiedType: "initial",
-      //   trainingTime: 3600,
-      //   buildDate: "2025-03-01",
-      //   status: ModelStatus.DEPLOYED,
-      // },
+      {
+        modelId: "m001",
+        version: "v1.0",
+        modifiedDate: "2025-04-16 18:05",
+        modifiedType: "初始版本上傳",
+        trainingTime: 0,
+        buildDate: "2025-04-10 08:00",
+        status: ModelStatus.INACTIVE,
+      },
       // {
       //   modelId: "m001",
       //   version: "v1.1",
