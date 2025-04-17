@@ -1,10 +1,6 @@
 // reducers/schedule.reducer.ts
 
-import {
-  ScheduleStatus,
-  TrainingResult,
-  TrainingSchedule,
-} from "@/types/schedule";
+import { ScheduleStatus, TrainingSchedule } from "@/types/schedule";
 
 // ---------------------------
 // 1. State 定義
@@ -12,12 +8,10 @@ import {
 
 export interface ScheduleState {
   scheduleMap: Record<string, TrainingSchedule[]>;
-  resultMap: Record<string, TrainingResult>;
 }
 
 export const initialScheduleState: ScheduleState = {
   scheduleMap: {},
-  resultMap: {},
 };
 
 // ---------------------------
@@ -27,7 +21,6 @@ export const initialScheduleState: ScheduleState = {
 export type ScheduleAction =
   | { type: "SET_SCHEDULES"; payload: Record<string, TrainingSchedule[]> }
   | { type: "ADD_SCHEDULE"; payload: TrainingSchedule }
-  | { type: "SET_RESULT"; payload: TrainingResult }
   | { type: "SET_SCHEDULE_STATUS"; id: string; status: ScheduleStatus };
 
 // ---------------------------
@@ -69,15 +62,6 @@ export function scheduleReducer(
       return {
         ...state,
         scheduleMap: updateMap,
-      };
-    }
-    case "SET_RESULT": {
-      return {
-        ...state,
-        resultMap: {
-          ...state.resultMap,
-          [action.payload.scheduleId]: action.payload,
-        },
       };
     }
     default:

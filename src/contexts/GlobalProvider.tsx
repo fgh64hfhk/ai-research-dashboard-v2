@@ -5,6 +5,7 @@ import { ModelProvider } from "@/contexts/model/ModelContext";
 import { VersionProvider } from "@/contexts/version/VersionContext";
 import { ParameterProvider } from "@/contexts/parameter/ParameterContext";
 import { ScheduleProvider } from "@/contexts/schedule/ScheduleContext";
+import { TrainingResultProvider } from "@/contexts/training/TrainingResultContext";
 
 import { Toaster } from "@/components/ui/sonner";
 
@@ -14,7 +15,7 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
       <VersionProvider>
         <ParameterProvider>
           <ScheduleProvider>
-            {children}
+            <TrainingResultProvider>{children}</TrainingResultProvider>
             <Toaster richColors />
           </ScheduleProvider>
         </ParameterProvider>

@@ -3,7 +3,6 @@
 import { ModelHeader } from "@/components/models/ModelHeader";
 import { VersionInfoCard } from "@/components/models/VersionInfoCard";
 import { ParameterView } from "@/components/models/ParameterView";
-import { TrainingScheduleView } from "@/components/schedule/TrainingScheduleView";
 import { BackButton } from "@/components/common/BackButton";
 
 import { useParams } from "next/navigation";
@@ -18,8 +17,13 @@ import {
 } from "@/hooks/version/version.hooks";
 import { useParameterByVersionKey } from "@/hooks/parameter/parameter.hooks";
 import { useSchedulesByVersionKey } from "@/hooks/schedule/schedule.hooks";
+import { useTrainingResultsByVersionKey } from "@/hooks/training/useTrainingResult";
+
 import { VersionActionPanel } from "@/components/version/VersionActionPanel";
 import { VersionIntroCard } from "@/components/version/VersionIntroCard";
+import { getNextScheduledTask } from "@/lib/utils/schedule.helper";
+import { NextTrainingScheduleCard } from "@/components/schedule/NextTrainingScheduleCard";
+import { TrainingResultCard } from "@/components/schedule/TrainingResultCard";
 
 export default function ModelVersionDetailPage() {
   const { modelId, versionId } = useParams<{
@@ -38,6 +42,9 @@ export default function ModelVersionDetailPage() {
   const parameters = useParameterByVersionKey(modelId, versionId);
 
   const schedules = useSchedulesByVersionKey(modelId, versionId);
+  const schedule = getNextScheduledTask(schedules);
+
+  const results = useTrainingResultsByVersionKey(schedule?.id || "");
 
   const { isParamMissing, isScheduleMissing } = useCheckVersionComplete(
     modelId,
@@ -76,12 +83,25 @@ export default function ModelVersionDetailPage() {
       )}
 
       {/* 排程區塊 */}
-      {schedules && schedules.length > 0 ? (
-        <TrainingScheduleView schedules={schedules} />
+      {schedule ? (
+        <NextTrainingScheduleCard schedule={schedule} />
       ) : (
         <EmptyState
           icon={<ListChecks className="w-10 h-10" />}
           title="尚未排程"
+          description="請為此版本建立一個訓練排程"
+        />
+      )}
+
+      {JSON.stringify(results)}
+
+      {/* 結果區塊 */}
+      {results ? (
+        <TrainingResultCard results={results} />
+      ) : (
+        <EmptyState
+          icon={<ListChecks className="w-10 h-10" />}
+          title="沒有結果"
           description="請為此版本建立一個訓練排程"
         />
       )}

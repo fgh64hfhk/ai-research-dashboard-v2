@@ -148,17 +148,17 @@ export const mockModelParameters: Record<string, ModelParameters> = {
 };
 
 export const mockSchedules: TrainingSchedule[] = [
-  // // m001_v1.0
-  // {
-  //   id: "s001",
-  //   modelId: "m001",
-  //   version: "v1.0",
-  //   buildDate: "2024-12-10",
-  //   runDate: "2025-04-02T10:00:00",
-  //   status: "scheduled",
-  //   createdAt: "2025-03-30T08:00:00",
-  //   type: "auto",
-  // },
+  // m001_v1.0
+  {
+    id: "s001",
+    modelId: "m001",
+    version: "v1.0",
+    buildDate: "2024-12-10",
+    runDate: "2025-05-01T10:00:00",
+    status: "scheduled",
+    createdAt: "2025-03-30T08:00:00",
+    type: "auto",
+  },
   // {
   //   id: "s002",
   //   modelId: "m001",
