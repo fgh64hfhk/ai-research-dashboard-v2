@@ -59,25 +59,25 @@ export default function ModelVersionDetailPage() {
   const [openParamDialog, setOpenParamDialog] = useState(false);
 
   // ✅ 建立 local loading 狀態模擬 500ms 載入時間
-    const [loading, setLoading] = useState(true);
-  
-    useEffect(() => {
-      const timeout = setTimeout(() => {
-        setLoading(false);
-      }, 500);
-  
-      return () => clearTimeout(timeout);
-    }, []);
+  const [loading, setLoading] = useState(true);
 
-    if (loading) {
-      return (
-        <div className="container max-w-5xl py-8 px-4 md:px-8 space-y-6">
-          <Skeleton className="h-10 w-2/3" />
-          <Skeleton className="h-28 w-full" />
-          <Skeleton className="h-40 w-full" />
-        </div>
-      );
-    }
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="container max-w-5xl py-8 px-4 md:px-8 space-y-6">
+        <Skeleton className="h-10 w-2/3" />
+        <Skeleton className="h-28 w-full" />
+        <Skeleton className="h-40 w-full" />
+      </div>
+    );
+  }
 
   if (!model || !modelVersion) {
     return (
@@ -86,7 +86,9 @@ export default function ModelVersionDetailPage() {
         title="找不到模型版本資料"
         description="請確認模型版本是否正確，或返回模型選單重新選擇。"
         action={
-          <Button onClick={() => router.push(`/models/${modelId}`)}>返回模型選單</Button>
+          <Button onClick={() => router.push(`/models/${modelId}`)}>
+            返回模型選單
+          </Button>
         }
       />
     );

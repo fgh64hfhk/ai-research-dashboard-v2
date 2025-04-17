@@ -12,6 +12,7 @@ import { ParameterFormValues } from "@/schemas/parameterCreateSchema";
 import { createParameters } from "@/lib/api/parameter/create"; // 模擬 API
 import { ParameterFormData } from "@/types/form";
 import { useAddParameter } from "@/hooks/parameter/parameter.hooks";
+import { scrollToAnchor } from "@/lib/utils/common.helper";
 
 interface ParameterCreateDialogProps {
   open: boolean;
@@ -48,8 +49,11 @@ export const ParameterCreateDialog = ({
 
       addParameter(modelId, version, result);
 
-      toast.success("參數設定成功！");
       onOpenChange(false); // 關閉 dialog
+
+      toast.success("參數設定成功！");
+
+      scrollToAnchor("param_view", 500);
     } catch (err) {
       console.error(err);
       toast.error("參數設定失敗，請稍後再試");

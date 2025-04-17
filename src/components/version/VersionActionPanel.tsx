@@ -13,6 +13,7 @@ import {
   PlusCircle,
 } from "lucide-react";
 import { ActionCard } from "@/components/common/ActionCard";
+import { scrollToAnchor } from "@/lib/utils/common.helper";
 
 interface VersionActionPanelProps {
   isParamMissing: boolean;
@@ -37,7 +38,7 @@ export function VersionActionPanel({
               <ActionCard
                 icon={<SlidersHorizontal className="w-5 h-5" />}
                 label={isParamMissing ? "設定參數" : "查看參數表"}
-                onClick={onSetParams}
+                onClick={isParamMissing? onSetParams : () => scrollToAnchor("param_view")}
                 variant={isParamMissing ? "warning" : "default"}
               />
             </div>

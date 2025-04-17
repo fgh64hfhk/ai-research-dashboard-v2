@@ -11,6 +11,7 @@ import {
   fetchModelVersions,
   useVersionsByModelId,
   useAddVersion,
+  useCheckVersionComplete,
 } from "@/hooks/version/version.hooks";
 
 import { ModelHeader } from "@/components/models/ModelHeader";
@@ -36,7 +37,6 @@ import { VersionFormData } from "@/types/form";
 import { createVersion } from "@/lib/api/version/create";
 import { toast } from "sonner";
 import { VersionCreateDialog } from "@/components/version/VersionCreateDialog";
-import { useIncompleteParams } from "@/hooks/useIncompleteParams";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -44,7 +44,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { getParameterKey } from "@/lib/utils/parameter.helper";
+import { useIncompleteParams } from "@/hooks/useIncompleteParams";
 
 export default function ModelDetailPage() {
   const { modelId } = useParams<{ modelId: string }>();
@@ -53,14 +53,13 @@ export default function ModelDetailPage() {
   const { dispatch } = useVersionContext();
 
   const addVersion = useAddVersion(); // 取得 dispatch 函式
-  const { markIncomplete } = useIncompleteParams();
 
   const model = useModelById(modelId);
   const latestVersion = useLatestVersionByModelId(modelId);
-  const key = getParameterKey(modelId, latestVersion?.version || "");
+  const { isParamMissing } = useCheckVersionComplete(modelId, latestVersion?.version || "");
+  const { markIncomplete } = useIncompleteParams();
 
   const versions = useVersionsByModelId(modelId);
-  const { isIncomplete } = useIncompleteParams();
 
   const [openAccordion, setOpenAccordion] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -212,12 +211,12 @@ export default function ModelDetailPage() {
                   }
                   disabled={!latestVersion}
                   className={cn(
-                    isIncomplete(key) && "bg-green-50 hover:bg-green-100"
+                    isParamMissing && "bg-green-50 hover:bg-green-100"
                   )}
                 />
               </div>
             </TooltipTrigger>
-            {versions.length !== 0 && isIncomplete(key) && (
+            {versions.length !== 0 && isParamMissing && (
               <TooltipContent>
                 <p className="text-sm font-medium">最新版本尚未完成參數設定</p>
               </TooltipContent>

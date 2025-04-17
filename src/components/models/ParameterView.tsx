@@ -70,7 +70,7 @@ export function ParameterView({ parameters }: Props) {
   );
 
   return (
-    <Card>
+    <Card id="param_view">
       <CardContent className="py-4 space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-medium">參數設定</h2>

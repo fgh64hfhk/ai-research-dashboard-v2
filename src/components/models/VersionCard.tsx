@@ -9,9 +9,9 @@ import { cn } from "@/lib/utils";
 import { ModelVersion } from "@/types/model";
 import { ModelVersionStatusBadge } from "@/components/models/ModelVersionStatusBadge";
 import { useEffect, useState } from "react";
-import { useIncompleteParams } from "@/hooks/useIncompleteParams";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useCheckVersionComplete } from "@/hooks/version/version.hooks";
 
 interface VersionCardProps {
   version: ModelVersion & { isLatest?: boolean };
@@ -26,7 +26,7 @@ export function VersionCard({
 }: VersionCardProps) {
   const router = useRouter();
   const [isHighlight, setIsHighlight] = useState(highlight);
-  const { isIncomplete } = useIncompleteParams();
+  const { isParamMissing } = useCheckVersionComplete(modelId, version.version);
 
   useEffect(() => {
     if (isHighlight) {
@@ -59,7 +59,7 @@ export function VersionCard({
           <div className="text-sm font-semibold flex items-center gap-1">
             版本-<span className="text-primary">{versionId}</span>
             {isLatest && <Badge variant="outline">最新版本</Badge>}
-            {isIncomplete(`${version.modelId}_${version.version}`) && (
+            {isParamMissing && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <span className="relative">
