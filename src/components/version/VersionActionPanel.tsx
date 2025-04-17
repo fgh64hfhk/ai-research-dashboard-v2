@@ -15,8 +15,6 @@ import {
 import { ActionCard } from "@/components/common/ActionCard";
 
 interface VersionActionPanelProps {
-  modelId: string;
-  versionId: string;
   isParamMissing: boolean;
   isScheduleMissing: boolean;
   onSetParams?: () => void;
@@ -27,6 +25,7 @@ interface VersionActionPanelProps {
 export function VersionActionPanel({
   isParamMissing,
   isScheduleMissing,
+  onSetParams,
 }: VersionActionPanelProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -38,7 +37,7 @@ export function VersionActionPanel({
               <ActionCard
                 icon={<SlidersHorizontal className="w-5 h-5" />}
                 label={isParamMissing ? "設定參數" : "查看參數表"}
-                onClick={() => {}}
+                onClick={onSetParams}
                 variant={isParamMissing ? "warning" : "default"}
               />
             </div>

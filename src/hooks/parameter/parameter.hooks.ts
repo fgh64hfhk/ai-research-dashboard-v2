@@ -21,3 +21,26 @@ export function useParameterByVersionKey(
   const key = getParameterKey(modelId, version);
   return parameterMap[key];
 }
+
+/**
+ * 使用 context 提供的 dispatch 將指定模型版本的參數加入 parameterMap
+ * @returns {addParameter} 傳入 modelId, version 與資料
+ */
+export function useAddParameter() {
+  const { dispatch } = useParameterContext();
+
+  const addParameter = (
+    modelId: string,
+    version: string,
+    parameters: ModelParameters
+  ) => {
+    const key = `${modelId}_${version}`;
+    dispatch({
+      type: "ADD_PARAMETERS",
+      key,
+      parameters,
+    });
+  };
+
+  return addParameter;
+}

@@ -23,3 +23,20 @@ export interface VersionFormData {
   trainingTime?: number; // 可留空，由系統訓練結果填入
   status?: "inactive" | "scheduled"; // 初始為 inactive（尚未訓練）
 }
+
+// 建立參數表所需資料結構（含 UI 輸入與系統欄位）
+export interface ParameterFormData {
+  // 使用者輸入欄位
+  learningRate: number;
+  batchSize: number;
+  epochs: number;
+  optimizer: "adam" | "sgd" | "rmsprop";
+  lossFunction: "crossentropy" | "mse" | "categorical_crossentropy";
+  datasetVersion: string;
+  pretrainedModel: boolean;
+  augmentation?: boolean;
+
+  // 自動填入欄位
+  modelId: string;
+  version: string;
+}

@@ -5,9 +5,9 @@ import { VersionInfoCard } from "@/components/models/VersionInfoCard";
 import { ParameterView } from "@/components/models/ParameterView";
 import { BackButton } from "@/components/common/BackButton";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { mapParametersToItems } from "@/lib/utils/parameter.helper";
-import { ListChecks, SlidersHorizontal } from "lucide-react";
+import { AlertCircle, ListChecks, SlidersHorizontal } from "lucide-react";
 import { EmptyState } from "@/components/common/EmptyState";
 
 import { useModelList } from "@/hooks/model/model.hooks";
@@ -24,12 +24,17 @@ import { VersionIntroCard } from "@/components/version/VersionIntroCard";
 import { getNextScheduledTask } from "@/lib/utils/schedule.helper";
 import { NextTrainingScheduleCard } from "@/components/schedule/NextTrainingScheduleCard";
 import { TrainingResultCard } from "@/components/schedule/TrainingResultCard";
+import { useEffect, useState } from "react";
+import { ParameterCreateDialog } from "@/components/parameter/ParameterCreateDialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 export default function ModelVersionDetailPage() {
   const { modelId, versionId } = useParams<{
     modelId: string;
     versionId: string;
   }>();
+  const router = useRouter();
 
   const models = useModelList();
 
@@ -51,11 +56,39 @@ export default function ModelVersionDetailPage() {
     versionId
   );
 
+  const [openParamDialog, setOpenParamDialog] = useState(false);
+
+  // ✅ 建立 local loading 狀態模擬 500ms 載入時間
+    const [loading, setLoading] = useState(true);
+  
+    useEffect(() => {
+      const timeout = setTimeout(() => {
+        setLoading(false);
+      }, 500);
+  
+      return () => clearTimeout(timeout);
+    }, []);
+
+    if (loading) {
+      return (
+        <div className="container max-w-5xl py-8 px-4 md:px-8 space-y-6">
+          <Skeleton className="h-10 w-2/3" />
+          <Skeleton className="h-28 w-full" />
+          <Skeleton className="h-40 w-full" />
+        </div>
+      );
+    }
+
   if (!model || !modelVersion) {
     return (
-      <p className="text-muted-foreground text-center py-10">
-        請重新載入確認全域狀態有獲取資料。
-      </p>
+      <EmptyState
+        icon={<AlertCircle className="w-10 h-10" />}
+        title="找不到模型版本資料"
+        description="請確認模型版本是否正確，或返回模型選單重新選擇。"
+        action={
+          <Button onClick={() => router.push(`/models/${modelId}`)}>返回模型選單</Button>
+        }
+      />
     );
   }
 
@@ -64,10 +97,9 @@ export default function ModelVersionDetailPage() {
       <ModelHeader {...model} />
       <VersionIntroCard />
       <VersionActionPanel
-        modelId={modelId}
-        versionId={versionId}
         isParamMissing={isParamMissing}
         isScheduleMissing={isScheduleMissing}
+        onSetParams={() => setOpenParamDialog(true)}
       />
       <VersionInfoCard {...modelVersion} />
 
@@ -93,8 +125,6 @@ export default function ModelVersionDetailPage() {
         />
       )}
 
-      {JSON.stringify(results)}
-
       {/* 結果區塊 */}
       {results ? (
         <TrainingResultCard results={results} />
@@ -109,6 +139,14 @@ export default function ModelVersionDetailPage() {
       <div className="flex justify-end">
         <BackButton />
       </div>
+
+      {/* 新增參數表的對話匡 */}
+      <ParameterCreateDialog
+        open={openParamDialog}
+        onOpenChange={setOpenParamDialog}
+        modelId={modelId}
+        version={versionId}
+      />
     </div>
   );
 }

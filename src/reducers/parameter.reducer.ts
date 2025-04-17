@@ -13,11 +13,17 @@ export const initialParameterState: ParameterState = {
 };
 
 // 3. 定義 Action
-export type ParameterAction = {
-  type: "SET_PARAMETERS";
-  key: string;
-  parameters: ModelParameters;
-};
+export type ParameterAction =
+  | {
+      type: "SET_PARAMETERS";
+      key: string;
+      parameters: ModelParameters;
+    }
+  | {
+      type: "ADD_PARAMETERS";
+      key: string;
+      parameters: ModelParameters;
+    };
 
 // 4. Reducer 主體
 export function parameterReducer(
@@ -26,6 +32,7 @@ export function parameterReducer(
 ): ParameterState {
   switch (action.type) {
     case "SET_PARAMETERS":
+    case "ADD_PARAMETERS":
       return {
         ...state,
         parameterMap: {

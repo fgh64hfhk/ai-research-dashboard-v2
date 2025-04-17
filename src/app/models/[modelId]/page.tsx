@@ -92,7 +92,7 @@ export default function ModelDetailPage() {
 
   if (loading) {
     return (
-      <div className="container max-w-5xl py-8 space-y-6">
+      <div className="container max-w-5xl py-8 px-4 md:px-8 space-y-6">
         <Skeleton className="h-10 w-2/3" />
         <Skeleton className="h-28 w-full" />
         <Skeleton className="h-40 w-full" />

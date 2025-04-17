@@ -17,7 +17,7 @@ import {
 } from "@/reducers/parameter.reducer";
 
 import { wait } from "@/lib/utils/async.helper";
-import { fetchMockParameters } from "@/lib/api/parameter.api";
+import { fetchMockParameters } from "@/lib/api/parameter/parameter.api";
 
 // ---------------------------
 // Context 建立與 Hook
