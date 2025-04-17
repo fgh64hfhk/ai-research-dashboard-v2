@@ -58,7 +58,6 @@ export function ParameterView({ parameters }: Props) {
     );
   }
 
-  // Group parameters by group label
   const grouped = parameters.reduce<Record<string, ModelParameterItem[]>>(
     (acc, item) => {
       const group = item.group || "其他參數";

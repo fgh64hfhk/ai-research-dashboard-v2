@@ -28,15 +28,12 @@ export const VersionCreateDialog = ({
     setIsSubmitting(true);
 
     try {
-      // 延遲 1 秒才顯示 spinner，避免太快閃一下影響體驗
+      // 模擬延遲才顯示 loading spinner
       setTimeout(() => {
         setShowLoading(true);
       }, 100);
 
-      await onSubmit(values);
-
-      // 模擬延遲後結束（可改為 props 控制關閉）
-      await new Promise((res) => setTimeout(res, 1000));
+      onSubmit(values);
     } catch (err) {
       console.error("版本建立失敗：", err);
     } finally {
@@ -64,9 +61,6 @@ export const VersionCreateDialog = ({
       <VersionCreateForm
         modelId={modelId}
         onSubmit={handleSubmit}
-        onDone={() => {
-          onOpenChange(false);
-        }}
       />
     </BaseDialog>
   );

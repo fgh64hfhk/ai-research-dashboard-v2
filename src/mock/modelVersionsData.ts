@@ -79,17 +79,17 @@ export const mockModels: ModelWithAllVersions[] = [
 ];
 
 export const mockModelParameters: Record<string, ModelParameters> = {
-  // "m001_v1.0": {
-  //   modelVersionId: "m001_v1.0",
-  //   learningRate: 0.001,
-  //   batchSize: 32,
-  //   epochs: 10,
-  //   optimizer: "adam",
-  //   lossFunction: "crossentropy",
-  //   datasetVersion: "fin-v1",
-  //   pretrainedModel: true,
-  //   augmentation: false,
-  // },
+  "m001_v1.0": {
+    modelVersionId: "m001_v1.0",
+    learningRate: 0.001,
+    batchSize: 32,
+    epochs: 10,
+    optimizer: "adam",
+    lossFunction: "categorical_crossentropy",
+    datasetVersion: "fin-v1",
+    pretrainedModel: false,
+    augmentation: false,
+  },
   // "m001_v1.1": {
   //   modelVersionId: "m001_v1.1",
   //   learningRate: 0.0005,

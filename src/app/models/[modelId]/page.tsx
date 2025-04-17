@@ -23,13 +23,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import {
-  SlidersHorizontal,
-  GitCompare,
-  ListChecks,
-  PlusCircle,
-  AlertCircle,
-} from "lucide-react";
+import { AlertCircle } from "lucide-react";
 
 import Image from "next/image";
 import { VersionFormValues } from "@/schemas/versionCreateSchema";
@@ -37,38 +31,41 @@ import { VersionFormData } from "@/types/form";
 import { createVersion } from "@/lib/api/version/create";
 import { toast } from "sonner";
 import { VersionCreateDialog } from "@/components/version/VersionCreateDialog";
-import { cn } from "@/lib/utils";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
 import { useIncompleteParams } from "@/hooks/useIncompleteParams";
+import { ModelActionPanel } from "@/components/models/ModelActionPanel";
+import { scrollToAnchor } from "@/lib/utils/common.helper";
 
 export default function ModelDetailPage() {
+  // 路由模組
   const { modelId } = useParams<{ modelId: string }>();
   const router = useRouter();
 
+  // 懶加載模組
   const { dispatch } = useVersionContext();
+  const [fetched, setFetched] = useState(false);
 
-  const addVersion = useAddVersion(); // 取得 dispatch 函式
-
-  const model = useModelById(modelId);
-  const latestVersion = useLatestVersionByModelId(modelId);
-  const { isParamMissing } = useCheckVersionComplete(modelId, latestVersion?.version || "");
+  // 新增版本模組
+  const addVersion = useAddVersion();
   const { markIncomplete } = useIncompleteParams();
-
-  const versions = useVersionsByModelId(modelId);
-
-  const [openAccordion, setOpenAccordion] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
 
+  // 初始化資料
+  const model = useModelById(modelId);
+  const latestVersion = useLatestVersionByModelId(modelId);
+  const versions = useVersionsByModelId(modelId);
+
+  // 確認版本是否有參數表與排程設定
+  const { isParamMissing, isScheduleMissing } = useCheckVersionComplete(
+    modelId,
+    latestVersion?.version || ""
+  );
+
+  // 下拉區塊模組
+  const [openAccordion, setOpenAccordion] = useState(false);
   const [newlyCreatedVersion, setNewlyCreatedVersion] = useState<string | null>(
     null
   );
-
-  const [fetched, setFetched] = useState(false);
 
   // ✅ 建立 local loading 狀態模擬 500ms 載入時間
   const [loading, setLoading] = useState(true);
@@ -112,13 +109,13 @@ export default function ModelDetailPage() {
     );
   }
 
-  // 在 onClick 中這樣寫：
   const handleOpenVersionList = (open: boolean) => {
-    setOpenAccordion(open); // 先展開
-    setTimeout(() => {
-      const anchor = document.getElementById("version-list");
-      anchor?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 200); // 略為延遲，確保動畫開始
+    setOpenAccordion(open);
+    scrollToAnchor("version-list", 200);
+  };
+
+  const handleOnVersionDetailPage = (modelId: string, versionId: string) => {
+    router.push(`/models/${modelId}/version/${versionId}`);
   };
 
   const handleSubmit = async (formData: VersionFormValues) => {
@@ -135,6 +132,7 @@ export default function ModelDetailPage() {
       };
 
       const result = await createVersion(payload);
+
       // 模擬串接 API 得到提交結果，因此相當於已連接
       setFetched(true);
 
@@ -148,18 +146,17 @@ export default function ModelDetailPage() {
       toast.success(`版本 ${result.version} 建立成功！`, {
         action: {
           label: "前往設定參數",
-          onClick: () =>
-            router.push(`/models/${modelId}/version/${result.version}`),
+          onClick: () => handleOnVersionDetailPage(modelId, result.version),
         },
       });
 
-      setTimeout(() => {
-        const anchor = document.getElementById("version-list");
-        anchor?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 200); // 略為延遲，確保動畫開始
+      scrollToAnchor("version-list", 200);
 
       // ✅ 高亮新版本
       setNewlyCreatedVersion(result.version);
+
+      // 關閉視窗
+      setOpenDialog(false);
     } catch (err) {
       toast.error("版本建立失敗，請稍後再試");
       console.error(err);
@@ -196,50 +193,15 @@ export default function ModelDetailPage() {
       </Card>
 
       {/* ✅ 操作卡片四格 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div>
-                <ActionCard
-                  icon={<SlidersHorizontal className="w-5 h-5" />}
-                  label="查看最新版本"
-                  onClick={() =>
-                    router.push(
-                      `/models/${modelId}/version/${latestVersion?.version}`
-                    )
-                  }
-                  disabled={!latestVersion}
-                  className={cn(
-                    isParamMissing && "bg-green-50 hover:bg-green-100"
-                  )}
-                />
-              </div>
-            </TooltipTrigger>
-            {versions.length !== 0 && isParamMissing && (
-              <TooltipContent>
-                <p className="text-sm font-medium">最新版本尚未完成參數設定</p>
-              </TooltipContent>
-            )}
-          </Tooltip>
-        </TooltipProvider>
-        <ActionCard
-          icon={<ListChecks className="w-5 h-5" />}
-          label="展開版本列表"
-          onClick={() => handleOpenVersionList(true)}
-          disabled={versions.length === 0}
-        />
-        <ActionCard
-          icon={<GitCompare className="w-5 h-5" />}
-          label="比較版本"
-          onClick={() => router.push(`/models/${modelId}/compare`)}
-        />
-        <ActionCard
-          icon={<PlusCircle className="w-5 h-5" />}
-          label="建立新版本"
-          onClick={() => setOpenDialog(true)}
-        />
-      </div>
+      <ModelActionPanel
+        isLatestVersion={!latestVersion}
+        isVersionList={versions.length === 0}
+        isParameterIncomplete={isParamMissing}
+        isScheduleIncomplete={isScheduleMissing}
+        onLatestVersionPage={() => handleOnVersionDetailPage(modelId, latestVersion?.version || "")}
+        onVersionList={() => handleOpenVersionList(true)}
+        onOpenCreateVersionDialog={() => setOpenDialog(true)}
+      />
 
       {/* ✅ 版本列表卡片區塊 */}
       <div id="version-list" className="pt-8">
@@ -259,42 +221,5 @@ export default function ModelDetailPage() {
         onSubmit={handleSubmit}
       />
     </div>
-  );
-}
-
-function ActionCard({
-  icon,
-  label,
-  onClick,
-  disabled,
-  className,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  onClick?: () => void;
-  disabled?: boolean;
-  className?: string;
-}) {
-  return (
-    <Card
-      onClick={!disabled ? onClick : undefined}
-      className={cn(
-        "group cursor-pointer transition border hover:shadow-md p-4 flex items-center gap-4 rounded-xl",
-        disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-accent",
-        className
-      )}
-    >
-      <div
-        className={cn(
-          "w-10 h-10 flex items-center justify-center rounded-full",
-          className ? "bg-green-100" : "bg-muted"
-        )}
-      >
-        {icon}
-      </div>
-      <span className="text-sm font-medium text-foreground group-hover:underline">
-        {label}
-      </span>
-    </Card>
   );
 }

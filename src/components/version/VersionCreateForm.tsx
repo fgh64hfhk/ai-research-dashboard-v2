@@ -31,7 +31,6 @@ interface VersionCreateFormProps {
 export function VersionCreateForm({
   modelId,
   onSubmit,
-  onDone,
 }: VersionCreateFormProps) {
 
   const form = useForm<VersionFormValues>({
@@ -44,17 +43,11 @@ export function VersionCreateForm({
     },
   });
 
-  const handleFormSubmit = async (values: VersionFormValues) => {
-    await onSubmit(values);
-    onDone?.();
-    form.reset(); // ✅ 可選：送出成功後清空表單
-  };
-
   return (
     <Form {...form}>
       <form
         id="version-create-form"
-        onSubmit={form.handleSubmit(handleFormSubmit)}
+        onSubmit={form.handleSubmit(onSubmit, (error) => {console.warn(error)})}
         className="space-y-6"
       >
         {/* ✅ 版本號 */}
