@@ -96,8 +96,8 @@ export default function ModelVersionDetailPage() {
 
   return (
     <div className="container max-w-5xl py-8 px-4 md:px-8 space-y-6">
-      <ModelHeader {...model} />
       <VersionIntroCard />
+      <ModelHeader {...model} />
       <VersionActionPanel
         isParamMissing={isParamMissing}
         isScheduleMissing={isScheduleMissing}

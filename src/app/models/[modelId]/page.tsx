@@ -165,9 +165,6 @@ export default function ModelDetailPage() {
 
   return (
     <div className="container max-w-5xl py-8 px-4 md:px-8 space-y-6">
-      {/* ✅ 模型標題 */}
-      <ModelHeader {...model} />
-
       {/* ✅ 導引卡片 */}
       <Card className="flex flex-col md:flex-row items-center gap-6 p-6">
         <Image
@@ -192,13 +189,18 @@ export default function ModelDetailPage() {
         </div>
       </Card>
 
+      {/* ✅ 模型標題 */}
+      <ModelHeader {...model} />
+
       {/* ✅ 操作卡片四格 */}
       <ModelActionPanel
         isLatestVersion={!latestVersion}
         isVersionList={versions.length === 0}
         isParameterIncomplete={isParamMissing}
         isScheduleIncomplete={isScheduleMissing}
-        onLatestVersionPage={() => handleOnVersionDetailPage(modelId, latestVersion?.version || "")}
+        onLatestVersionPage={() =>
+          handleOnVersionDetailPage(modelId, latestVersion?.version || "")
+        }
         onVersionList={() => handleOpenVersionList(true)}
         onOpenCreateVersionDialog={() => setOpenDialog(true)}
       />
