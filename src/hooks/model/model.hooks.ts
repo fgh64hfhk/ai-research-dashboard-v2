@@ -33,3 +33,16 @@ export function useModelListLoading(): boolean {
   } = useModelContext();
   return loadingMap["all"] ?? true; // 預設視為正在載入
 }
+
+export function useModelCreate() {
+  const { dispatch } = useModelContext();
+
+  const addModel = (model: Model) => {
+    dispatch({
+      type: "ADD_MODEL",
+      payload: model,
+    });
+  };
+
+  return addModel;
+}

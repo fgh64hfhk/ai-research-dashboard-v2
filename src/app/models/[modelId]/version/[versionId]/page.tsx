@@ -20,7 +20,6 @@ import { useSchedulesByVersionKey } from "@/hooks/schedule/schedule.hooks";
 import { useTrainingResultsByVersionKey } from "@/hooks/training/useTrainingResult";
 
 import { VersionActionPanel } from "@/components/version/VersionActionPanel";
-import { VersionIntroCard } from "@/components/version/VersionIntroCard";
 import { getNextScheduledTask } from "@/lib/utils/schedule.helper";
 import { NextTrainingScheduleCard } from "@/components/schedule/NextTrainingScheduleCard";
 import { TrainingResultCard } from "@/components/schedule/TrainingResultCard";
@@ -28,6 +27,7 @@ import { useEffect, useState } from "react";
 import { ParameterCreateDialog } from "@/components/parameter/ParameterCreateDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { IntroCard } from "@/components/common/IntroCard";
 
 export default function ModelVersionDetailPage() {
   const { modelId, versionId } = useParams<{
@@ -95,8 +95,17 @@ export default function ModelVersionDetailPage() {
   }
 
   return (
-    <div className="container max-w-5xl py-8 px-4 md:px-8 space-y-6">
-      <VersionIntroCard />
+    <div className="container max-w-3xl py-8 px-4 md:px-8 space-y-6">
+      <IntroCard
+        imageSrc="/guide/In progress.gif"
+        title="這是該模型版本的詳細頁，您可以："
+        descriptionList={[
+          "查看版本基本資訊與訓練狀態",
+          "檢視或設定模型訓練參數",
+          "新增或管理訓練排程",
+          "若尚未設定參數與排程，請盡快完成！",
+        ]}
+      />
       <ModelHeader {...model} />
       <VersionActionPanel
         isParamMissing={isParamMissing}

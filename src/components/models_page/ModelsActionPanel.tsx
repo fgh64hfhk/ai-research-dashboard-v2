@@ -4,17 +4,20 @@ import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { PlusCircle, Search, Clock, GitCompare } from "lucide-react";
 
-export function ModelsActionPanel() {
+interface ModelsActionPanelProps {
+  onOpenCreateDialog?: () => void;
+}
+
+export function ModelsActionPanel({
+  onOpenCreateDialog,
+}: ModelsActionPanelProps) {
   const router = useRouter();
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold">快速操作</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card
-          onClick={() => {
-            router.push("/models/create");
-          }}
+          onClick={onOpenCreateDialog}
           className="group cursor-pointer transition border hover:shadow-md p-4 flex items-center gap-4 rounded-xl hover:bg-accent"
         >
           <div className="w-10 h-10 flex items-center justify-center rounded-full bg-muted">

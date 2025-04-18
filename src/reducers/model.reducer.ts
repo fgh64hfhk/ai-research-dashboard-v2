@@ -20,8 +20,8 @@ export const initialModelState: ModelState = {
 // ---------------------------
 export type ModelAction =
   | { type: "SET_MODELS"; payload: Model[] }
-  | { type: "SET_LOADING"; modelId: string; loading: boolean };
-
+  | { type: "SET_LOADING"; modelId: string; loading: boolean }
+  | { type: "ADD_MODEL"; payload: Model };
 // ---------------------------
 // Reducer 本體
 // ---------------------------
@@ -39,6 +39,14 @@ export function modelReducer(
           ...state.loadingMap,
           [action.modelId]: action.loading,
         },
+      };
+    case "ADD_MODEL":
+      return {
+        ...state,
+        models: [
+          ...state.models,
+          action.payload,
+        ],
       };
     default:
       return state;

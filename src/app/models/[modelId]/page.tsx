@@ -19,13 +19,11 @@ import { VersionCardListAccordion } from "@/components/models/VersionCardListAcc
 
 import { EmptyState } from "@/components/common/EmptyState";
 
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { AlertCircle } from "lucide-react";
 
-import Image from "next/image";
 import { VersionFormValues } from "@/schemas/versionCreateSchema";
 import { VersionFormData } from "@/types/form";
 import { createVersion } from "@/lib/api/version/create";
@@ -35,6 +33,7 @@ import { VersionCreateDialog } from "@/components/version/VersionCreateDialog";
 import { useIncompleteParams } from "@/hooks/useIncompleteParams";
 import { ModelActionPanel } from "@/components/models/ModelActionPanel";
 import { scrollToAnchor } from "@/lib/utils/common.helper";
+import { IntroCard } from "@/components/common/IntroCard";
 
 export default function ModelDetailPage() {
   // 路由模組
@@ -164,30 +163,18 @@ export default function ModelDetailPage() {
   };
 
   return (
-    <div className="container max-w-5xl py-8 px-4 md:px-8 space-y-6">
+    <div className="container max-w-3xl py-8 px-4 md:px-8 space-y-6">
       {/* ✅ 導引卡片 */}
-      <Card className="flex flex-col md:flex-row items-center gap-6 p-6">
-        <Image
-          src="/model-guide.gif"
-          alt="model-guide"
-          width={200}
-          height={200}
-          className="rounded-md"
-          priority={true}
-          unoptimized
-        />
-        <div className="space-y-2 text-sm text-muted-foreground">
-          <p className="text-base font-medium text-foreground">
-            這是你的模型操作主頁，您可以：
-          </p>
-          <ul className="list-disc ml-5 space-y-1">
-            <li>檢視最新版本與參數</li>
-            <li>建立新版本並上傳模型</li>
-            <li>比較各版本的參數與結果</li>
-            <li>若尚未建立任何版本，請先從下方操作開始</li>
-          </ul>
-        </div>
-      </Card>
+      <IntroCard
+        imageSrc="/guide/Artificial intelligence.gif"
+        title="這是你的模型操作主頁，您可以："
+        descriptionList={[
+          "檢視最新版本與參數",
+          "建立新版本並上傳模型",
+          "比較各版本的參數與結果",
+          "若尚未建立任何版本，請先從下方操作開始",
+        ]}
+      />
 
       {/* ✅ 模型標題 */}
       <ModelHeader {...model} />

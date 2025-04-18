@@ -2,9 +2,15 @@
 
 import { ScheduleType } from "@/types/schedule";
 
-// 用於訓練排程表單（/schedule/create）
-// 此型別配合 hook-form / UI 組件（如日期選擇器）
-// 與 SchedulePayload 類型不同，需經轉換再送出 API
+export interface ModelFormData {
+  modelName: string;
+  language: string;
+  description?: string;
+
+  // 以下為自動帶入欄位
+  modelId: string;
+}
+
 export interface ScheduleFormData {
   modelId: string;
   version: string;
