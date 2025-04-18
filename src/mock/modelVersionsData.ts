@@ -150,7 +150,7 @@ export const mockModelParameters: Record<string, ModelParameters> = {
 export const mockSchedules: TrainingSchedule[] = [
   // m001_v1.0
   // {
-  //   id: "s001",
+  //   scheduleId: "s001",
   //   modelId: "m001",
   //   version: "v1.0",
   //   buildDate: "2024-12-10",

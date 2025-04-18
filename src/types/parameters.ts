@@ -1,8 +1,4 @@
-// types/parameters.ts
-
 // 模型參數（ModelParameters）
-// 模型訓練參數（搭配版本綁定）
-// 用於建立排程前的訓練設定，也可用於版本複製功能
 export type ModelParameters = {
   modelVersionId: string; // 綁定的模型版本 ID
   learningRate: number; // 學習率

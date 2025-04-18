@@ -1,5 +1,3 @@
-// types/model.ts
-
 // 模型本體（Model, ModelVersion）
 export type Model = {
   modelId: string;

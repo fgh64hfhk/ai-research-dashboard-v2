@@ -36,8 +36,9 @@ export function ModelActionPanel({
   onCompare,
   onOpenCreateVersionDialog,
 }: ModelActionPanelProps) {
+  const isLatestVersionReady = !isParameterIncomplete && !isScheduleIncomplete;
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -46,12 +47,12 @@ export function ModelActionPanel({
                 icon={<SlidersHorizontal className="w-5 h-5" />}
                 label="查看最新版本"
                 onClick={onLatestVersionPage}
-                disabled={isLatestVersion}
-                variant={!isLatestVersion ? "warning" : "default"}
+                disabled={!isLatestVersion}
+                variant={!isLatestVersionReady ? "warning" : "default"}
               />
             </div>
           </TooltipTrigger>
-          {!isLatestVersion && (
+          {!isLatestVersionReady && (
             <TooltipContent>
               {isParameterIncomplete && isScheduleIncomplete && (
                 <p className="text-sm font-medium">

@@ -16,7 +16,7 @@ import {
   versionReducer,
 } from "@/reducers/version.reducer";
 
-import { fetchMockModelVersions } from "@/lib/api/model.api";
+import { fetchMockModelVersions } from "@/lib/api/model/model.api";
 import { wait } from "@/lib/utils/async.helper";
 
 // ---------------------------

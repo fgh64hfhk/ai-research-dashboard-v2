@@ -27,9 +27,10 @@ export function VersionActionPanel({
   isParamMissing,
   isScheduleMissing,
   onSetParams,
+  onSetSchedule,
 }: VersionActionPanelProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* 查看/設定參數表 */}
       <TooltipProvider>
         <Tooltip>
@@ -38,7 +39,11 @@ export function VersionActionPanel({
               <ActionCard
                 icon={<SlidersHorizontal className="w-5 h-5" />}
                 label={isParamMissing ? "設定參數" : "查看參數表"}
-                onClick={isParamMissing? onSetParams : () => scrollToAnchor("param_view")}
+                onClick={
+                  isParamMissing
+                    ? onSetParams
+                    : () => scrollToAnchor("param_view")
+                }
                 variant={isParamMissing ? "warning" : "default"}
               />
             </div>
@@ -59,7 +64,11 @@ export function VersionActionPanel({
               <ActionCard
                 icon={<ListChecks className="w-5 h-5" />}
                 label={isScheduleMissing ? "設定排程" : "查看排程表"}
-                onClick={() => {}}
+                onClick={
+                  isScheduleMissing
+                    ? onSetSchedule
+                    : () => scrollToAnchor("schedule_view")
+                }
                 variant={isScheduleMissing ? "error" : "default"}
               />
             </div>

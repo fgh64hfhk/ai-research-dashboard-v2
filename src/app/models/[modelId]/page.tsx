@@ -33,7 +33,7 @@ import { VersionCreateDialog } from "@/components/version/VersionCreateDialog";
 import { useIncompleteParams } from "@/hooks/useIncompleteParams";
 import { ModelActionPanel } from "@/components/models/ModelActionPanel";
 import { scrollToAnchor } from "@/lib/utils/common.helper";
-import { IntroCard } from "@/components/common/IntroCard";
+import { IntroCard } from "@/components/common/PageIntroCard";
 
 export default function ModelDetailPage() {
   // 路由模組
@@ -181,7 +181,7 @@ export default function ModelDetailPage() {
 
       {/* ✅ 操作卡片四格 */}
       <ModelActionPanel
-        isLatestVersion={!latestVersion}
+        isLatestVersion={!!latestVersion}
         isVersionList={versions.length === 0}
         isParameterIncomplete={isParamMissing}
         isScheduleIncomplete={isScheduleMissing}

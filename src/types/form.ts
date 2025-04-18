@@ -1,7 +1,3 @@
-// types/form.ts
-
-import { ScheduleType } from "@/types/schedule";
-
 export interface ModelFormData {
   modelName: string;
   language: string;
@@ -9,13 +5,6 @@ export interface ModelFormData {
 
   // 以下為自動帶入欄位
   modelId: string;
-}
-
-export interface ScheduleFormData {
-  modelId: string;
-  version: string;
-  runDate: Date; // 日期選擇元件回傳為 JS Date 物件
-  type: ScheduleType;
 }
 
 export interface VersionFormData {

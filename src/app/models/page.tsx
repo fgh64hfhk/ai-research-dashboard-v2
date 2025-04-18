@@ -2,7 +2,7 @@
 
 import { useModelCreate, useModelList } from "@/hooks/model/model.hooks"; // 模型列表 hook
 
-import { IntroCard } from "@/components/common/IntroCard";
+import { IntroCard } from "@/components/common/PageIntroCard";
 import { ModelsActionPanel } from "@/components/models_page/ModelsActionPanel";
 import { ModelCardList } from "@/components/models_page/ModelCardList";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -65,7 +65,6 @@ export default function ModelListPage() {
   return (
     <div className="container max-w-3xl py-8 px-4 md:px-8 space-y-6">
       {/* ✅ 區塊一：首頁引導說明卡片 */}
-
       <IntroCard
         title="歡迎使用 AI 模型管理平台 👋"
         descriptionList={[

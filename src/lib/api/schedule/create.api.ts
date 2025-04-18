@@ -1,12 +1,10 @@
+import { wait } from "@/lib/utils/async.helper";
 import { SchedulePayload, ScheduleResponse } from "@/types/schedule";
-
-// 模擬延遲
-const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export async function createSchedule(
   payload: SchedulePayload
 ): Promise<ScheduleResponse> {
-  console.log("[Mock API] createSchedule payload:", payload);
+  console.log("[Mock API] 創建新排程:", payload);
 
   await wait(500);
 
@@ -15,11 +13,10 @@ export async function createSchedule(
   }
 
   return {
-    scheduleId: "schedule_" + Math.floor(Math.random() * 10000),
+    scheduleId: payload.scheduleId,
     modelId: payload.modelId,
     version: payload.version,
-    status: "scheduled",
+    status: payload.status || "scheduled",
     message: "Schedule created successfully",
-    completedAt: new Date().toISOString(),
   };
 }

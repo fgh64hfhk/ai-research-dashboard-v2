@@ -16,7 +16,7 @@ import {
   useVersionsByModelId,
 } from "@/hooks/version/version.hooks";
 import { useParameterByVersionKey } from "@/hooks/parameter/parameter.hooks";
-import { useSchedulesByVersionKey } from "@/hooks/schedule/schedule.hooks";
+import { useScheduleCreate, useSchedulesByVersionKey } from "@/hooks/schedule/schedule.hooks";
 import { useTrainingResultsByVersionKey } from "@/hooks/training/useTrainingResult";
 
 import { VersionActionPanel } from "@/components/version/VersionActionPanel";
@@ -27,38 +27,91 @@ import { useEffect, useState } from "react";
 import { ParameterCreateDialog } from "@/components/parameter/ParameterCreateDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { IntroCard } from "@/components/common/IntroCard";
+import { IntroCard } from "@/components/common/PageIntroCard";
+import { ScheduleCreateDialog } from "@/components/version_page/ScheduleCreateDialog";
+import { ScheduleFormValues } from "@/schemas/scheduleCreateSchema";
+import { SchedulePayload, TrainingSchedule } from "@/types/schedule";
+import { toast } from "sonner";
+import { createSchedule } from "@/lib/api/schedule/create.api";
 
 export default function ModelVersionDetailPage() {
+  // 路由模組
   const { modelId, versionId } = useParams<{
     modelId: string;
     versionId: string;
   }>();
   const router = useRouter();
 
+  // 資料初始化
   const models = useModelList();
-
   const versions = useVersionsByModelId(modelId);
-
   const model = models.find((m) => m.modelId === modelId);
-
   const modelVersion = versions.find((v) => v.version === versionId);
-
   const parameters = useParameterByVersionKey(modelId, versionId);
-
   const schedules = useSchedulesByVersionKey(modelId, versionId);
   const schedule = getNextScheduledTask(schedules);
-
   const results = useTrainingResultsByVersionKey(schedule?.id || "");
 
+  // 確定版本完成設定模組
   const { isParamMissing, isScheduleMissing } = useCheckVersionComplete(
     modelId,
     versionId
   );
 
+  // 新增參數模組
   const [openParamDialog, setOpenParamDialog] = useState(false);
 
-  // ✅ 建立 local loading 狀態模擬 500ms 載入時間
+  // 新增排程模組
+  const addSchedule = useScheduleCreate();
+  const [openScheduleDialog, setOpenScheduleDialog] = useState(false);
+  // 新增排程提交函式
+  const handleSubmit = async (formData: ScheduleFormValues) => {
+    try {
+      const payload: SchedulePayload = {
+        scheduleId: "s001",
+        modelId,
+        version: versionId,
+        runDate: formData.runDate.toISOString(),
+        type: formData.type,
+        buildDate: new Date().toISOString(),
+        status: "scheduled",
+      };
+      const result = await createSchedule(payload);
+
+      const schedule: TrainingSchedule = {
+        scheduleId: result.scheduleId,
+        modelId: result.modelId,
+        version: result.version,
+
+        buildDate: payload.buildDate,
+        runDate: payload.runDate,
+
+        type: payload.type,
+        status: result.status,
+
+        triggerTraining: formData.triggerTraining
+      }
+
+      // 加入新排程到全域狀態
+      addSchedule(schedule);
+
+      // 顯示通知與路由
+      toast.success(`排程 ${schedule.scheduleId} 建立成功！`, {
+        action: {
+          label: "前往排程詳細頁面",
+          onClick: () => router.push(`/schedule/${schedule.scheduleId}`),
+        },
+      });
+
+      // 關閉對話匡
+      setOpenScheduleDialog(false);
+    } catch (err) {
+      toast.error("排程建立失敗，請稍後再試");
+      console.error(err);
+    }
+  };
+
+  // 載入緩衝模組
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -111,6 +164,7 @@ export default function ModelVersionDetailPage() {
         isParamMissing={isParamMissing}
         isScheduleMissing={isScheduleMissing}
         onSetParams={() => setOpenParamDialog(true)}
+        onSetSchedule={() => setOpenScheduleDialog(true)}
       />
       <VersionInfoCard {...modelVersion} />
 
@@ -157,6 +211,15 @@ export default function ModelVersionDetailPage() {
         onOpenChange={setOpenParamDialog}
         modelId={modelId}
         version={versionId}
+      />
+
+      {/* 新增排程的對話匡 */}
+      <ScheduleCreateDialog
+        open={openScheduleDialog}
+        onOpenChange={setOpenScheduleDialog}
+        onSubmit={handleSubmit}
+        modelId={modelId}
+        versionId={versionId}
       />
     </div>
   );

@@ -17,7 +17,7 @@ import {
   ModelAction,
 } from "@/reducers/model.reducer";
 
-import { fetchMockModels } from "@/lib/api/model.api";
+import { fetchMockModels } from "@/lib/api/model/model.api";
 import { wait } from "@/lib/utils/async.helper";
 
 // ---------------------------

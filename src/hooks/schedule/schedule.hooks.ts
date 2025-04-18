@@ -24,13 +24,15 @@ export function useSchedulesByVersionKey(
 
 // ✅ 根據 id 全域搜尋排程資料
 // 注意：此 hook 會遍歷所有版本排程列表進行查找（O(n)）
-export function useScheduleById(id: string): TrainingSchedule | undefined {
+export function useScheduleById(
+  scheduleId: string
+): TrainingSchedule | undefined {
   const {
     state: { scheduleMap },
   } = useScheduleContext();
 
   for (const key in scheduleMap) {
-    const match = scheduleMap[key].find((s) => s.id === id);
+    const match = scheduleMap[key].find((s) => s.scheduleId === scheduleId);
     if (match) return match;
   }
 
@@ -42,4 +44,16 @@ export function useScheduleResult(
 ): TrainingResult | undefined {
   const { state } = useScheduleContext();
   return state.resultMap[scheduleId];
+}
+
+export function useScheduleCreate() {
+  const { dispatch } = useScheduleContext();
+  const addSchedule = (payload: TrainingSchedule) => {
+    dispatch({
+      type: "ADD_SCHEDULE",
+      payload: payload,
+    });
+  };
+
+  return addSchedule;
 }

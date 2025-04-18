@@ -21,7 +21,7 @@ export const initialScheduleState: ScheduleState = {
 export type ScheduleAction =
   | { type: "SET_SCHEDULES"; payload: Record<string, TrainingSchedule[]> }
   | { type: "ADD_SCHEDULE"; payload: TrainingSchedule }
-  | { type: "SET_SCHEDULE_STATUS"; id: string; status: ScheduleStatus };
+  | { type: "SET_SCHEDULE_STATUS"; scheduleId: string; status: ScheduleStatus };
 
 // ---------------------------
 // 3. Reducer 主體
@@ -56,7 +56,9 @@ export function scheduleReducer(
       const updateMap = { ...state.scheduleMap };
       for (const key in updateMap) {
         updateMap[key] = updateMap[key].map((s) =>
-          s.id === action.id ? { ...s, status: action.status } : s
+          s.scheduleId === action.scheduleId
+            ? { ...s, status: action.status }
+            : s
         );
       }
       return {

@@ -10,7 +10,7 @@ interface ModelIntroCardProps {
 }
 
 export function IntroCard({
-  imageSrc = "/model-guide.gif",
+  imageSrc = "https://placehold.co/400x400",
   title,
   descriptionList,
 }: ModelIntroCardProps) {
