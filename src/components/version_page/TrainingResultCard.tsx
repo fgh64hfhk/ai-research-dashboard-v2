@@ -9,7 +9,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { useState } from "react";
-import { TrainingResult } from "@/types/schedule";
+import { TrainingResult } from "@/types/training";
 import { format } from "date-fns";
 
 interface Props {

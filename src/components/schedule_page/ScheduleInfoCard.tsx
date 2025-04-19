@@ -1,9 +1,9 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { ScheduleStatusBadge } from "../schedule/ScheduleStatusBadge";
 import { CalendarClock, Clock, Layers, List } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { ScheduleStatus } from "@/types/schedule";
 
 interface ScheduleInfoCardProps {
   scheduleId: string;
@@ -12,7 +12,7 @@ interface ScheduleInfoCardProps {
   runDate: string;
   buildDate: string;
   type: string;
-  status: string;
+  status: ScheduleStatus;
 }
 
 export function ScheduleInfoCard({
@@ -30,9 +30,7 @@ export function ScheduleInfoCard({
         <h2 className="text-lg font-semibold text-foreground">
           排程任務 #{scheduleId}
         </h2>
-        <Badge variant="outline" className="capitalize text-sm">
-          {status}
-        </Badge>
+        <ScheduleStatusBadge status={status} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground mt-2">
@@ -46,7 +44,7 @@ export function ScheduleInfoCard({
           {new Date(buildDate).toLocaleString()}
         </InfoItem>
         <InfoItem icon={<List className="w-4 h-4" />} label="排程類型">
-          {type}
+          {type.toUpperCase()}
         </InfoItem>
       </div>
     </Card>

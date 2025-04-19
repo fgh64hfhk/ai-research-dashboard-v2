@@ -11,14 +11,14 @@ import { useEffect, useRef, useState } from "react";
  *          isCompleted: 是否訓練完成（可供外部回寫結果）
  *          setIsCompleted: 外部清除狀態控制
  */
-export function useTrainingSocket(scheduleId: string | undefined) {
+export function useTrainingSocket(scheduleId: string) {
   const socketRef = useRef<WebSocket | null>(null);
 
   const [progress, setProgress] = useState<number>(0);
   const [connected, setConnected] = useState<boolean>(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
-  const [error, setError] = useState<string | null>(null); // 🔸 可選擴充：顯示錯誤訊息
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!scheduleId) return;
@@ -75,6 +75,6 @@ export function useTrainingSocket(scheduleId: string | undefined) {
     connected,
     isCompleted,
     setIsCompleted,
-    error, // 可在 UI 顯示錯誤訊息
+    error,
   };
 }

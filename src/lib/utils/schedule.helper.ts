@@ -1,6 +1,4 @@
 import { TrainingSchedule } from "@/types/schedule";
-import { ScheduleFormData } from "@/types/form";
-import { SchedulePayload } from "@/types/schedule";
 
 // ✅ 工具函數：取得排程資料的 map key
 export function getScheduleKey(modelId: string, version: string): string {
@@ -35,16 +33,19 @@ export function getNextScheduledTask(
     )[0];
 }
 
-// 用於表單資料轉換、封裝預設欄位（如 buildDate、status）
-export function transformToSchedulePayload(
-  form: ScheduleFormData
-): SchedulePayload {
-  return {
-    modelId: form.modelId,
-    version: form.version,
-    runDate: form.runDate.toISOString(),
-    type: form.type,
-    buildDate: new Date().toISOString(),
-    status: "scheduled",
-  };
+// 找出最新的排程（不限 status = scheduled）
+export function getLatestScheduleTask(
+  schedules: TrainingSchedule[] | undefined
+): TrainingSchedule | undefined {
+  if (!schedules || schedules.length === 0) return undefined;
+
+  const now = new Date();
+
+  const futureSchedules = schedules.filter((s) => new Date(s.runDate) > now);
+
+  futureSchedules.sort(
+    (a, b) => new Date(a.buildDate).getTime() - new Date(b.buildDate).getTime()
+  );
+
+  return futureSchedules[0];
 }

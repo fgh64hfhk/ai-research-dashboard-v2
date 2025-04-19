@@ -1,22 +1,26 @@
-// hooks/result/useTrainingResult.ts
-
-import { TrainingResult } from "@/types/schedule";
 import { useTrainingResultContext } from "@/contexts/training/TrainingResultContext";
+import { TrainingResult } from "@/types/training";
+
+export function useTrainingResultCreate() {
+  const { dispatch } = useTrainingResultContext();
+  const addResult = (result: Record<string, TrainingResult[]>) => {
+    dispatch({
+      type: "SET_RESULTS",
+      payload: result,
+    });
+  };
+  return addResult;
+}
 
 /**
  * 取得指定版本的所有訓練結果清單
  */
-export function useTrainingResultsByVersionKey(
+export function useTrainingResultsByScheduleId(
   scheduleId: string
-): TrainingResult[] | undefined {
+): TrainingResult[] {
   const {
     state: { resultMap },
   } = useTrainingResultContext();
-
-  if (!scheduleId) {
-    console.warn("useResultsByVersionKey: scheduleId 缺失");
-    return undefined;
-  }
 
   return resultMap[scheduleId] ?? [];
 }

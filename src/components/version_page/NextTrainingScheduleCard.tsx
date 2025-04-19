@@ -23,11 +23,12 @@ export function NextTrainingScheduleCard({ schedule, className }: Props) {
   const router = useRouter();
   return (
     <Card
+      id="schedule_view"
       className={cn(
         "border-l-4 border-yellow-400 cursor-pointer hover:shadow-md transition",
         className
       )}
-      onClick={() => router.push(`/schedule/${schedule.id}`)}
+      onClick={() => router.push(`/schedule/${schedule.scheduleId}`)}
     >
       <CardContent className="py-4 space-y-2">
         <div className="flex items-center justify-between">

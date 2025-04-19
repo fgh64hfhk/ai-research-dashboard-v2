@@ -1,50 +1,35 @@
 // lib/mock/mockTrainingResults.ts
 
-import { TrainingResult } from "@/types/schedule";
+import { TrainingResult } from "@/types/training";
 
 export const mockTrainingResults: TrainingResult[] = [
   {
     scheduleId: "s001",
-    modelId: "model-alpha",
+    modelId: "m001",
     version: "v1.0",
     status: "completed",
-    trainingTime: 180,
+    trainingTime: 101,
     metrics: {
       accuracy: 0.91,
       loss: 0.18,
     },
     logs: [
-      "Epoch 1/5 - acc: 0.83 - loss: 0.29",
-      "Epoch 2/5 - acc: 0.89 - loss: 0.21",
-      "Epoch 5/5 - acc: 0.91 - loss: 0.18",
+      "Epoch 1/5 - acc: 0.91 - loss: 0.21",
+      "Epoch 2/5 - acc: 0.87 - loss: 0.16",
+      "Epoch 3/5 - acc: 0.94 - loss: 0.18",
+      "Epoch 4/5 - acc: 0.86 - loss: 0.19",
+      "Epoch 5/5 - acc: 0.91 - loss: 0.20",
     ],
-    completedAt: "2025-04-15T14:30:00Z",
+    completedAt: "2025-04-19T17:07:00Z",
   },
-  {
-    scheduleId: "schedule_1002",
-    modelId: "model-beta",
-    version: "v2.1",
-    status: "failed",
-    trainingTime: 45,
-    message: "GPU 記憶體不足導致中斷",
-    logs: ["訓練中斷：CUDA out of memory"],
-    completedAt: "2025-04-15T15:10:00Z",
-  },
-  {
-    scheduleId: "schedule_1003",
-    modelId: "model-alpha",
-    version: "v1.1",
-    status: "completed",
-    trainingTime: 240,
-    metrics: {
-      accuracy: 0.93,
-      loss: 0.15,
-    },
-    logs: [
-      "Epoch 1/5 - acc: 0.86 - loss: 0.25",
-      "Epoch 2/5 - acc: 0.90 - loss: 0.19",
-      "Epoch 5/5 - acc: 0.93 - loss: 0.15",
-    ],
-    completedAt: "2025-04-16T10:45:00Z",
-  },
+  // {
+  //   scheduleId: "s001",
+  //   modelId: "m001",
+  //   version: "v1.0",
+  //   status: "failed",
+  //   trainingTime: 45,
+  //   message: "GPU 記憶體不足導致中斷",
+  //   logs: ["訓練中斷：CUDA out of memory"],
+  //   completedAt: "2025-04-19T17:07:00",
+  // },
 ];

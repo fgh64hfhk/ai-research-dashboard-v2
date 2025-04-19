@@ -1,5 +1,4 @@
-// lib/api/mockResultAPI.ts
-import { TrainingResult } from "@/types/schedule";
+import { TrainingResult } from "@/types/training";
 import { mockTrainingResults } from "@/mock/mockTrainingResults";
 import { groupTrainingResultsByKey } from "@/lib/utils/result.helper";
 

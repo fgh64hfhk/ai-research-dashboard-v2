@@ -1,4 +1,4 @@
-import { TrainingResult } from "@/types/schedule";
+import { TrainingResult } from "@/types/training";
 
 export function groupTrainingResultsByKey(
   results: TrainingResult[]

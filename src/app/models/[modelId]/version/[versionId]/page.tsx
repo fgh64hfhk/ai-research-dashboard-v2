@@ -16,13 +16,19 @@ import {
   useVersionsByModelId,
 } from "@/hooks/version/version.hooks";
 import { useParameterByVersionKey } from "@/hooks/parameter/parameter.hooks";
-import { useScheduleCreate, useSchedulesByVersionKey } from "@/hooks/schedule/schedule.hooks";
-import { useTrainingResultsByVersionKey } from "@/hooks/training/useTrainingResult";
+import {
+  useScheduleCreate,
+  useSchedulesByVersionKey,
+} from "@/hooks/schedule/schedule.hooks";
+import { useTrainingResultsByScheduleId } from "@/hooks/training/useTrainingResult";
 
 import { VersionActionPanel } from "@/components/version/VersionActionPanel";
-import { getNextScheduledTask } from "@/lib/utils/schedule.helper";
-import { NextTrainingScheduleCard } from "@/components/schedule/NextTrainingScheduleCard";
-import { TrainingResultCard } from "@/components/schedule/TrainingResultCard";
+import {
+  getLatestScheduleTask,
+  getNextScheduledTask,
+} from "@/lib/utils/schedule.helper";
+import { NextTrainingScheduleCard } from "@/components/version_page/NextTrainingScheduleCard";
+import { TrainingResultCard } from "@/components/version_page/TrainingResultCard";
 import { useEffect, useState } from "react";
 import { ParameterCreateDialog } from "@/components/parameter/ParameterCreateDialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -33,6 +39,7 @@ import { ScheduleFormValues } from "@/schemas/scheduleCreateSchema";
 import { SchedulePayload, TrainingSchedule } from "@/types/schedule";
 import { toast } from "sonner";
 import { createSchedule } from "@/lib/api/schedule/create.api";
+import { scrollToAnchor } from "@/lib/utils/common.helper";
 
 export default function ModelVersionDetailPage() {
   // 路由模組
@@ -49,8 +56,9 @@ export default function ModelVersionDetailPage() {
   const modelVersion = versions.find((v) => v.version === versionId);
   const parameters = useParameterByVersionKey(modelId, versionId);
   const schedules = useSchedulesByVersionKey(modelId, versionId);
-  const schedule = getNextScheduledTask(schedules);
-  const results = useTrainingResultsByVersionKey(schedule?.id || "");
+  const schedule1 = getNextScheduledTask(schedules);
+  const schedule2 = getLatestScheduleTask(schedules);
+  const results = useTrainingResultsByScheduleId(schedule2?.scheduleId || "");
 
   // 確定版本完成設定模組
   const { isParamMissing, isScheduleMissing } = useCheckVersionComplete(
@@ -89,8 +97,8 @@ export default function ModelVersionDetailPage() {
         type: payload.type,
         status: result.status,
 
-        triggerTraining: formData.triggerTraining
-      }
+        triggerTraining: formData.triggerTraining,
+      };
 
       // 加入新排程到全域狀態
       addSchedule(schedule);
@@ -105,6 +113,9 @@ export default function ModelVersionDetailPage() {
 
       // 關閉對話匡
       setOpenScheduleDialog(false);
+
+      // 自動滾動到排程摘要區跨
+      scrollToAnchor("schedule_view", 200);
     } catch (err) {
       toast.error("排程建立失敗，請稍後再試");
       console.error(err);
@@ -150,7 +161,6 @@ export default function ModelVersionDetailPage() {
   return (
     <div className="container max-w-3xl py-8 px-4 md:px-8 space-y-6">
       <IntroCard
-        imageSrc="/guide/In progress.gif"
         title="這是該模型版本的詳細頁，您可以："
         descriptionList={[
           "查看版本基本資訊與訓練狀態",
@@ -180,8 +190,10 @@ export default function ModelVersionDetailPage() {
       )}
 
       {/* 排程區塊 */}
-      {schedule ? (
-        <NextTrainingScheduleCard schedule={schedule} />
+      {schedule1 ? (
+        <NextTrainingScheduleCard schedule={schedule1} />
+      ) : schedule2 ? (
+        <NextTrainingScheduleCard schedule={schedule2} />
       ) : (
         <EmptyState
           icon={<ListChecks className="w-10 h-10" />}

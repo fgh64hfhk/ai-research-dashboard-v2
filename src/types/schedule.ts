@@ -45,16 +45,3 @@ export interface ScheduleResponse {
   message?: string; // 若失敗可回傳錯誤說明
   completedAt?: string;
 }
-
-// 訓練結果儲存模型：訓練完成後儲存於資料庫的詳細結果（含 metrics / logs）
-export interface TrainingResult {
-  scheduleId: string;
-  modelId: string;
-  version: string;
-  status: "completed" | "failed"; // 訓練成功或失敗的最終狀態
-  trainingTime: number;
-  metrics?: Record<string, number>; // e.g., accuracy, loss
-  logs?: string[]; // optional training logs
-  message?: string; // optional failure reason or summary
-  completedAt: string;
-}

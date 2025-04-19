@@ -1,6 +1,6 @@
 // contexts/schedule/schedule.hooks.ts
 import { useScheduleContext } from "@/contexts/schedule/ScheduleContext";
-import { TrainingResult, TrainingSchedule } from "@/types/schedule";
+import { ScheduleStatus, TrainingSchedule } from "@/types/schedule";
 
 import { getScheduleKey } from "@/lib/utils/schedule.helper";
 
@@ -39,13 +39,6 @@ export function useScheduleById(
   return undefined;
 }
 
-export function useScheduleResult(
-  scheduleId: string
-): TrainingResult | undefined {
-  const { state } = useScheduleContext();
-  return state.resultMap[scheduleId];
-}
-
 export function useScheduleCreate() {
   const { dispatch } = useScheduleContext();
   const addSchedule = (payload: TrainingSchedule) => {
@@ -54,6 +47,18 @@ export function useScheduleCreate() {
       payload: payload,
     });
   };
-
+  
   return addSchedule;
+}
+
+export function useScheduleStatus() {
+  const {dispatch} = useScheduleContext();
+  const changeStatus = (scheduleId: string, status: ScheduleStatus) => {
+    dispatch({
+      type: "SET_SCHEDULE_STATUS",
+      scheduleId: scheduleId,
+      status: status,
+    })
+  }
+  return changeStatus;
 }

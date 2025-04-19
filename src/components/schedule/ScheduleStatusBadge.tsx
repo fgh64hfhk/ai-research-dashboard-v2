@@ -6,7 +6,7 @@ import {
 import { ScheduleStatus } from "@/types/schedule";
 
 interface Props {
-  status?: ScheduleStatus;
+  status: ScheduleStatus;
 }
 
 export function ScheduleStatusBadge({ status }: Props) {

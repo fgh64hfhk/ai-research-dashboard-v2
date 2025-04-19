@@ -1,6 +1,6 @@
 // reducers/trainingResult.reducer.ts
 
-import { TrainingResult } from "@/types/schedule";
+import { TrainingResult } from "@/types/training";
 
 // ----------
 // State
