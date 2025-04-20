@@ -1,15 +1,32 @@
 "use client";
 
-import { ModelHeader } from "@/components/models/ModelHeader";
-import { VersionInfoCard } from "@/components/models/VersionInfoCard";
-import { ParameterView } from "@/components/models/ParameterView";
-import { BackButton } from "@/components/common/BackButton";
-
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { mapParametersToItems } from "@/lib/utils/parameter.helper";
-import { AlertCircle, ListChecks, SlidersHorizontal } from "lucide-react";
-import { EmptyState } from "@/components/common/EmptyState";
 
+import {
+  VersionDetailSkeleton,
+  VersionInfoCard,
+  VersionActionPanel,
+} from "@/components/version";
+import {
+  ParameterView,
+  ParameterCreateDialog,
+} from "@/components/parameter";
+import {
+  NextTrainingScheduleCard,
+  ScheduleCreateDialog,
+} from "@/components/schedule";
+import { TrainingResultCard } from "@/components/trainingResult";
+
+import { ModelHeader } from "@/components/model/ModelHeader";
+
+import { PageIntroCard } from "@/components/guidance/PageIntroCard";
+import { PageLoader } from "@/components/common/PageLoader";
+import { EmptyState } from "@/components/common/EmptyState";
+import { BackButton } from "@/components/common/BackButton";
+import { Button } from "@/components/ui/button";
+
+import { useLoadingGuard } from "@/hooks/useLoadingGuard";
 import { useModelList } from "@/hooks/model/model.hooks";
 import {
   useCheckVersionComplete,
@@ -22,24 +39,20 @@ import {
 } from "@/hooks/schedule/schedule.hooks";
 import { useTrainingResultsByScheduleId } from "@/hooks/training/useTrainingResult";
 
-import { VersionActionPanel } from "@/components/version/VersionActionPanel";
+import { mapParametersToItems } from "@/lib/utils/parameter.helper";
 import {
   getLatestScheduleTask,
   getNextScheduledTask,
 } from "@/lib/utils/schedule.helper";
-import { NextTrainingScheduleCard } from "@/components/version_page/NextTrainingScheduleCard";
-import { TrainingResultCard } from "@/components/version_page/TrainingResultCard";
-import { useEffect, useState } from "react";
-import { ParameterCreateDialog } from "@/components/parameter/ParameterCreateDialog";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { IntroCard } from "@/components/common/PageIntroCard";
-import { ScheduleCreateDialog } from "@/components/version_page/ScheduleCreateDialog";
+import { scrollToAnchor } from "@/lib/utils/common.helper";
+
 import { ScheduleFormValues } from "@/schemas/scheduleCreateSchema";
 import { SchedulePayload, TrainingSchedule } from "@/types/schedule";
-import { toast } from "sonner";
+
 import { createSchedule } from "@/lib/api/schedule/create.api";
-import { scrollToAnchor } from "@/lib/utils/common.helper";
+
+import { AlertCircle, ListChecks, SlidersHorizontal } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ModelVersionDetailPage() {
   // 路由模組
@@ -59,6 +72,7 @@ export default function ModelVersionDetailPage() {
   const schedule1 = getNextScheduledTask(schedules);
   const schedule2 = getLatestScheduleTask(schedules);
   const results = useTrainingResultsByScheduleId(schedule2?.scheduleId || "");
+  const isLoading = useLoadingGuard(800);
 
   // 確定版本完成設定模組
   const { isParamMissing, isScheduleMissing } = useCheckVersionComplete(
@@ -122,45 +136,9 @@ export default function ModelVersionDetailPage() {
     }
   };
 
-  // 載入緩衝模組
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="container max-w-5xl py-8 px-4 md:px-8 space-y-6">
-        <Skeleton className="h-10 w-2/3" />
-        <Skeleton className="h-28 w-full" />
-        <Skeleton className="h-40 w-full" />
-      </div>
-    );
-  }
-
-  if (!model || !modelVersion) {
-    return (
-      <EmptyState
-        icon={<AlertCircle className="w-10 h-10" />}
-        title="找不到模型版本資料"
-        description="請確認模型版本是否正確，或返回模型選單重新選擇。"
-        action={
-          <Button onClick={() => router.push(`/models/${modelId}`)}>
-            返回模型選單
-          </Button>
-        }
-      />
-    );
-  }
-
   return (
-    <div className="container max-w-3xl py-8 px-4 md:px-8 space-y-6">
-      <IntroCard
+    <PageLoader isLoading={isLoading} fallback={<VersionDetailSkeleton />}>
+      <PageIntroCard
         title="這是該模型版本的詳細頁，您可以："
         descriptionList={[
           "查看版本基本資訊與訓練狀態",
@@ -169,14 +147,30 @@ export default function ModelVersionDetailPage() {
           "若尚未設定參數與排程，請盡快完成！",
         ]}
       />
-      <ModelHeader {...model} />
+      {model && modelVersion ? (
+        <>
+          <ModelHeader {...model} />
+          <VersionInfoCard {...modelVersion} />
+        </>
+      ) : (
+        <EmptyState
+          icon={<AlertCircle className="w-10 h-10" />}
+          title="找不到模型版本資料"
+          description="請確認模型版本是否正確，或返回模型選單重新選擇。"
+          action={
+            <Button onClick={() => router.push(`/models/${modelId}`)}>
+              返回模型選單
+            </Button>
+          }
+        />
+      )}
+
       <VersionActionPanel
         isParamMissing={isParamMissing}
         isScheduleMissing={isScheduleMissing}
         onSetParams={() => setOpenParamDialog(true)}
         onSetSchedule={() => setOpenScheduleDialog(true)}
       />
-      <VersionInfoCard {...modelVersion} />
 
       {/* 參數區塊 */}
       {parameters && Object.keys(parameters).length > 0 ? (
@@ -203,7 +197,7 @@ export default function ModelVersionDetailPage() {
       )}
 
       {/* 結果區塊 */}
-      {results ? (
+      {results.length !== 0 ? (
         <TrainingResultCard results={results} />
       ) : (
         <EmptyState
@@ -233,6 +227,6 @@ export default function ModelVersionDetailPage() {
         modelId={modelId}
         versionId={versionId}
       />
-    </div>
+    </PageLoader>
   );
 }

@@ -13,27 +13,32 @@ import {
   useAddVersion,
   useCheckVersionComplete,
 } from "@/hooks/version/version.hooks";
+import { useIncompleteParams } from "@/hooks/useIncompleteParams";
+import { useLoadingGuard } from "@/hooks/useLoadingGuard";
 
-import { ModelHeader } from "@/components/models/ModelHeader";
-import { VersionCardListAccordion } from "@/components/models/VersionCardListAccordion";
-
+import { PageIntroCard } from "@/components/guidance/PageIntroCard";
+import { PageLoader } from "@/components/common/PageLoader";
 import { EmptyState } from "@/components/common/EmptyState";
 
+import { ModelHeader } from "@/components/model/ModelHeader";
+import { ModelActionPanel } from "@/components/model/ModelActionPanel";
+import { ModelDetailSkeleton } from "@/components/model/ModelDetailSkeleton";
+
+import {
+  VersionCardListAccordion,
+  VersionCreateDialog,
+} from "@/components/version";
+
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 
 import { AlertCircle } from "lucide-react";
 
 import { VersionFormValues } from "@/schemas/versionCreateSchema";
 import { VersionFormData } from "@/types/form";
-import { createVersion } from "@/lib/api/version/create";
-import { toast } from "sonner";
-import { VersionCreateDialog } from "@/components/version/VersionCreateDialog";
 
-import { useIncompleteParams } from "@/hooks/useIncompleteParams";
-import { ModelActionPanel } from "@/components/models/ModelActionPanel";
+import { createVersion } from "@/lib/api/version/create";
 import { scrollToAnchor } from "@/lib/utils/common.helper";
-import { IntroCard } from "@/components/common/PageIntroCard";
+import { toast } from "sonner";
 
 export default function ModelDetailPage() {
   // 路由模組
@@ -53,6 +58,7 @@ export default function ModelDetailPage() {
   const model = useModelById(modelId);
   const latestVersion = useLatestVersionByModelId(modelId);
   const versions = useVersionsByModelId(modelId);
+  const isLoading = useLoadingGuard(1200);
 
   // 確認版本是否有參數表與排程設定
   const { isParamMissing, isScheduleMissing } = useCheckVersionComplete(
@@ -66,17 +72,6 @@ export default function ModelDetailPage() {
     null
   );
 
-  // ✅ 建立 local loading 狀態模擬 500ms 載入時間
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, []);
-
   // 初次開啟版本列表時懶加載
   useEffect(() => {
     if (openAccordion && !fetched) {
@@ -84,29 +79,6 @@ export default function ModelDetailPage() {
       setFetched(true);
     }
   }, [openAccordion, fetched, modelId, dispatch]);
-
-  if (loading) {
-    return (
-      <div className="container max-w-5xl py-8 px-4 md:px-8 space-y-6">
-        <Skeleton className="h-10 w-2/3" />
-        <Skeleton className="h-28 w-full" />
-        <Skeleton className="h-40 w-full" />
-      </div>
-    );
-  }
-
-  if (!model) {
-    return (
-      <EmptyState
-        icon={<AlertCircle className="w-10 h-10" />}
-        title="找不到模型資料"
-        description="請確認模型 ID 是否正確，或返回模型清單重新選擇。"
-        action={
-          <Button onClick={() => router.push("/models")}>返回模型清單</Button>
-        }
-      />
-    );
-  }
 
   const handleOpenVersionList = (open: boolean) => {
     setOpenAccordion(open);
@@ -163,10 +135,9 @@ export default function ModelDetailPage() {
   };
 
   return (
-    <div className="container max-w-3xl py-8 px-4 md:px-8 space-y-6">
+    <PageLoader isLoading={isLoading} fallback={<ModelDetailSkeleton />}>
       {/* ✅ 導引卡片 */}
-      <IntroCard
-        imageSrc="/guide/Artificial intelligence.gif"
+      <PageIntroCard
         title="這是你的模型操作主頁，您可以："
         descriptionList={[
           "檢視最新版本與參數",
@@ -177,7 +148,18 @@ export default function ModelDetailPage() {
       />
 
       {/* ✅ 模型標題 */}
-      <ModelHeader {...model} />
+      {model ? (
+        <ModelHeader {...model} />
+      ) : (
+        <EmptyState
+          icon={<AlertCircle className="w-10 h-10" />}
+          title="找不到模型資料"
+          description="請確認模型 ID 是否正確，或返回模型清單重新選擇。"
+          action={
+            <Button onClick={() => router.push("/models")}>返回模型清單</Button>
+          }
+        />
+      )}
 
       {/* ✅ 操作卡片四格 */}
       <ModelActionPanel
@@ -209,6 +191,6 @@ export default function ModelDetailPage() {
         modelId={modelId}
         onSubmit={handleSubmit}
       />
-    </div>
+    </PageLoader>
   );
 }

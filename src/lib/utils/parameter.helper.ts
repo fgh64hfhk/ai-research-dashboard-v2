@@ -1,6 +1,6 @@
 // lib/utils/parameter.helper.ts
 import { ModelParameters } from "@/types/parameters";
-import { ModelParameterItem } from "@/components/models/ParameterView";
+import { ModelParameterItem } from "@/components/parameter/ParameterView";
 
 // ✅ 參數描述：用於 UI 顯示說明
 const PARAMETER_DESCRIPTIONS: Record<string, string> = {

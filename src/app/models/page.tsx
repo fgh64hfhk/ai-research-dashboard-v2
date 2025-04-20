@@ -1,26 +1,38 @@
 "use client";
 
-import { useModelCreate, useModelList } from "@/hooks/model/model.hooks"; // 模型列表 hook
-
-import { IntroCard } from "@/components/common/PageIntroCard";
-import { ModelsActionPanel } from "@/components/models_page/ModelsActionPanel";
-import { ModelCardList } from "@/components/models_page/ModelCardList";
-import { EmptyState } from "@/components/common/EmptyState";
-import { Layers } from "lucide-react";
 import { useState } from "react";
-import { ModelCreateDialog } from "@/components/models_page/ModelCreateDialog";
+
+import { useLoadingGuard } from "@/hooks/useLoadingGuard";
+import { useModelCreate, useModelList } from "@/hooks/model/model.hooks";
+
+import {
+  ModelCardList,
+  ModelCreateDialog,
+  ModelsActionPanel,
+} from "@/components/model";
+
+import { PageLoader } from "@/components/common/PageLoader";
+import { EmptyState } from "@/components/common/EmptyState";
+
+import { PageIntroCard } from "@/components/guidance/PageIntroCard";
+
+import { Layers } from "lucide-react";
+
 import { ModelFormValues } from "@/schemas/modelCreateSchema";
 import { ModelFormData } from "@/types/form";
 
 import { v4 as uuidv4 } from "uuid";
 import { createModel } from "@/lib/api/model/create";
-import { toast } from "sonner";
 import { scrollToAnchor } from "@/lib/utils/common.helper";
+
+import { toast } from "sonner";
+import ModelListSkeleton from "@/components/model/ModelListSkeleton";
 
 export default function ModelListPage() {
   // 初始化資料
   const models = useModelList();
   const hasModels = models.length > 0;
+  const isLoading = useLoadingGuard(500);
 
   // 新增模型模組
   const addModel = useModelCreate();
@@ -63,20 +75,19 @@ export default function ModelListPage() {
   };
 
   return (
-    <div className="container max-w-3xl py-8 px-4 md:px-8 space-y-6">
+    <PageLoader isLoading={isLoading} fallback={<ModelListSkeleton />}>
       {/* ✅ 區塊一：首頁引導說明卡片 */}
-      <IntroCard
+      <PageIntroCard
         title="歡迎使用 AI 模型管理平台 👋"
         descriptionList={[
           "瀏覽所有模型與版本資訊",
           "建立新模型並進行訓練規劃",
           "快速切換與比較多個版本",
         ]}
-        imageSrc="/guide/Data extraction.gif"
       />
 
       {/* ✅ 區塊二：四格動作卡片區塊 */}
-      <ModelsActionPanel onOpenCreateDialog={() => setOpenDialog(true)}/>
+      <ModelsActionPanel onOpenCreateDialog={() => setOpenDialog(true)} />
 
       {/* ✅ 區塊三：模型清單（卡片列表） */}
       {hasModels ? (
@@ -96,6 +107,6 @@ export default function ModelListPage() {
         onOpenChange={setOpenDialog}
         onSubmit={handleSubmit}
       />
-    </div>
+    </PageLoader>
   );
 }

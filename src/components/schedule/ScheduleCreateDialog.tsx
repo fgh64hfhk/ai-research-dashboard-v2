@@ -1,41 +1,37 @@
-"use client";
-
+import { ScheduleFormValues } from "@/schemas/scheduleCreateSchema";
+import { useState } from "react";
 import { BaseDialog } from "@/components/common/BaseDialog";
 import { Button } from "@/components/ui/button";
-
-import { VersionCreateForm } from "@/components/version/VersionCreateForm";
-import { VersionFormValues } from "@/schemas/versionCreateSchema";
-import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { ScheduleCreateForm } from "@/components/schedule/ScheduleCreateForm";
 
-interface VersionCreateDialogProps {
+interface ScheduleCreateDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSubmit: (data: ScheduleFormValues) => Promise<void>;
   modelId: string;
-  onSubmit: (data: VersionFormValues) => Promise<void>;
+  versionId: string;
 }
 
-export default function VersionCreateDialog({
+const ScheduleCreateDialog = ({
   open,
   onOpenChange,
-  modelId,
   onSubmit,
-}: VersionCreateDialogProps) {
+  modelId,
+  versionId,
+}: ScheduleCreateDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
 
-  const handleSubmit = async (values: VersionFormValues) => {
+  const handleSubmit = async (values: ScheduleFormValues) => {
     setIsSubmitting(true);
 
     try {
       // 模擬延遲才顯示 loading spinner
-      setTimeout(() => {
-        setShowLoading(true);
-      }, 100);
-      
+      setTimeout(() => setShowLoading(true), 100);
       await onSubmit(values);
     } catch (err) {
-      console.error("版本建立失敗：", err);
+      console.error(err);
     } finally {
       setIsSubmitting(false);
       setShowLoading(false);
@@ -46,20 +42,22 @@ export default function VersionCreateDialog({
     <BaseDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={`建立 ${modelId.toUpperCase()} 的初始版本`}
-      description="請填寫下列資訊來建立新版本，包括修改摘要、初始參數設定與模型檔案上傳。"
+      title="新增排程日期"
+      description={`請填寫 ${modelId} - ${versionId} 的排程日期`}
       footer={
         <Button
           type="submit"
-          form="version-create-form"
+          form="schedule-create-form"
           disabled={isSubmitting}
         >
           {showLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-          建立版本
+          建立排程
         </Button>
       }
     >
-      <VersionCreateForm modelId={modelId} onSubmit={handleSubmit} />
+      <ScheduleCreateForm onSubmit={handleSubmit} />
     </BaseDialog>
   );
-}
+};
+
+export default ScheduleCreateDialog;

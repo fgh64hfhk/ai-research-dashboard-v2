@@ -23,7 +23,7 @@ interface VersionActionPanelProps {
   onCompare?: () => void;
 }
 
-export function VersionActionPanel({
+export default function VersionActionPanel({
   isParamMissing,
   isScheduleMissing,
   onSetParams,

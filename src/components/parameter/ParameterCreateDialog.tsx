@@ -7,9 +7,9 @@ import { toast } from "sonner";
 import { BaseDialog } from "@/components/common/BaseDialog";
 import { Button } from "@/components/ui/button";
 
-import { ParameterCreateForm } from "./ParameterCreateForm";
+import { ParameterCreateForm } from "@/components/parameter/ParameterCreateForm";
 import { ParameterFormValues } from "@/schemas/parameterCreateSchema";
-import { createParameters } from "@/lib/api/parameter/create"; // 模擬 API
+import { createParameters } from "@/lib/api/parameter/create";
 import { ParameterFormData } from "@/types/form";
 import { useAddParameter } from "@/hooks/parameter/parameter.hooks";
 import { scrollToAnchor } from "@/lib/utils/common.helper";
@@ -21,7 +21,7 @@ interface ParameterCreateDialogProps {
   version: string;
 }
 
-export const ParameterCreateDialog = ({
+const ParameterCreateDialog = ({
   open,
   onOpenChange,
   modelId,
@@ -90,3 +90,5 @@ export const ParameterCreateDialog = ({
     </BaseDialog>
   );
 };
+
+export default ParameterCreateDialog;

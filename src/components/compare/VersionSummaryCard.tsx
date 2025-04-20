@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
-import { ModelVersionStatusBadge } from "../models/ModelVersionStatusBadge";
+import { ModelVersionStatusBadge } from "../version/ModelVersionStatusBadge";
 import { ModelVersion } from "@/types/model";
 
 interface Props {

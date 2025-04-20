@@ -39,11 +39,7 @@ export function getLatestScheduleTask(
 ): TrainingSchedule | undefined {
   if (!schedules || schedules.length === 0) return undefined;
 
-  const now = new Date();
-
-  const futureSchedules = schedules.filter((s) => new Date(s.runDate) > now);
-
-  futureSchedules.sort(
+  const futureSchedules = schedules.sort(
     (a, b) => new Date(a.buildDate).getTime() - new Date(b.buildDate).getTime()
   );
 
