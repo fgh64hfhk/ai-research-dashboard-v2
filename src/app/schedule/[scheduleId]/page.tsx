@@ -1,9 +1,12 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+import { useLoadingGuard } from "@/hooks/useLoadingGuard";
 import { ActionCard } from "@/components/common/ActionCard";
-import { IntroCard } from "@/components/common/PageIntroCard";
-import { ScheduleInfoCard } from "@/components/schedule_page/ScheduleInfoCard";
+
+import { ScheduleInfoCard } from "@/components/schedule/ScheduleInfoCard";
 import {
   useScheduleById,
   useScheduleStatus,
@@ -11,7 +14,6 @@ import {
 import { CalendarX, PlayCircle, RefreshCcw, Settings2 } from "lucide-react";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
 import { startMockTrainingSocket } from "@/mock/socketMock";
 import { useTrainingSocket } from "@/hooks/socket/useTrainingSocket";
 import { TrainingProgressCard } from "@/components/schedule/TrainingProgressCard";
@@ -22,8 +24,13 @@ import {
   useTrainingResultCreate,
   useTrainingResultsByScheduleId,
 } from "@/hooks/training/useTrainingResult";
+import { TrainingResultItem } from "@/components/schedule/TrainingResultItem";
+import { PageLoader } from "@/components/common/PageLoader";
+
 import { toast } from "sonner";
-import { TrainingResultItem } from "@/components/schedule_page/TrainingResultItem";
+import { ScheduleDetailSkeleton, ScheduleHeader } from "@/components/schedule";
+import { PageIntroCard } from "@/components/guidance/PageIntroCard";
+import { useModelById } from "@/hooks/model/model.hooks";
 
 export default function ScheduleDetailPage() {
   // 路由模組
@@ -33,10 +40,12 @@ export default function ScheduleDetailPage() {
   // 資料初始化
   const schedule = useScheduleById(scheduleId);
   const modelId = schedule?.modelId;
+  const model = useModelById(modelId || "");
   const versionId = schedule?.version;
   const trainingResult = useTrainingResultsByScheduleId(
     schedule?.scheduleId || ""
   );
+  const isLoading = useLoadingGuard(800);
 
   // 啟動訓練的模組
   const changeStatus = useScheduleStatus();
@@ -110,32 +119,18 @@ export default function ScheduleDetailPage() {
     error,
   ]);
 
-  if (!schedule) {
-    return (
-      <EmptyState
-        icon={<CalendarX className="w-10 h-10 text-muted-foreground" />}
-        title="找不到排程資料"
-        description="請確認排程 ID 是否正確，或返回模型頁面重新操作。"
-        action={
-          <Button variant="outline" onClick={() => router.push("/models")}>
-            返回模型列表
-          </Button>
-        }
-      />
-    );
-  }
-
   // 按鈕啟用的條件邏輯（抽象）
-  const actionType = schedule.status === "scheduled" ? "success" : "default";
+  const actionType = schedule?.status === "scheduled" ? "success" : "default";
 
-  const isStartable = schedule.status === "scheduled";
+  const isStartable = schedule?.status === "scheduled";
 
-  const isReschedule = schedule.status === "completed" || schedule.status === "failed";
+  const isReschedule =
+    schedule?.status === "completed" || schedule?.status === "failed";
 
   return (
-    <div className="container max-w-3xl py-8 px-4 md:px-8 space-y-6">
+    <PageLoader isLoading={isLoading} fallback={<ScheduleDetailSkeleton />}>
       {/* 🧭 區塊一：使用者引導說明卡片 */}
-      <IntroCard
+      <PageIntroCard
         title="🎯 這是模型的訓練排程詳細頁面，您可以："
         descriptionList={[
           "檢視排程的執行時間與任務狀態",
@@ -146,8 +141,27 @@ export default function ScheduleDetailPage() {
       />
 
       {/* 🧭 區塊二：標題與狀態 */}
+      <ScheduleHeader
+        modelName={model?.name || ""}
+        version={versionId || ""}
+        status={schedule?.status || ""}
+        scheduledAt={schedule?.runDate || ""}
+      />
       {/* 🧭 區塊三：排程詳情（關聯模型版本 / 時間 / 類型 等） */}
-      <ScheduleInfoCard {...schedule} />
+      {schedule ? (
+        <ScheduleInfoCard {...schedule} />
+      ) : (
+        <EmptyState
+          icon={<CalendarX className="w-10 h-10 text-muted-foreground" />}
+          title="找不到排程資料"
+          description="請確認排程 ID 是否正確，或返回模型頁面重新操作。"
+          action={
+            <Button variant="outline" onClick={() => router.push("/models")}>
+              返回模型列表
+            </Button>
+          }
+        />
+      )}
 
       {/* ✅ 區塊四：操作按鈕 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -179,7 +193,7 @@ export default function ScheduleDetailPage() {
       {isRunning && !isCompleted ? (
         <TrainingProgressCard progress={progress} connected={connected} />
       ) : trainingResult?.length !== 0 ? (
-        <TrainingResultItem result={trainingResult[0]}/>
+        <TrainingResultItem result={trainingResult[0]} />
       ) : (
         <EmptyState
           icon={<PlayCircle className="w-10 h-10 text-muted-foreground" />}
@@ -193,6 +207,6 @@ export default function ScheduleDetailPage() {
           }
         />
       )}
-    </div>
+    </PageLoader>
   );
 }

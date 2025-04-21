@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { ScheduleStatusBadge } from "../schedule/ScheduleStatusBadge";
+import { ScheduleStatusBadge } from "@/components/schedule/ScheduleStatusBadge";
 import { CalendarClock, Clock, Layers, List } from "lucide-react";
 import { ScheduleStatus } from "@/types/schedule";
 
