@@ -22,7 +22,7 @@ import { generateMockTrainingResult } from "@/lib/mock/result.mock";
 import { TrainingResult } from "@/types/training";
 import {
   useTrainingResultCreate,
-  useTrainingResultsByScheduleId,
+  useTrainingResultsByVersionKey,
 } from "@/hooks/training/useTrainingResult";
 import { TrainingResultItem } from "@/components/schedule/TrainingResultItem";
 import { PageLoader } from "@/components/common/PageLoader";
@@ -42,7 +42,7 @@ export default function ScheduleDetailPage() {
   const modelId = schedule?.modelId;
   const model = useModelById(modelId || "");
   const versionId = schedule?.version;
-  const trainingResult = useTrainingResultsByScheduleId(
+  const trainingResult = useTrainingResultsByVersionKey(
     schedule?.scheduleId || ""
   );
   const isLoading = useLoadingGuard(800);

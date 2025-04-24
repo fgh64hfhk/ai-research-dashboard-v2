@@ -6,7 +6,7 @@ import Image from "next/image";
 interface ModelIntroCardProps {
   imageSrc?: string;
   title: string;
-  descriptionList: string[];
+  descriptionList: React.ReactNode[];
 }
 
 export function PageIntroCard({

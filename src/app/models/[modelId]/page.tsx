@@ -13,7 +13,7 @@ import {
   useAddVersion,
   useCheckVersionComplete,
 } from "@/hooks/version/version.hooks";
-import { useIncompleteParams } from "@/hooks/useIncompleteParams";
+import { useIncompleteParams } from "@/hooks/parameter/useIncompleteParams";
 import { useLoadingGuard } from "@/hooks/useLoadingGuard";
 
 import { PageIntroCard } from "@/components/guidance/PageIntroCard";

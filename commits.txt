@@ -1,0 +1,479 @@
+commit 517223f65cc97a9ca4150123a37539bc8bbca1ee
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Apr 24 21:18:27 2025 +0800
+
+    feat: 完成版本比較頁核心功能與測試資料注入
+    
+    - 資料型別：
+      - 擴充訓練結果型別欄位，支援 accuracy/loss logs 與錯誤訊息
+      - 調整參數表結構為彈性鍵值對以支援比較邏輯
+    
+    - 假資料：
+      - 調整並補足模型、版本、排程、訓練結果的 mock 資料
+      - 確保可進行完整比較流程與圖表顯示測試
+    
+    - 工具函數：
+      - 調整訓練結果扁平化函數（`extractEpochMetricsFromLogs`）
+      - 新增 `generateTrainingInsight` 用於生成統計摘要
+      - 新增 `convertParamsToCompareItems` 用於參數差異轉換
+    
+    - Hooks：
+      - 新增 `useVersionCompare` hook 統一注入比較頁資料
+      - 調整 `useTrainingResultsByScheduleId` 支援篩選成功結果
+      - 新增 `getLatestCompletedResultByVersion`
+      - 新增 `getLastResultByVersion`（含失敗結果）
+    
+    - 組件：
+      - 調整 `PageIntroCard` 引導內容
+      - 新增 `ParameterCompareCard` 比對參數差異
+      - 新增 `TrainingResultCompareChart` 顯示 loss/acc 趨勢
+      - 新增 `TrainingResultInsightCard` 呈現自然語言摘要
+      - 新增 `CompareActionSection` 整合版本選擇與操作按鈕
+      - 新增 `VersionSelectToggle` 切換比較版本
+      - 新增 `CompareSkeleton` 頁面載入骨架
+      - 新增 `VersionActionPanel` 操作按鈕區塊
+    
+    - 頁面：
+      - 新增 `/mock-compare` 測試頁確認資料整合與渲染正確
+      - 新增 `/models/[modelId]/compare` 比較頁正式版本
+        - 初始化預設版本狀態
+        - 注入完整資料結構
+        - 模擬正式使用者文案與操作引導
+
+commit 73869d5b48fdf7000bc4763470feb2ff541cc518
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Mon Apr 21 12:06:46 2025 +0800
+
+    refactor:模組分類（Module-based folder structure）
+    
+    拆解排程詳細頁面的結構，對其組件進行模組分類
+    
+    - 修改一：重新整理組件資料夾，包含排程與訓練結果的模組分類
+    - 下次進度：整理compare等棄用資料夾與組件，整合到訓練結果的比較詳細頁面
+
+commit 339089b7722b715218da779d1da9e24970f63673
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sun Apr 20 17:20:03 2025 +0800
+
+    refactor: 模組分類（Module-based folder structure）
+    
+    - 修改一：重新整理組件資料夾，包含模型 版本 參數 排程 訓練結果等模組分類
+    - 修改二：新增指引資料夾，可作為未來頁面導引組件的擴充
+    - 修改三：優化頁面預載入的組件與邏輯
+    - 修改四：統一頁面配置，新增內容容器的配置組件
+    
+    - 下次進度：整理compare, models, schedule_page等棄用資料夾與組件，整合到排程詳細頁面
+
+commit a6abc36444838fc7dc326e448596392a568a0492
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sat Apr 19 18:18:08 2025 +0800
+
+    feat: integrate training result module and mock websocket flow
+    
+    新增訓練結果管理模組，整合模擬自動訓練流程與 WebSocket 通訊至排程詳細頁面
+    
+    - 定義訓練結果的型別
+    - 新增  reducer 處理訓練結果狀態
+    - 新增訓練排程假資料，模擬自動訓練觸發流程
+    - 新增訓練結果假資料，模擬成功與失敗案例
+    - 根據排程 ID 分組訓練結果資料
+    - 模擬自動訓練後創建資料流程
+    - 模擬串接 API 取得所有訓練結果
+    - 新增 hooks：創建與取得訓練結果、改變排程狀態
+    - 新增 hooks：模擬客戶端啟動 WebSocket 監聽器
+    - 新增模擬伺服器端 WebSocket 通道
+    - 新增訓練結果 context 狀態管理模組
+    - 新增 UI：訓練進度卡片組件、訓練結果項目卡片
+    - 整合模擬 WebSocket 通道至排程詳細頁，支援訓練啟動與即時同步
+    - 整合訓練結果模組至排程詳細頁
+    - 整合空狀態組件至排程詳細頁以處理無資料情境
+
+＊＊commit 85048b8e3985d16550d4d8377b77952e2892e18a
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Apr 18 17:55:00 2025 +0800
+
+    feat: 新增版本排程建立功能與整合 UI 流程
+    
+    # 建立排程功能模組，支援版本詳細頁面中新增訓練排程
+    
+    - 定義 TrainingSchedule / SchedulePayload / ScheduleResponse 型別
+    - 建立 scheduleCreateSchema 用於 Zod 驗證與型別推導
+    - 新增 reducer action：ADD_SCHEDULE（支援加入新排程至全域狀態）
+    - 修正並補充 mockSchedules 資料內容
+    - 新增模擬 API：createSchedule，用於模擬建立排程流程
+    - 製作 useScheduleCreate hook，封裝 API 呼叫與 dispatch 行為
+    
+    - 重構 components 結構，依照頁面功能分類整理版本詳細頁元件
+    - 新增 VersionPage/ScheduleCreateForm 與 ScheduleCreateDialog 組件
+    - 整合 VersionActionPanel 開啟「新增排程」對話匡
+    - 整合 Dialog + 表單 + 全域狀態，完成提交排程模組
+
+commit d1926ddbf4c50b0bb45a44397f64faf214649b43
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Apr 18 13:17:23 2025 +0800
+
+    feat: 新增模型建立模組與 UI 整合
+    
+    - 新增 modelCreateSchema 與 ModelFormValues 型別
+    - 完成 ModelCreateForm.tsx 並支援表單重設與預填
+    - 整合 BaseDialog 與 ModelCreateDialog 管理開關與提交按鈕
+    - 新增 useAddModel hook 與 ADD_MODEL reducer action
+    - 修正 model.reducer.ts 的 ADD_MODEL 實作邏輯（由 object 改為 array append）
+    - 抽離 ModelCard 與 ModelCardList 並設計 ModelsActionPanel 四宮格操作區塊
+    
+    - 建立模型後自動跳轉至該模型版本頁面
+    - 加入重複 modelId 的驗證
+
+commit b368de486d494a17d8ba2aa54bc265f03323289e
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Apr 18 10:42:44 2025 +0800
+
+    feat: 建立模型首頁操作面板與首頁導引卡片
+    
+    - 修改一：設計 models/page.tsx 首頁初版視覺配置，預留未來模型清單與卡片區塊
+    - 修改二：抽出 PageIntroCard.tsx 作為通用導引卡片元件
+    - 修改三：抽出 ModelsActionPanel.tsx 包含常見操作如新增模型、查看最近活動、匯入、篩選等
+
+commit ffafec9e5f69ebf478d7b37a87358abf04df8957
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Apr 18 07:16:31 2025 +0800
+
+    modified: 抽離組件優化對話匡提交函數
+    
+    - 修改一：抽離ModelActionPanel 重新整合到模型管理頁面
+    - 修改二：調整VersionCreateDialog 與 VersionCreateForm 導入函數與定義
+    - 修改三：確保假資料吻合 並檢閱 ParameterView 的邏輯
+
+commit 17e831978196d56ba0ee464a2f125536a763ea24
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Apr 17 16:29:31 2025 +0800
+
+    feat: 平滑捲動至版本參數區塊，優化 UX 體驗
+    
+    - 新增 router.push + scrollIntoView 實作方案，解決 hash 導致跳動問題
+    - 抽出 scrollToAnchor 工具函式，提升可重用性與可讀性
+    - 調整 ActionCard 點擊「查看參數表」時自動平滑滾動至 #param 區塊
+    - 加入 anchor id 的 scroll margin className（scroll-mt-24）避免被 header 遮蓋
+
+commit ff6a9579fe4b8cfd91618863a4c1f772ec09ad60
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Apr 17 15:28:40 2025 +0800
+
+    feat: 完成參數設定功能模組整合
+    
+    - 新增 ParameterContext、reducer、hooks 模組，支援參數表全域狀態管理
+    - 實作 createParameters 模擬 API，提供參數新增功能
+    - 建立 parameterCreateSchema 與 payload 型別，驗證使用者輸入
+    - 抽出 ParameterCreateForm 表單元件與 ParameterAddDialog 對話匡
+    - 整合 Basedialog + Form，實現 Dialog 內建參數設定
+    - 在 version page.tsx 中新增對話匡開關與操作按鈕
+    - 優化型別定義與命名一致性（ModelParameter / payload）
+
+commit 985a54387b28bce3a0603606ed6d7a3822cda719
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Apr 17 12:30:54 2025 +0800
+
+    feat: 訓練結果模組整合與版本頁面展示優化
+    
+    整合 TrainingResult 模組，包含 context、reducer、hook 及 mock API 支援。
+    
+    在版本詳細頁中新增最近一次訓練結果卡片，提供準確的訓練紀錄摘要。
+    
+    - 新增 TrainingResultContext 並支援一對多訓練結果儲存
+    - 實作 useTrainingResult hook，支援依 scheduleId / modelId_version 查詢
+    - 抽出並整合 TrainingResultCard 元件至 ModelVersionDetailPage.tsx
+
+commit 1730c8dec3ca839ea8d7b9132f433c3b400bba4d
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Apr 17 06:43:56 2025 +0800
+
+    feat: 重構版本完成檢查與本地提示邏輯
+    
+    - 新增 useCheckVersionComplete hook：結合參數與排程狀態，統一判斷版本是否完成
+    - 使用 useRef 優化 useEffect，避免 infinite render (Maximum update depth exceeded)
+    - 整合 useIncompleteParams 與版本完成條件邏輯：當版本尚未完成時自動 markIncomplete，完成後清除
+    - 將版本完成狀態與 UI 提示邏輯解耦，支援未來高亮、提示、徽章等設計
+
+commit d75e9655698d33d0eacfff73d8d9cb76a3a66b4b
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Apr 16 19:07:15 2025 +0800
+
+    feat(version): 建立版本詳細頁面結構與操作區塊
+    
+    - 新增 ModelVersionDetailPage，整合模型與版本參數與排程顯示
+    - 新增 VersionActionPanel 操作卡片區塊，對應版本詳細頁的常用操作
+    - 新增 VersionIntroCard 導引卡片元件，提供版本頁引導說明與圖片支援
+    
+    後續可擴充：
+    - 根據版本訓練狀態進行引導按鈕跳轉
+    - 加入參數設定、排程建立的快捷功能
+
+＊＊commit afe5fe492eeac3baaa10220aecca9e558db70e21
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Tue Apr 15 20:39:21 2025 +0800
+
+    feat: 加入查看最新版本按鈕的提醒樣式與 Tooltip 引導
+    
+    - 為「查看最新版本」按鈕加入漸層背景樣式，當尚未設定參數或排程時提醒使用者
+    - 使用 shadcn/ui Tooltip 在懸停時顯示提示內容
+    - 結合 `useParameterByVersionKey` 與 `useSchedulesByVersionKey` 判斷缺漏項目
+    - UX 設計保持低干擾，引導使用者完成操作流程
+
+commit 6dea9891dd8cfef5e222abefb5aa5d97ee5b3989
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Tue Apr 15 14:51:23 2025 +0800
+
+    feat(version): 新增 version reducer 與 hooks，整合版本建立邏輯
+    
+    - 新增 addVersion action 至 version reducer，用以管理單筆版本加入狀態
+    - 實作 useAddVersion hook，提供版本建立後狀態注入的方式
+    - 調整 VersionCardListAccordion 組件，支援 newlyCreatedVersion 標記
+    - 修正版本卡片列表邏輯，支援懶加載版本與單筆插入同步
+    - 強化 ModelDetailPage 中版本建立後的 UX 動線與資料更新流程
+
+commit be77ae4200e619e1deea06a65c473802f3f1d4eb
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Tue Apr 15 12:30:21 2025 +0800
+
+    feat: 支援展開版本列表時自動捲動至卡片區塊頂部
+    
+    - 新增 `onOpenChange` 回呼處理至 VersionCardListAccordion，確保 scroll 動作在 Accordion 展開後觸發
+    - 使用 `getBoundingClientRect()` + `window.scrollY` 搭配留白 padding 進行 scroll，避免頂部貼齊造成視覺錯亂
+    - 優化 ModelDetailPage 中 handleOpenVersionList 的開展與移動順序，避免 race condition
+
+commit bf3b6312ead847df5ba9ca78e7287edbcad1da36
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Mon Apr 14 16:52:20 2025 +0800
+
+    feat(version): 建立模型版本新增流程（含表單驗證與檔案上傳）
+    
+    - 新增 VersionCreateForm：使用 zod schema 驗證版本號、修改摘要與 .h5 模型檔案
+    - 新增 VersionCreateDialog：封裝對話框，支援提交 loading 狀態管理與延遲關閉
+    - 抽離 DropzoneUploader 組件，加入自動上傳模擬與進度條
+    - 將「新增版本」整合至 ModelActionPanel，並模擬呼叫 API 提交資料
+    - 表單成功送出後自動清空並關閉 Dialog
+    
+    後續可考慮：
+    - 接入後端版本 API
+    - 成功建立版本後自動加入版本清單 or 導向版本詳情頁
+    - 加入 dataset 或參數預設選擇功能
+
+commit 507cc0810226c3b9f5432682ef5247dda40a1e45
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Apr 10 20:28:15 2025 +0800
+
+    feat: 完成模型版本比較頁初版整合
+    
+    建立 /models/[modelId]/compare 路由，支援對比不同版本的參數與訓練結果
+    
+    - 新增 VersionComparePage：支援 from/to 查詢參數判斷對比版本
+    - 新增 VersionSummaryCard：顯示構建時間、修改摘要與狀態 badge
+    - 新增 ParameterComparisonTable：使用 shadcn/ui 表格展示參數差異，自動高亮不同欄位
+    - 新增 ResultComparisonCard：整合訓練結果摘要，包含 status、耗時、metrics 欄位比對
+    - 對接各 context 資料（versionMap, parameterMap, resultMap）進行組合渲染
+    - 空狀態處理：當任一版本資料缺失時，顯示 EmptyState 元件提示
+    
+    <type>: <簡要描述這次提交的目的>
+
+commit 915a9509dd99be51d4f9a79c118a1d2dcbbc6b2e
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Apr 10 18:06:06 2025 +0800
+
+    feat: 完成訓練模擬流程（啟動進度追蹤與訓練完成自動寫入結果）
+    
+    - 新增 DebugStartTrainingButton 元件：啟動訓練並更新排程狀態為 running
+    - 優化 debug/schedule/page.tsx：
+      - 使用 runningScheduleId 管理 socket 對應的訓練任務
+      - 執行 startMockTrainingSocket 建立模擬進度推送
+      - 結合 useTrainingSocket 追蹤訓練進度與完成狀態
+      - 當 progress 到達 100%，自動 dispatch 訓練完成狀態並寫入模擬結果
+    - 新增完成通知 toast.success 與進度監聽中斷防護邏輯
+    - 修正 TrainingResultCard 的渲染條件，避免 undefined 報錯
+
+commit 06855beabd1bf870c341352d34ba0d29d59c7fb4
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Apr 10 11:41:34 2025 +0800
+
+    feat: 建立模型訓練追蹤流程（模擬 WebSocket 即時進度）
+    
+    模擬訓練中進度的完整功能整合，包含後端模擬與 UI 呈現
+    
+    - 新增 useTrainingSocket(scheduleId) hook：封裝 WebSocket 監聽訓練進度
+    - 安裝 mock-socket 並建立 lib/mock/socketMock.ts：模擬伺服器發送 progress 數據
+    - 新增 TrainingProgressCard：以進度條顯示訓練進度與連線狀態
+    - 重構 /debug/schedule/page.tsx：
+      - 正確使用 useEffect 與 useTrainingSocket
+      - 只在唯一 running 排程中啟動模擬 socket
+      - 判斷狀態切換渲染進度卡或訓練結果卡
+    - 修正原先違規的 Hook 使用方式（不能寫在 map/條件內）
+
+＊＊commit 61e8777a13ad57140e7e8727bf9cfb09f02bc6f6
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Apr 9 18:16:43 2025 +0800
+
+    feat: 完成訓練結果資料整合與模擬測試
+    
+    - 新增 TrainingResult 型別於 schedule.ts，定義訓練完成後的標準格式
+    - 新增 mockTrainingResult() 工具函數：模擬成功/失敗訓練結果
+    - 新增 scheduleContext 中 resultMap 與 SET_RESULT reducer action
+    - 新增 useScheduleResult() hook 快速查詢特定排程結果
+    - 新增 <DebugTriggerResultButton />：點擊後手動產生訓練結果
+    - 新增 <TrainingResultCard />：以卡片格式完整顯示訓練結果與指標
+    - 整合至 /debug/schedule 測試頁，顯示每筆排程的訓練結果與控制按鈕
+    - 調整 hooks 使用位置避免 React Hook 呼叫錯誤（先整理 resultMap 資料）
+
+commit 4608530825450c6601558c214146d5a81b9c08eb
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Apr 9 11:23:10 2025 +0800
+
+    feat: 完成訓練排程提交流程與型別整合
+    
+    - 新增 SchedulePayload 型別：明確區分使用者輸入與系統補值
+    - 新增 ScheduleFormData 表單型別：用於 hook form 驗證與轉換
+    - 新增 transformToSchedulePayload() 工具函數：表單資料轉換為 payload
+    - 整合至 <ScheduleCreateForm /> onSubmit 流程：
+      - 自動補上 buildDate, status
+      - 使用 uuidv4 製作 schedule.id
+      - 使用 ADD_SCHEDULE action 寫入 context
+    - 提交成功後跳轉至該版本詳細頁
+
+commit 0f146331e90f1230b36ef542eaecd3ad1b0636e5
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Tue Apr 8 09:35:51 2025 +0800
+
+    refactor: 重構版本與排程頁面資料查詢邏輯，整合 context hooks
+    
+    - 將 /models/[modelId]/version/[versionId] 詳細頁整合 hooks
+      - 使用 useModelList、useVersionsByModelId、useParameterByVersionKey、useSchedulesByVersionKey
+      - 拆除原先 ModelContext 相依，實作更模組化資料查詢流程
+      - 加入空狀態與細節呈現優化
+    
+    - 建立 useScheduleById 全域查詢 hook
+      - 透過 id 快速從 scheduleMap 中找到指定排程
+      - 用於 schedule/[id] 詳細頁簡化搜尋邏輯
+    
+    - 重構 /schedule/[id] 詳細頁使用 useScheduleById
+      - 移除模型版本巢狀搜尋
+      - 支援顯示模型名稱、類型、狀態、執行與建立時間
+
+commit 236e57713acdc232cac9d9e0194c93967c1383d2
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sat Apr 5 01:20:11 2025 +0800
+
+    refactor: 拆分並重構模型參數與排程 Context 結構
+    
+    為提升資料模組化與可測試性，將模型參數與排程資料自 ModelContext 中拆分，並整合 Hook 與 Debug 工具驗證資料注入正確。
+    
+    - 拆分 ParameterContext，管理 parameterMap 並導出查詢 hook
+    - 拆分 ScheduleContext，管理 scheduleMap 並導出查詢 hook
+    - 新增 parameter.hooks.ts / schedule.hooks.ts 提供 useByVersionKey 與 key 工具函數
+    - 建立 ParameterDebug / ScheduleDebug 測試元件，支援 JSON 結構檢視
+    - 確認 parameter/schedule 資料初始化與映射成功，準備後續整合 UI 元件
+    - 與 model/version 拆分一致，維持全域狀態維護一致性
+
+commit 2ecc4501ba1b36572c3feb8f64a0966b867b1d5f
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Apr 4 20:44:37 2025 +0800
+
+    refactor: 重構模型資料 Context 與初始化邏輯
+    
+    為優化模型狀態管理與後續維護性，將原本集中式的 ModelContext 重構為模組化架構，提升可讀性與擴充性。
+    
+    - 分離出 contexts/model 模組，定義獨立的 ModelContext 與 reducer
+    - 整合 AppProviders，統一集中全域 Provider 結構
+    - 新增 model.hooks.ts，封裝常用模型查詢 hook（list, byId, loading）
+    - 新增 lib/api/model.ts 模擬 API 串接
+    - 新增 utils/model.helper.ts 提供扁平化 ModelWithVersions 工具
+    - 新增 utils/wait.ts 模擬伺服器延遲
+    - 優化 ModelList：整合 Skeleton loading 與 EmptyState 顯示處理
+    - 更新 ModelListSkeleton 結構與動畫，提升使用者體驗
+    - EmptyState 加入最小高度與 icon 顯示一致性
+
+commit e28f2255a33641a5cc7f1f75510e2a2ab07be17a
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Apr 3 00:01:27 2025 +0800
+
+    feat: 整合模型版本詳細頁面與訓練排程功能
+    
+    整合模型初始資料結構與詳細頁功能，包含訓練排程、版本資訊、參數顯示與重載功能，提升使用者瀏覽與操作體驗。
+    
+    - 整合訓練排程型別（TrainingSchedule）、狀態（ScheduleStatus）與類型（ScheduleType）
+    - 新增最新版本的 state 結構與顯示介面
+    - 將 version / parameter / schedule 整合進初始模型 state
+    - 新增 loadingMap 與 latestVersionLoadingMap 區分不同讀取狀態
+    - ModelAction 中新增 setLatestVersion, setParameters, setSchedules, setLoading, setLatestVersionLoading 等動作
+    - 修正 setLatestVersion payload 結構
+    - Reducer 中新增版本、參數、排程讀取狀態處理邏輯
+    - mock data 加入訓練排程類型欄位
+    - 工具函數：groupSchedulesByKey, getNextScheduledTask
+    - 工具函數：mapParametersToItems, getSortedVersions, flattenMockModelsVersions
+    - 新增模擬 API 模組，支援讀取假資料
+    - 撰寫 reloadLatestVersion 動作函式，整合到 context
+    - 修正模型初次載入與詳細頁重載資料 flow
+    - 整合 useCallback 的 reloadLatestVersion 與 fetchModelVersions
+    - ModelCard 加入「重新載入最新版本」按鈕，Skeleton 獨立處理 loading 狀態
+    - 抽出 LatestModelVersionPreviewComponent 組件
+    - Accordion 組件新增排序功能，Skeleton 處理 hydration 錯誤，並支援詳細頁導向
+    - 詳細頁組件切分：ModelHeader, ModelDescription, VersionInfoCard, ParameterView, TrainingScheduleView, BackButton, EmptyState
+    - ParameterView 支援參數分組顯示、說明 tooltip
+    - TrainingScheduleView 支援狀態 icon + Badge 顯示與「重新排程」按鈕（限 failed 狀態）
+    - BackButton 加入 modelId 綁定的返回邏輯
+    - 詳細頁整合 context，依據版本資料顯示內容，加入空狀態與排版美化
+    - 錯誤狀態處理與 fallback 資訊補充
+
+commit 642c43e1346e810cc7a9e3a05efc8ccbb12e39f7
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Tue Apr 1 18:28:13 2025 +0800
+
+    feat: support version preview with schedule summary and reload logic
+    
+    - 抽離 <VersionPreview /> 元件，顯示版本狀態、參數、排程概要
+    - 整合至 <ModelCard />，支援版本展開前摘要顯示
+    - 新增 lib/schedule.helper.ts，封裝 groupSchedulesByKey 與 getNextScheduledTask
+    - 在 ModelContext 中初始化 scheduleMap 並可由 key 查詢
+    - 在 ModelVersionAccordion 中加入「🔁 重新載入版本」按鈕
+
+commit 67421baa36b01017362a79ff2539f3d8c068f968
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Mon Mar 31 22:01:43 2025 +0800
+
+    feat: implement /models page with lazy-loaded version accordion
+    
+    - 新增 /models/page.tsx 初始入口頁
+    - 製作 models 組件：ModelCard, ModelList, ModelListSkeleton, ModelVersionAccordion
+    - 建立 ModelContext + useReducer 控制 versionMap、loadingMap 狀態
+    - 製作版本懶加載流程，點擊 Accordion 時才載入資料
+    - 調整 status.helper.ts：改為支援新定義型別
+    - 實作 getNextVersion 工具函數，自動推算下一版號（vX.Y）
+    - 撰寫 models/mock 資料（含 model, versions, parameters, schedules）
+    - 調整 type 模組：model.ts, parameters.ts, schedule.ts 統一資料邏輯
+
+commit d480913b4f1c0c4794002b2c48866cba76456e00
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sat Mar 29 17:00:34 2025 +0800
+
+    feat: enhance InfoRow component and refactor schedule detail layout
+    
+    - 抽離 InfoRow.tsx 支援 icon、tooltip、自動折行
+    - 新增 InfoRowGroup.tsx 支援多欄響應式排版（1-3 欄）
+    - 重構 ScheduleDetailPage：使用 InfoRow + InfoRowGroup 統一呈現任務資訊
+    - 測試通過：含 Lucide icon、tooltip、長文字排版、欄數 RWD 表現
+
+commit c14fdd1da75b3e6a5392b89a2cc2fafe4d7f6cbc
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sat Mar 29 02:07:00 2025 +0800
+
+    feat: initialize MDX layout with ScrollSpy and responsive TOC
+    
+    - 建立專案初始架構，導入 MDX 支援並設置可滾動測試頁
+    
+    - 使用 @next/mdx, @mdx-js/react 等套件完成 MDX 支援
+    - 建立自訂 MdxLayout，支援側邊欄與手機切換
+    - 實作 IntersectionObserver + useState 完成 ScrollSpy 高亮功能
+    - 撰寫 demo 頁面測試可滾動 + 導覽效果
+
+commit bbbd4172a4890954efb6ac8381044c2e71ecd9fb
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Mar 28 18:14:49 2025 +0800
+
+    Initial commit from Create Next App

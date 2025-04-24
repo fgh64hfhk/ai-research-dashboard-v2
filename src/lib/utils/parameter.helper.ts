@@ -1,6 +1,7 @@
 // lib/utils/parameter.helper.ts
 import { ModelParameters } from "@/types/parameters";
 import { ModelParameterItem } from "@/components/parameter/ParameterView";
+import { ParameterItem } from "@/components/compare/ParameterCompareCard";
 
 // ✅ 參數描述：用於 UI 顯示說明
 const PARAMETER_DESCRIPTIONS: Record<string, string> = {
@@ -52,4 +53,18 @@ export function formatParameterValue(
 // ✅ 工具函數：取得參數的 map key
 export function getParameterKey(modelId: string, version: string): string {
   return `${modelId}_${version}`;
+}
+
+export function convertParamsToCompareItems(
+  baseParams: ModelParameters | undefined,
+  targetParams: ModelParameters | undefined,
+): ParameterItem[] {
+  if (!baseParams || !targetParams) return [];
+  const keys = Array.from(new Set([...Object.keys(baseParams), ...Object.keys(targetParams)]))
+
+  return keys.map((key) => ({
+    key,
+    baseValue: baseParams[key] ?? "-",
+    targetValue: targetParams[key] ?? "-",
+  }));
 }

@@ -7,7 +7,7 @@ import { fetchMockModelVersions } from "@/lib/api/model/model.api";
 import { wait } from "@/lib/utils/async.helper";
 import { useParameterByVersionKey } from "@/hooks/parameter/parameter.hooks";
 import { useSchedulesByVersionKey } from "@/hooks/schedule/schedule.hooks";
-import { useIncompleteParams } from "@/hooks/useIncompleteParams";
+import { useIncompleteParams } from "@/hooks/parameter/useIncompleteParams";
 import { useEffect, useRef } from "react";
 
 // ✅ 取得指定模型的所有版本清單

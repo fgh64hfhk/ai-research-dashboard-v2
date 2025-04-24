@@ -37,7 +37,7 @@ import {
   useScheduleCreate,
   useSchedulesByVersionKey,
 } from "@/hooks/schedule/schedule.hooks";
-import { useTrainingResultsByScheduleId } from "@/hooks/training/useTrainingResult";
+import { useTrainingResultsByVersionKey } from "@/hooks/training/useTrainingResult";
 
 import { mapParametersToItems } from "@/lib/utils/parameter.helper";
 import {
@@ -71,7 +71,7 @@ export default function ModelVersionDetailPage() {
   const schedules = useSchedulesByVersionKey(modelId, versionId);
   const schedule1 = getNextScheduledTask(schedules);
   const schedule2 = getLatestScheduleTask(schedules);
-  const results = useTrainingResultsByScheduleId(schedule2?.scheduleId || "");
+  const results = useTrainingResultsByVersionKey(schedule2?.scheduleId || "");
   const isLoading = useLoadingGuard(800);
 
   // 確定版本完成設定模組

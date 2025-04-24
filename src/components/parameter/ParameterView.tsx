@@ -20,7 +20,7 @@ import {
 
 export interface ModelParameterItem {
   key: string;
-  value: string | number | boolean | object | null;
+  value: string | number | boolean | object | undefined;
   description?: string;
   group?: string;
 }

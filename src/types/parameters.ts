@@ -9,4 +9,6 @@ export type ModelParameters = {
   datasetVersion: string; // 資料集版本
   pretrainedModel: boolean; // 是否使用預訓練模型
   augmentation: boolean; // 是否啟用數據增強
+} & {
+  [key: string]: string | number | boolean | undefined;
 };
