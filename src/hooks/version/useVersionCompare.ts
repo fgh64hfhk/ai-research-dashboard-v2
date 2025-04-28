@@ -6,7 +6,7 @@ import { useModelById } from "@/hooks/model/model.hooks";
 import { useVersionsByModelId } from "@/hooks/version/version.hooks";
 import { useParameterByVersionKey } from "@/hooks/parameter/parameter.hooks";
 import { useSchedulesByVersionKey } from "@/hooks/schedule/schedule.hooks";
-import { useTrainingResultsByVersionKey } from "@/hooks/training/useTrainingResult";
+import { useTrainingResultsByVersionKey } from "@/hooks/training/results.hooks";
 
 import { extractEpochMetricsFromLogs } from "@/lib/utils/result.helper";
 import { generateTrainingInsight } from "@/lib/utils/insight.helper";

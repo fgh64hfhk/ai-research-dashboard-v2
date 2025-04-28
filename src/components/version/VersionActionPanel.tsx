@@ -10,7 +10,7 @@ import {
   ListChecks,
   SlidersHorizontal,
   GitCompare,
-  PlusCircle,
+  ArrowLeft,
 } from "lucide-react";
 import { ActionCard } from "@/components/common/ActionCard";
 import { scrollToAnchor } from "@/lib/utils/common.helper";
@@ -21,6 +21,7 @@ interface VersionActionPanelProps {
   onSetParams?: () => void;
   onSetSchedule?: () => void;
   onCompare?: () => void;
+  onBack?: () => void;
 }
 
 export default function VersionActionPanel({
@@ -28,6 +29,8 @@ export default function VersionActionPanel({
   isScheduleMissing,
   onSetParams,
   onSetSchedule,
+  onCompare,
+  onBack,
 }: VersionActionPanelProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -85,14 +88,14 @@ export default function VersionActionPanel({
       <ActionCard
         icon={<GitCompare className="w-5 h-5" />}
         label="版本比較"
-        onClick={() => {}}
+        onClick={onCompare}
       />
 
-      {/* 查看訓練進度 */}
+      {/* 返回模型列表 */}
       <ActionCard
-        icon={<PlusCircle className="w-5 h-5" />}
-        label="查看訓練進度"
-        onClick={() => {}}
+        icon={<ArrowLeft className="w-5 h-5" />}
+        label="返回模型列表"
+        onClick={onBack}
       />
     </div>
   );

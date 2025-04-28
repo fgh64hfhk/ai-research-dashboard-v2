@@ -41,7 +41,7 @@ export function ParameterCreateForm({ defaultValues, onSubmit }: Props) {
       epochs: 10,
       optimizer: "adam",
       lossFunction: "categorical_crossentropy",
-      datasetVersion: "v1",
+      datasetVersion: "Chinese-MedQA-v1",
       pretrainedModel: false,
       augmentation: false,
       ...defaultValues,

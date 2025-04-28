@@ -23,7 +23,7 @@ import { TrainingResult } from "@/types/training";
 import {
   useTrainingResultCreate,
   useTrainingResultsByVersionKey,
-} from "@/hooks/training/useTrainingResult";
+} from "@/hooks/training/results.hooks";
 import { TrainingResultItem } from "@/components/schedule/TrainingResultItem";
 import { PageLoader } from "@/components/common/PageLoader";
 
@@ -131,7 +131,8 @@ export default function ScheduleDetailPage() {
     <PageLoader isLoading={isLoading} fallback={<ScheduleDetailSkeleton />}>
       {/* 🧭 區塊一：使用者引導說明卡片 */}
       <PageIntroCard
-        title="🎯 這是模型的訓練排程詳細頁面，您可以："
+        imageSrc="/guide/Data extraction schedule.gif"
+        title="這是排程的詳細頁面，你可以："
         descriptionList={[
           "檢視排程的執行時間與任務狀態",
           "若尚未執行，可修改時間或取消任務",
@@ -147,7 +148,7 @@ export default function ScheduleDetailPage() {
         status={schedule?.status || ""}
         scheduledAt={schedule?.runDate || ""}
       />
-      {/* 🧭 區塊三：排程詳情（關聯模型版本 / 時間 / 類型 等） */}
+      {/* 🧭 區塊三：排程詳情（關聯模型版本 / 時間 / 類型 等）*/}
       {schedule ? (
         <ScheduleInfoCard {...schedule} />
       ) : (

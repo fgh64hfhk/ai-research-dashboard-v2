@@ -20,28 +20,26 @@ export function groupSchedulesByKey(
   return result;
 }
 
-// 找出最近要執行的排程（僅限 status = scheduled）
-export function getNextScheduledTask(
-  schedules: TrainingSchedule[] | undefined
-): TrainingSchedule | undefined {
-  if (!schedules || schedules.length === 0) return undefined;
-  const now = new Date();
-  return schedules
-    .filter((s) => s.status === "scheduled" && new Date(s.runDate) > now)
-    .sort(
-      (a, b) => new Date(a.runDate).getTime() - new Date(b.runDate).getTime()
-    )[0];
-}
-
-// 找出最新的排程（不限 status = scheduled）
+// 找最新建立的排程
 export function getLatestScheduleTask(
   schedules: TrainingSchedule[] | undefined
 ): TrainingSchedule | undefined {
-  if (!schedules || schedules.length === 0) return undefined;
+  if (!schedules?.length) return undefined;
+  return schedules.slice().sort((a, b) => {
+    return new Date(b.buildDate).getTime() - new Date(a.buildDate).getTime();
+  })[0];
+}
 
-  const futureSchedules = schedules.sort(
-    (a, b) => new Date(a.buildDate).getTime() - new Date(b.buildDate).getTime()
-  );
+// 排序並切割最新與歷史排程
+export function splitSchedules(schedules: TrainingSchedule[]) {
+  if (!schedules.length) return { latest: undefined, history: [] };
 
-  return futureSchedules[0];
+  const sorted = schedules.slice().sort((a, b) => {
+    return new Date(b.buildDate).getTime() - new Date(a.buildDate).getTime();
+  });
+
+  return {
+    latest: sorted[0],
+    history: sorted.slice(1),
+  };
 }

@@ -8,22 +8,14 @@ import {
   VersionInfoCard,
   VersionActionPanel,
 } from "@/components/version";
-import {
-  ParameterView,
-  ParameterCreateDialog,
-} from "@/components/parameter";
-import {
-  NextTrainingScheduleCard,
-  ScheduleCreateDialog,
-} from "@/components/schedule";
-import { TrainingResultCard } from "@/components/trainingResult";
+import { ParameterView, ParameterCreateDialog } from "@/components/parameter";
+import { ScheduleCreateDialog } from "@/components/schedule";
 
 import { ModelHeader } from "@/components/model/ModelHeader";
 
 import { PageIntroCard } from "@/components/guidance/PageIntroCard";
 import { PageLoader } from "@/components/common/PageLoader";
 import { EmptyState } from "@/components/common/EmptyState";
-import { BackButton } from "@/components/common/BackButton";
 import { Button } from "@/components/ui/button";
 
 import { useLoadingGuard } from "@/hooks/useLoadingGuard";
@@ -37,13 +29,8 @@ import {
   useScheduleCreate,
   useSchedulesByVersionKey,
 } from "@/hooks/schedule/schedule.hooks";
-import { useTrainingResultsByVersionKey } from "@/hooks/training/useTrainingResult";
 
 import { mapParametersToItems } from "@/lib/utils/parameter.helper";
-import {
-  getLatestScheduleTask,
-  getNextScheduledTask,
-} from "@/lib/utils/schedule.helper";
 import { scrollToAnchor } from "@/lib/utils/common.helper";
 
 import { ScheduleFormValues } from "@/schemas/scheduleCreateSchema";
@@ -51,8 +38,9 @@ import { SchedulePayload, TrainingSchedule } from "@/types/schedule";
 
 import { createSchedule } from "@/lib/api/schedule/create.api";
 
-import { AlertCircle, ListChecks, SlidersHorizontal } from "lucide-react";
+import { AlertCircle, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
+import { ScheduleListPanel } from "@/components/schedule/ScheduleListPanel";
 
 export default function ModelVersionDetailPage() {
   // 路由模組
@@ -68,10 +56,9 @@ export default function ModelVersionDetailPage() {
   const model = models.find((m) => m.modelId === modelId);
   const modelVersion = versions.find((v) => v.version === versionId);
   const parameters = useParameterByVersionKey(modelId, versionId);
+
   const schedules = useSchedulesByVersionKey(modelId, versionId);
-  const schedule1 = getNextScheduledTask(schedules);
-  const schedule2 = getLatestScheduleTask(schedules);
-  const results = useTrainingResultsByVersionKey(schedule2?.scheduleId || "");
+
   const isLoading = useLoadingGuard(800);
 
   // 確定版本完成設定模組
@@ -136,10 +123,25 @@ export default function ModelVersionDetailPage() {
     }
   };
 
+  // 跳轉比較頁面的函式
+  const handleComparePage = () => {
+    if (!modelId || !versionId) return;
+
+    // 跳轉到 /models/[modelId]/compare?from=[versionId]
+    router.push(`/models/${modelId}/compare?from=${versionId}`);
+  };
+
+  const handleBackPage = () => {
+    if (!modelId) return;
+    // 跳轉到 /models/[modelId]/
+    router.push(`/models/${modelId}/`);
+  };
+
   return (
     <PageLoader isLoading={isLoading} fallback={<VersionDetailSkeleton />}>
       <PageIntroCard
-        title="這是該模型版本的詳細頁，您可以："
+        imageSrc="/guide/In progress.gif"
+        title="這是模型版本的詳細頁，你可以："
         descriptionList={[
           "查看版本基本資訊與訓練狀態",
           "檢視或設定模型訓練參數",
@@ -170,6 +172,8 @@ export default function ModelVersionDetailPage() {
         isScheduleMissing={isScheduleMissing}
         onSetParams={() => setOpenParamDialog(true)}
         onSetSchedule={() => setOpenScheduleDialog(true)}
+        onCompare={handleComparePage}
+        onBack={handleBackPage}
       />
 
       {/* 參數區塊 */}
@@ -184,32 +188,7 @@ export default function ModelVersionDetailPage() {
       )}
 
       {/* 排程區塊 */}
-      {schedule1 ? (
-        <NextTrainingScheduleCard schedule={schedule1} />
-      ) : schedule2 ? (
-        <NextTrainingScheduleCard schedule={schedule2} />
-      ) : (
-        <EmptyState
-          icon={<ListChecks className="w-10 h-10" />}
-          title="尚未排程"
-          description="請為此版本建立一個訓練排程"
-        />
-      )}
-
-      {/* 結果區塊 */}
-      {results.length !== 0 ? (
-        <TrainingResultCard results={results} />
-      ) : (
-        <EmptyState
-          icon={<ListChecks className="w-10 h-10" />}
-          title="沒有結果"
-          description="請為此版本建立一個訓練排程"
-        />
-      )}
-
-      <div className="flex justify-end">
-        <BackButton />
-      </div>
+      <ScheduleListPanel schedules={schedules || []} />
 
       {/* 新增參數表的對話匡 */}
       <ParameterCreateDialog

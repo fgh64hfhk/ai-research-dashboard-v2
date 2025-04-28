@@ -14,7 +14,7 @@ export function useParameterByVersionKey(
   } = useParameterContext();
 
   if (!modelId || !version) {
-    console.warn("useParameterByVersionKey: modelId 或 version 為空");
+    // console.warn("useParameterByVersionKey: modelId 或 version 為空");
     return undefined;
   }
 

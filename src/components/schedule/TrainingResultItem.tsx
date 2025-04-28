@@ -77,9 +77,12 @@ export function TrainingResultItem({ result }: Props) {
         <div>
           <Accordion type="single" collapsible>
             <AccordionItem value="logs">
-              <AccordionTrigger className="text-sm text-muted-foreground" onClick={() => {
-                scrollToAnchor("log_view", 200);
-              }}>
+              <AccordionTrigger
+                className="text-sm text-muted-foreground"
+                onClick={() => {
+                  scrollToAnchor("log_view", 200);
+                }}
+              >
                 <div className={`flex gap-2 ${!isSuccess && "text-red-500"}`}>
                   <LogOut className="w-4 h-4" /> <span>查看訓練日誌</span>
                 </div>

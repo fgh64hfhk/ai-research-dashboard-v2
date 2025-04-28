@@ -85,8 +85,16 @@ export default function ModelDetailPage() {
     scrollToAnchor("version-list", 200);
   };
 
-  const handleOnVersionDetailPage = (modelId: string, versionId: string) => {
+  const handleVersionDetailPage = (modelId: string, versionId: string) => {
     router.push(`/models/${modelId}/version/${versionId}`);
+  };
+
+  const handleComparePage = (modelId: string) => {
+    router.push(`/models/${modelId}/compare`);
+  };
+
+  const handleBackToModelList = () => {
+    router.push("/models");
   };
 
   const handleSubmit = async (formData: VersionFormValues) => {
@@ -97,7 +105,7 @@ export default function ModelDetailPage() {
         modifiedType: formData.modifiedType,
         modelFile: formData.modelFile,
 
-        buildDate: new Date("2025-04-10").toISOString(),
+        buildDate: new Date("2025-04-30").toISOString(),
         trainingTime: 0,
         status: "inactive",
       };
@@ -117,7 +125,7 @@ export default function ModelDetailPage() {
       toast.success(`版本 ${result.version} 建立成功！`, {
         action: {
           label: "前往設定參數",
-          onClick: () => handleOnVersionDetailPage(modelId, result.version),
+          onClick: () => handleVersionDetailPage(modelId, result.version),
         },
       });
 
@@ -138,10 +146,11 @@ export default function ModelDetailPage() {
     <PageLoader isLoading={isLoading} fallback={<ModelDetailSkeleton />}>
       {/* ✅ 導引卡片 */}
       <PageIntroCard
-        title="這是你的模型操作主頁，您可以："
+        imageSrc="/guide/Artificial intelligence.gif"
+        title="這是你的模型操作主頁，你可以："
         descriptionList={[
           "檢視最新版本與參數",
-          "建立新版本並上傳模型",
+          "建立新版本並上傳檔案",
           "比較各版本的參數與結果",
           "若尚未建立任何版本，請先從下方操作開始",
         ]}
@@ -168,10 +177,12 @@ export default function ModelDetailPage() {
         isParameterIncomplete={isParamMissing}
         isScheduleIncomplete={isScheduleMissing}
         onLatestVersionPage={() =>
-          handleOnVersionDetailPage(modelId, latestVersion?.version || "")
+          handleVersionDetailPage(modelId, latestVersion?.version || "")
         }
         onVersionList={() => handleOpenVersionList(true)}
+        onVersionComparePage={() => handleComparePage(modelId)}
         onOpenCreateVersionDialog={() => setOpenDialog(true)}
+        onBackToModelList={handleBackToModelList}
       />
 
       {/* ✅ 版本列表卡片區塊 */}

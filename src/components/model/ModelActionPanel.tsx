@@ -9,6 +9,7 @@ import {
 
 import { ActionCard } from "@/components/common/ActionCard";
 import {
+  ArrowLeft,
   GitCompare,
   ListChecks,
   PlusCircle,
@@ -22,8 +23,9 @@ interface ModelActionPanelProps {
   isScheduleIncomplete: boolean;
   onLatestVersionPage?: () => void;
   onVersionList?: () => void;
-  onCompare?: () => void;
+  onVersionComparePage?: () => void;
   onOpenCreateVersionDialog?: () => void;
+  onBackToModelList?: () => void;
 }
 
 export function ModelActionPanel({
@@ -33,11 +35,13 @@ export function ModelActionPanel({
   isScheduleIncomplete,
   onLatestVersionPage,
   onVersionList,
+  onVersionComparePage,
   onOpenCreateVersionDialog,
+  onBackToModelList,
 }: ModelActionPanelProps) {
   const isLatestVersionReady = !isParameterIncomplete && !isScheduleIncomplete;
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -47,23 +51,25 @@ export function ModelActionPanel({
                 label="查看最新版本"
                 onClick={onLatestVersionPage}
                 disabled={!isLatestVersion}
-                variant={!isLatestVersionReady ? "warning" : "default"}
+                variant={
+                  isLatestVersion && !isLatestVersionReady
+                    ? "warning"
+                    : "default"
+                }
               />
             </div>
           </TooltipTrigger>
           {!isLatestVersionReady && (
-            <TooltipContent>
-              {isParameterIncomplete && isScheduleIncomplete && (
-                <p className="text-sm font-medium">
-                  最新版本尚未完成參數與排程設定
-                </p>
-              )}
-              {isParameterIncomplete && !isScheduleIncomplete && (
-                <p className="text-sm font-medium">最新版本尚未完成參數設定</p>
-              )}
-              {!isParameterIncomplete && isScheduleIncomplete && (
-                <p className="text-sm font-medium">最新版本尚未完成排程設定</p>
-              )}
+            <TooltipContent className="text-center p-2 text-sm font-medium">
+              {isParameterIncomplete &&
+                isScheduleIncomplete &&
+                "最新版本尚未完成參數與排程設定"}
+              {isParameterIncomplete &&
+                !isScheduleIncomplete &&
+                "最新版本尚未完成參數設定"}
+              {!isParameterIncomplete &&
+                isScheduleIncomplete &&
+                "最新版本尚未完成排程設定"}
             </TooltipContent>
           )}
         </Tooltip>
@@ -77,12 +83,19 @@ export function ModelActionPanel({
       <ActionCard
         icon={<GitCompare className="w-5 h-5" />}
         label="比較版本"
-        disabled={true}
+        onClick={onVersionComparePage}
+        disabled={!onVersionComparePage}
       />
       <ActionCard
         icon={<PlusCircle className="w-5 h-5" />}
         label="建立新版本"
         onClick={onOpenCreateVersionDialog}
+      />
+      <ActionCard
+        icon={<ArrowLeft className="w-5 h-5" />}
+        label="返回模型列表"
+        onClick={onBackToModelList}
+        disabled={!onBackToModelList}
       />
     </div>
   );

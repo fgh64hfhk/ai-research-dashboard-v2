@@ -22,24 +22,33 @@ import {
 } from "@/components/ui/select";
 
 interface ModelCreateFormProps {
-  onSubmit: (values: ModelFormValues) => void;
+  onSubmit: (values: ModelFormValues) => Promise<void>;
 }
 
 export function ModelCreateForm({ onSubmit }: ModelCreateFormProps) {
   const form = useForm<ModelFormValues>({
     resolver: zodResolver(modelCreateSchema),
     defaultValues: {
-      modelName: "GPT-Finance",
+      modelName: "GPT-Finance-V2",
       language: "Python",
-      description: "A large language model for financial data processing.",
+      description: "A large language model for financial data processing v2.",
     },
   });
+
+  const handleSubmitWrapper = async (data: ModelFormValues) => {
+    try {
+      await onSubmit(data);
+      form.reset();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Form {...form}>
       <form
         id="model-create-form"
-        onSubmit={form.handleSubmit(onSubmit, (error) => console.warn(error))}
+        onSubmit={form.handleSubmit(handleSubmitWrapper, (error) => console.warn(error))}
         className="space-y-6"
       >
         {/* 模型名稱 */}

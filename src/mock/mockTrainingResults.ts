@@ -25,17 +25,19 @@ export const mockTrainingResults: TrainingResult[] = [
   {
     scheduleId: "s002",
     modelId: "m001",
-    version: "v1.0",
+    version: "v1.1",
     status: "failed",
     trainingTime: 45,
     message: "GPU 記憶體不足導致中斷",
     logs: ["訓練中斷：CUDA out of memory"],
     completedAt: "2025-04-20T19:00:00",
   },
+
+  // m002_v1.0
   {
-    scheduleId: "s003",
-    modelId: "m001",
-    version: "v1.1",
+    scheduleId: "s004",
+    modelId: "m002",
+    version: "v1.0",
     status: "completed",
     trainingTime: 200,
     metrics: {
@@ -49,16 +51,16 @@ export const mockTrainingResults: TrainingResult[] = [
       "Epoch 4/5 - acc: 0.69 - loss: 0.3",
       "Epoch 5/5 - acc: 0.71 - loss: 0.28",
     ],
-    completedAt: "2025-04-23T18:00:00Z",
+    completedAt: "2025-04-30T18:00:00",
   },
   {
     scheduleId: "s004",
-    modelId: "m001",
-    version: "v1.1",
+    modelId: "m002",
+    version: "v1.0",
     status: "failed",
     trainingTime: 30,
     message: "GPU 記憶體不足導致中斷",
     logs: ["訓練中斷：CUDA out of memory"],
-    completedAt: "2025-04-23T19:00:00",
+    completedAt: "2025-04-30T19:00:00",
   },
 ];

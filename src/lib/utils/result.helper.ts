@@ -37,3 +37,15 @@ export function extractEpochMetricsFromLogs(logs: string[]): {
 
   return result;
 }
+
+// 找某個排程下最新的訓練結果
+export function getLatestTrainingResult(
+  results: TrainingResult[]
+): TrainingResult | undefined {
+  if (!results.length) return undefined;
+  return results.slice().sort((a, b) => {
+    return (
+      new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
+    );
+  })[0];
+}

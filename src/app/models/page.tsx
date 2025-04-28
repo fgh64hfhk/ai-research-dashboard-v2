@@ -27,12 +27,14 @@ import { scrollToAnchor } from "@/lib/utils/common.helper";
 
 import { toast } from "sonner";
 import ModelListSkeleton from "@/components/model/ModelListSkeleton";
+import { useRouter } from "next/navigation";
 
 export default function ModelListPage() {
   // 初始化資料
   const models = useModelList();
   const hasModels = models.length > 0;
   const isLoading = useLoadingGuard(500);
+  const router = useRouter();
 
   // 新增模型模組
   const addModel = useModelCreate();
@@ -59,7 +61,7 @@ export default function ModelListPage() {
       toast.success(`模型 ${result.name} 建立成功！`, {
         action: {
           label: "前往模型管理頁面",
-          onClick: () => {},
+          onClick: () => {router.push(`/models/${payload.modelId}/`)},
         },
       });
 
@@ -78,7 +80,8 @@ export default function ModelListPage() {
     <PageLoader isLoading={isLoading} fallback={<ModelListSkeleton />}>
       {/* ✅ 區塊一：首頁引導說明卡片 */}
       <PageIntroCard
-        title="歡迎使用 AI 模型管理平台 👋"
+        imageSrc="/guide/Data extraction.gif"
+        title="歡迎使用 AI 模型管理平台，你可以："
         descriptionList={[
           "瀏覽所有模型與版本資訊",
           "建立新模型並進行訓練規劃",

@@ -1,4 +1,4 @@
-// /app/models/layout.tsx
+// /app/schedules/layout.tsx
 // import Sidebar from "@/components/layout/Sidebar";
 import PageContainer from "@/components/layout/PageContainer";
 // import BreadcrumbBar from "@/components/layout/BreadcrumbBar";

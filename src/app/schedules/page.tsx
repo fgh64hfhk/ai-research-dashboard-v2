@@ -7,7 +7,7 @@ import { CalendarClock } from "lucide-react";
 
 export default function TaskListPage() {
   return (
-    <div className="container max-w-5xl py-8 px-4 md:px-8 space-y-6">
+    <>
       {/* 1. 引導卡片 */}
       <PageIntroCard
         title="這裡是訓練排程總覽頁 🔁"
@@ -27,6 +27,6 @@ export default function TaskListPage() {
         title="目前沒有任何訓練排程"
         description="尚未建立任何訓練任務，請由模型版本頁面新增訓練排程。"
       />
-    </div>
+    </>
   );
 }

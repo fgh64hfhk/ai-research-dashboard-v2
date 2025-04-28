@@ -13,6 +13,7 @@ import { ModelVersion } from "@/types/model";
 
 import { useState, useEffect } from "react";
 import { getSortedVersions } from "@/lib/utils/version.helper";
+import { FileIcon } from "lucide-react";
 
 interface Props {
   modelId: string;
@@ -48,6 +49,15 @@ export default function VersionCardListAccordion({
   }, [openByDefault]);
 
   const sortedVersions = getSortedVersions(versions, true);
+
+  if (versions.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <FileIcon className="w-10 h-10 text-gray-400 mb-4" />
+        <p className="text-gray-500">目前尚無版本，請建立新版本！</p>
+      </div>
+    );
+  }
 
   return (
     <Accordion
