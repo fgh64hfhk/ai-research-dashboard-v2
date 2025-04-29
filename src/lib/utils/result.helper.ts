@@ -6,7 +6,7 @@ export function groupTrainingResultsByKey(
   const map: Record<string, TrainingResult[]> = {};
 
   for (const result of results) {
-    const key = `${result.modelId}_${result.version}`;
+    const key = `${result.modelId}_${result.version}_${result.scheduleId}`;
     if (!map[key]) map[key] = [];
     map[key].push(result);
   }

@@ -51,7 +51,7 @@ export const mockTrainingResults: TrainingResult[] = [
       "Epoch 4/5 - acc: 0.69 - loss: 0.3",
       "Epoch 5/5 - acc: 0.71 - loss: 0.28",
     ],
-    completedAt: "2025-04-30T18:00:00",
+    completedAt: "2025-04-30T13:00:00",
   },
   {
     scheduleId: "s004",
@@ -61,6 +61,6 @@ export const mockTrainingResults: TrainingResult[] = [
     trainingTime: 30,
     message: "GPU 記憶體不足導致中斷",
     logs: ["訓練中斷：CUDA out of memory"],
-    completedAt: "2025-04-30T19:00:00",
+    completedAt: "2025-04-30T12:30:00",
   },
 ];

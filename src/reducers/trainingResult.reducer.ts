@@ -7,7 +7,7 @@ import { TrainingResult } from "@/types/training";
 // ----------
 
 export interface TrainingResultState {
-  resultMap: Record<string, TrainingResult[]>; // key = scheduleId
+  resultMap: Record<string, TrainingResult[]>; // key = version_scheduleId
 }
 
 export const initialTrainingResultState: TrainingResultState = {
@@ -20,6 +20,7 @@ export const initialTrainingResultState: TrainingResultState = {
 
 export type TrainingResultAction =
   | { type: "SET_RESULTS"; payload: Record<string, TrainingResult[]> }
+  | { type: "ADD_RESULT"; key: string; result: TrainingResult }
   | { type: "CLEAR_RESULT"; scheduleId: string };
 
 // ----------
@@ -39,6 +40,17 @@ export function trainingResultReducer(
           ...action.payload,
         },
       };
+
+    case "ADD_RESULT": {
+      const existing = state.resultMap[action.key] || [];
+      return {
+        ...state,
+        resultMap: {
+          ...state.resultMap,
+          [action.key]: [...existing, action.result],
+        },
+      };
+    }
 
     case "CLEAR_RESULT": {
       const newMap = { ...state.resultMap };

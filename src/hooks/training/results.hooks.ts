@@ -1,24 +1,25 @@
 import { useTrainingResultContext } from "@/contexts/training/TrainingResultContext";
 import { TrainingResult } from "@/types/training";
+import { useMemo } from "react";
 
 export function useTrainingResultCreate() {
   const { dispatch } = useTrainingResultContext();
-  const addResult = (result: Record<string, TrainingResult[]>) => {
+  const addResult = (key: string, result: TrainingResult) => {
     dispatch({
-      type: "SET_RESULTS",
-      payload: result,
+      type: "ADD_RESULT",
+      key,
+      result,
     });
   };
   return addResult;
 }
 
-/**
- * 取得指定版本的所有訓練結果清單
- */
 export function useTrainingResultsByVersionKey(key: string): TrainingResult[] {
   const {
     state: { resultMap },
   } = useTrainingResultContext();
 
-  return resultMap[key] ?? [];
+  return useMemo(() => {
+    return resultMap[key] ?? [];
+  }, [resultMap, key]);
 }

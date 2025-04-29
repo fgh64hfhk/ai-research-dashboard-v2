@@ -13,7 +13,7 @@ interface Props {
 
 export function TrainingProgressCard({ progress, connected }: Props) {
   return (
-    <Card id="progress_view">
+    <Card>
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2">
           <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />

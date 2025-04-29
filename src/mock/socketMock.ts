@@ -1,5 +1,4 @@
 // lib/mock/socketMock.ts
-
 import { Server } from "mock-socket";
 
 // 全域暫存 mock server 實例（避免多次創建）
@@ -20,19 +19,45 @@ export function startMockTrainingSocket(scheduleId: string) {
 
   server.on("connection", (socket) => {
     let progress = 0;
+    let lastProgress = -1;
+
     const interval = setInterval(() => {
-      progress += Math.floor(Math.random() * 10) + 5;
       if (progress >= 100) {
-        progress = 100;
         clearInterval(interval);
+        setTimeout(() => {
+          try {
+            server.close();
+          } catch (error) {
+            console.error("Server close error:", error);
+          }
+        }, 100);
+        return;
       }
 
-      socket.send(JSON.stringify({ progress }));
+      const increment = Math.floor(Math.random() * 10) + 5;
+      progress = Math.min(progress + increment, 100);
 
-      if (progress === 100) {
-        setTimeout(() => server.close(), 500);
+      if (progress !== lastProgress) {
+        console.log("progress in server:", progress);
+        try {
+          socket.send(JSON.stringify({ progress }));
+          lastProgress = progress;
+        } catch (error) {
+          console.error("Socket send error:", error);
+          clearInterval(interval);
+          try {
+            server.close();
+          } catch (error) {
+            console.error("Server close error:", error);
+          }
+        }
       }
-    }, 600);
+    }, 500);
+  });
+
+  server.on("close", () => {
+    console.log("server close")
+    delete mockServers[scheduleId];
   });
 
   return server;

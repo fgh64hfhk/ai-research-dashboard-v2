@@ -8,7 +8,7 @@ export function generateMockTrainingResult(params: {
   modelId: string;
   version: string;
 }): TrainingResult {
-  const isSuccess = Math.random() > 0.3;
+  const isSuccess = Math.random() > 0.5;
 
   const now = new Date().toISOString();
 
