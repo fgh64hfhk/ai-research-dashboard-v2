@@ -14,6 +14,7 @@ export type ModelVersion = {
   trainingTime: number; // 訓練時間
   buildDate: string; // 構建日期
   status?: ModelStatus;
+  description?: string;
 };
 
 export enum ModelStatus {
@@ -24,6 +25,16 @@ export enum ModelStatus {
   PENDING_DEPLOYMENT = "Pending Deployment",
   SCHEDULED = "Scheduled",
   INACTIVE = "Inactive",
+  COMPLETED = "Completed",
+}
+
+export enum ModelModifiedType {
+  PARAMETER_TUNE = "參數調整",
+  DATASET_EXPANSION = "資料擴增",
+  STRUCTURE_CHANGE = "模型架構變更",
+  LOSS_FUNCTION_TUNE = "損失函數調整",
+  INITIAL = "初始化版本",
+  OTHER = "其他",
 }
 
 // 用於首頁快速列出模型 + 最新版本摘要

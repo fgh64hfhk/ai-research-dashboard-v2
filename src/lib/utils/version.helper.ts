@@ -1,5 +1,7 @@
 // lib/utils/version.helper.ts
-import { ModelVersion } from "@/types/model";
+import { ModelModifiedType, ModelStatus, ModelVersion } from "@/types/model";
+import { TrainingInsight } from "./insight.helper";
+import dayjs from "dayjs";
 
 export function getSortedVersions(
   versions: ModelVersion[],
@@ -27,7 +29,7 @@ export function getSortedVersions(
  * @param type 更新類型：major（大版本）或 minor（小版本）
  * @returns 下一個版本號字串
  */
-export function getNextVersion(
+export function getNextVersionString(
   current: string,
   type: "major" | "minor" = "minor"
 ): string {
@@ -42,4 +44,41 @@ export function getNextVersion(
   }
 
   return type === "major" ? `v${major + 1}.0` : `v${major}.${minor + 1}`;
+}
+
+export function compareVersionString(a: string, b: string): number {
+  const parse = (v: string) => v.replace(/^v/i, "").split(".").map(Number);
+  const [aMajor, aMinor = 0] = parse(a);
+  const [bMajor, bMinor = 0] = parse(b);
+
+  if (aMajor !== bMajor) return aMajor - bMajor;
+  return aMinor - bMinor;
+}
+
+export function generatePreFilledVersion(
+  targetVersion: ModelVersion,
+  insight?: TrainingInsight
+): ModelVersion {
+  const now = dayjs().format("YYYY-MM-DD HH:mm");
+  const nextVersion = getNextVersionString(targetVersion.version, "minor");
+
+  const importantLabel = insight?.insights?.find(
+    (item) => item.important
+  )?.label;
+
+  const descriptionLines = [
+    importantLabel ? `⭐ 重點指標：${importantLabel}` : null,
+    insight?.recommendation ? `📌 建議：${insight.recommendation}` : null,
+  ].filter(Boolean);
+
+  return {
+    modelId: targetVersion.modelId,
+    version: nextVersion,
+    modifiedDate: now,
+    buildDate: now,
+    modifiedType: ModelModifiedType.PARAMETER_TUNE,
+    description: descriptionLines.join("\n\n"),
+    trainingTime: 0,
+    status: ModelStatus.INACTIVE,
+  };
 }

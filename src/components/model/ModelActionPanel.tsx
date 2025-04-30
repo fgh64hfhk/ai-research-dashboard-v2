@@ -96,7 +96,7 @@ export function ModelActionPanel({
         label="比較版本"
         onClick={onVersionComparePage}
         variant={modelStage === "trained" ? "success" : "default"}
-        disabled={modelStage === "trained"}
+        disabled={modelStage !== "trained"}
       />
       <Tooltip>
         <TooltipTrigger asChild>
