@@ -31,3 +31,27 @@ export function flattenModelVersions(
 ): Record<string, ModelVersion[]> {
   return flattenModels(data).versionMap;
 }
+
+export type ModelStage = "noVersion" | "hasVersion" | "scheduled" | "trained";
+
+export function getModelStageFromData({
+  latestVersion,
+  versions,
+  isParamMissing,
+  isScheduleMissing,
+  hasCompletedTraining,
+}: {
+  latestVersion: ModelVersion;
+  versions: ModelVersion[];
+  isParamMissing: boolean;
+  isScheduleMissing: boolean;
+  hasCompletedTraining: boolean;
+}): ModelStage {
+  const hasVersion = !!latestVersion && versions.length > 0;
+  const hasSetup = !isParamMissing && !isScheduleMissing;
+
+  if (!hasVersion) return "noVersion";
+  if (!hasSetup) return "hasVersion";
+  if (!hasCompletedTraining) return "scheduled";
+  return "trained";
+}

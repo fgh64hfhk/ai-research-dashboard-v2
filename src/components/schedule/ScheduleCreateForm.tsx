@@ -44,7 +44,7 @@ export const ScheduleCreateForm = ({ onSubmit }: ScheduleCreateFormProps) => {
   const form = useForm<ScheduleFormValues>({
     resolver: zodResolver(scheduleSchema),
     defaultValues: {
-      runDate: undefined,
+      runDate: new Date(),
       type: "auto",
       triggerTraining: true,
     },
@@ -63,7 +63,7 @@ export const ScheduleCreateForm = ({ onSubmit }: ScheduleCreateFormProps) => {
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>執行時間</FormLabel>
-              <Popover>
+              <Popover modal={true}>
                 <PopoverTrigger asChild>
                   <FormControl>
                     <Button
@@ -73,20 +73,21 @@ export const ScheduleCreateForm = ({ onSubmit }: ScheduleCreateFormProps) => {
                         !field.value && "text-muted-foreground"
                       )}
                     >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
                       {field.value ? (
-                        format(new Date(field.value), "yyyy-MM-dd HH:mm")
+                        format(field.value, "yyyy-MM-dd HH:mm")
                       ) : (
-                        <span>選擇時間</span>
+                        <span>請選擇時間</span>
                       )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0 z-[1000]" side="bottom">
                   <Calendar
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
+                    disabled={(date) => date < new Date()}
                     initialFocus
                   />
                 </PopoverContent>

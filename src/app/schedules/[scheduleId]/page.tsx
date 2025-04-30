@@ -70,7 +70,7 @@ export default function ScheduleDetailPage() {
   );
   const changeStatus = useScheduleStatus();
 
-  // 第一步驟：
+  // 第一步驟：監聽是否登入啟動訓練的排程
   useEffect(() => {
     if (!schedule) return;
 
@@ -95,7 +95,7 @@ export default function ScheduleDetailPage() {
   }, [runningScheduleId, running]);
 
   // 根據 running schedule id 啟動客戶端的 socket 請求
-  const { progress, connected, isCompleted, setIsCompleted } =
+  const { progress, connected, isCompleted, isInitializing, setIsCompleted } =
     useTrainingSocket(runningScheduleId, running);
 
   // 根據訓練是否完成切換狀態
@@ -274,7 +274,7 @@ export default function ScheduleDetailPage() {
       {/* 🧭 區塊五：訓練進度 or 訓練結果展示 */}
       {running && !isCompleted ? (
         <div id="progress_view" className="pt-8 space-y-6">
-          <TrainingProgressCard progress={progress} connected={connected} />
+          <TrainingProgressCard progress={progress} initialized={isInitializing} connected={connected} />
         </div>
       ) : trainingResults && trainingResults.length > 0 ? (
         <div id="result_view" className="space-y-4">

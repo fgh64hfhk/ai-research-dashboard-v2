@@ -15,8 +15,10 @@ import {
   PlusCircle,
   SlidersHorizontal,
 } from "lucide-react";
+import { ModelStage } from "@/lib/utils/model.helper";
 
 interface ModelActionPanelProps {
+  modelStage: ModelStage;
   isLatestVersion: boolean;
   isVersionList: boolean;
   isParameterIncomplete: boolean;
@@ -29,6 +31,7 @@ interface ModelActionPanelProps {
 }
 
 export function ModelActionPanel({
+  modelStage,
   isLatestVersion,
   isVersionList,
   isParameterIncomplete,
@@ -39,6 +42,14 @@ export function ModelActionPanel({
   onOpenCreateVersionDialog,
   onBackToModelList,
 }: ModelActionPanelProps) {
+  const disabled = modelStage !== "noVersion";
+  const tooltipMap: Record<typeof modelStage, string> = {
+    noVersion: "請建立模型的第一個版本，以啟動訓練流程",
+    hasVersion: "請先設定參數並排程訓練，避免版本混亂",
+    scheduled: "已完成設定，請啟動訓練或等待結果",
+    trained: "請前往版本比較頁進行參數調整，不建議直接創建新版本",
+  };
+
   const isLatestVersionReady = !isParameterIncomplete && !isScheduleIncomplete;
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -84,13 +95,25 @@ export function ModelActionPanel({
         icon={<GitCompare className="w-5 h-5" />}
         label="比較版本"
         onClick={onVersionComparePage}
-        disabled={!onVersionComparePage}
+        variant={modelStage === "trained" ? "success" : "default"}
+        disabled={modelStage === "trained"}
       />
-      <ActionCard
-        icon={<PlusCircle className="w-5 h-5" />}
-        label="建立新版本"
-        onClick={onOpenCreateVersionDialog}
-      />
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <ActionCard
+              icon={<PlusCircle className="w-5 h-5" />}
+              label="建立新版本"
+              onClick={!disabled ? onOpenCreateVersionDialog : undefined}
+              variant={modelStage === "noVersion" ? "warning" : "default"}
+              disabled={disabled}
+            />
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="top" align="start">
+          {tooltipMap[modelStage]}
+        </TooltipContent>
+      </Tooltip>
       <ActionCard
         icon={<ArrowLeft className="w-5 h-5" />}
         label="返回模型列表"

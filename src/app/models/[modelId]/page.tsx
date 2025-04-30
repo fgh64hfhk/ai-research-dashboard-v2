@@ -39,6 +39,8 @@ import { VersionFormData } from "@/types/form";
 import { createVersion } from "@/lib/api/version/create";
 import { scrollToAnchor } from "@/lib/utils/common.helper";
 import { toast } from "sonner";
+import { getModelStageFromData } from "@/lib/utils/model.helper";
+import { useLatestTrainingStatus } from "@/hooks/training/results.hooks";
 
 export default function ModelDetailPage() {
   // 路由模組
@@ -65,6 +67,22 @@ export default function ModelDetailPage() {
     modelId,
     latestVersion?.version || ""
   );
+
+  const { hasCompletedTraining } = useLatestTrainingStatus(
+    modelId,
+    latestVersion?.version || ""
+  );
+
+  // 確定模型狀態
+  const modelStage = latestVersion
+    ? getModelStageFromData({
+        latestVersion,
+        versions,
+        isParamMissing,
+        isScheduleMissing,
+        hasCompletedTraining,
+      })
+    : "noVersion";
 
   // 下拉區塊模組
   const [openAccordion, setOpenAccordion] = useState(false);
@@ -172,6 +190,7 @@ export default function ModelDetailPage() {
 
       {/* ✅ 操作卡片四格 */}
       <ModelActionPanel
+        modelStage={modelStage}
         isLatestVersion={!!latestVersion}
         isVersionList={versions.length === 0}
         isParameterIncomplete={isParamMissing}

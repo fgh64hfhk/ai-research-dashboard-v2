@@ -12,6 +12,7 @@ export function useTrainingSocket(scheduleId: string | null, isRunning: boolean)
   const [progress, setProgress] = useState<number>(0);
   const [connected, setConnected] = useState<boolean>(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isInitializing, setIsInitializing] = useState<boolean>(false);
 
   useEffect(() => {
     if (!scheduleId || !isRunning) return;
@@ -20,43 +21,52 @@ export function useTrainingSocket(scheduleId: string | null, isRunning: boolean)
     setProgress(0);
     setConnected(false);
     setIsCompleted(false);
+    setIsInitializing(true); // 開始初始化等待
 
-    const socket = new WebSocket(`ws://localhost:4000/train/${scheduleId}`);
-    socketRef.current = socket;
+    // 模擬初始化等待一秒
+    const initTimeout = setTimeout(() => {
 
-    socket.onopen = () => {
-      setConnected(true);
-    };
+      const socket = new WebSocket(`ws://localhost:4000/train/${scheduleId}`);
+      socketRef.current = socket;
+  
+      socket.onopen = () => {
+        setConnected(true);
+        setIsInitializing(false); // 初始化完成
+      };
 
-    socket.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (typeof data.progress === "number") {
-          setProgress((prev) => {
-            if (prev !== data.progress) return data.progress;
-            return prev;
-          });
-          if (data.progress >= 100) {
-            setIsCompleted(true);
+      socket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (typeof data.progress === "number") {
+            setProgress((prev) => {
+              if (prev !== data.progress) return data.progress;
+              return prev;
+            });
+            if (data.progress >= 100) {
+              setIsCompleted(true);
+            }
           }
+        } catch (err) {
+          console.error("解析 WebSocket 訊息失敗", err);
         }
-      } catch (err) {
-        console.error("解析 WebSocket 訊息失敗", err);
-      }
-    };
+      };
+  
+      socket.onerror = (event) => {
+        console.error("WebSocket 發生錯誤：", event);
+      };
+  
+      socket.onclose = () => {
+        console.log("client close")
+        setConnected(false);
+        setProgress((prev) => (prev < 100 ? 0 : prev));
+      };
 
-    socket.onerror = (event) => {
-      console.error("WebSocket 發生錯誤：", event);
-    };
+    }, 1000); // 模擬等待時間
 
-    socket.onclose = () => {
-      console.log("client close")
-      setConnected(false);
-      setProgress((prev) => (prev < 100 ? 0 : prev));
-    };
 
     // 清除邏輯（避免殘留連線）
     return () => {
+      clearTimeout(initTimeout);
       if (
         socketRef.current &&
         socketRef.current.readyState !== WebSocket.CLOSED
@@ -76,6 +86,7 @@ export function useTrainingSocket(scheduleId: string | null, isRunning: boolean)
     progress,
     connected,
     isCompleted,
+    isInitializing,
     setIsCompleted,
   };
 }

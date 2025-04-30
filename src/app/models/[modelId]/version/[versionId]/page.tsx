@@ -42,6 +42,8 @@ import { AlertCircle, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { ScheduleListPanel } from "@/components/schedule/ScheduleListPanel";
 
+import { v4 as uuidv4 } from 'uuid';
+
 export default function ModelVersionDetailPage() {
   // 路由模組
   const { modelId, versionId } = useParams<{
@@ -77,7 +79,7 @@ export default function ModelVersionDetailPage() {
   const handleSubmit = async (formData: ScheduleFormValues) => {
     try {
       const payload: SchedulePayload = {
-        scheduleId: "s001",
+        scheduleId: uuidv4(),
         modelId,
         version: versionId,
         runDate: formData.runDate.toISOString(),
