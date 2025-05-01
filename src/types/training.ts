@@ -10,12 +10,11 @@ export interface TrainingResult {
   logs?: string[]; // 日誌（可選）
   message?: string; // 錯誤摘要或自訂訊息（可選）
 
-  epochMetrics?: {
-    epoch: number;
-    acc?: number;
-    loss?: number;
-    [key: string]: number | undefined;
-  }[];
-
   completedAt: string; // 訓練完成時間（ISO 格式字串）
+}
+
+export interface TrainingMetric {
+  epoch: number;
+  loss: number;
+  accuracy: number;
 }

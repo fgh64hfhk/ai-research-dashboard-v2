@@ -56,15 +56,22 @@ export function getParameterKey(modelId: string, version: string): string {
 }
 
 export function convertParamsToCompareItems(
-  baseParams: ModelParameters | undefined,
-  targetParams: ModelParameters | undefined,
+  baseParams?: ModelParameters,
+  targetParams?: ModelParameters
 ): ParameterItem[] {
-  if (!baseParams || !targetParams) return [];
-  const keys = Array.from(new Set([...Object.keys(baseParams), ...Object.keys(targetParams)]))
+  if (!baseParams && !targetParams) return [];
+
+  // 合併兩邊都有的 key
+  const keys = Array.from(
+    new Set([
+      ...Object.keys(baseParams || []),
+      ...Object.keys(targetParams || []),
+    ])
+  );
 
   return keys.map((key) => ({
     key,
-    baseValue: baseParams[key] ?? "-",
-    targetValue: targetParams[key] ?? "-",
+    baseValue: baseParams?.[key] ?? "-",
+    targetValue: targetParams?.[key] ?? "-",
   }));
 }

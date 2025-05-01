@@ -1,4 +1,4 @@
-import { TrainingResult } from "@/types/training";
+import { TrainingMetric, TrainingResult } from "@/types/training";
 
 export function groupTrainingResultsByKey(
   results: TrainingResult[]
@@ -15,11 +15,7 @@ export function groupTrainingResultsByKey(
 }
 
 // 解析每次訓練循環的指標
-export function extractEpochMetricsFromLogs(logs: string[]): {
-  epoch: number;
-  acc: number;
-  loss: number;
-}[] {
+export function extractEpochMetricsFromLogs(logs: string[]): TrainingMetric[] {
   const result = [];
 
   for (const log of logs) {
@@ -29,7 +25,7 @@ export function extractEpochMetricsFromLogs(logs: string[]): {
     if (match) {
       result.push({
         epoch: parseInt(match[1]),
-        acc: parseFloat(match[2]),
+        accuracy: parseFloat(match[2]),
         loss: parseFloat(match[3]),
       });
     }

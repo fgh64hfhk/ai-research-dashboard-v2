@@ -9,26 +9,21 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
-
-interface TrainingMetric {
-  epoch: number;
-  loss: number;
-  acc: number;
-}
+import { TrainingMetric } from "@/types/training";
 
 interface TrainingResultCompareChartProps {
   baseVersionId: string;
   targetVersionId: string;
-  baseMetrics?: TrainingMetric[];
-  targetMetrics?: TrainingMetric[];
+  baseMetrics: TrainingMetric[];
+  targetMetrics: TrainingMetric[];
 }
 
-const TrainingResultCompareChart: React.FC<TrainingResultCompareChartProps> = ({
+export default function TrainingResultCompareChart({
   baseVersionId,
   targetVersionId,
-  baseMetrics = [],
-  targetMetrics = [],
-}) => {
+  baseMetrics,
+  targetMetrics,
+}: TrainingResultCompareChartProps) {
   // 合併兩筆資料的 epoch 作為 x 軸
   const allEpochs = Array.from(
     new Set([
@@ -43,73 +38,107 @@ const TrainingResultCompareChart: React.FC<TrainingResultCompareChartProps> = ({
     return {
       epoch,
       base_loss: base?.loss,
-      base_acc: base?.acc,
+      base_acc: base?.accuracy,
       target_loss: target?.loss,
-      target_acc: target?.acc,
+      target_acc: target?.accuracy,
     };
   });
 
   return (
     <Card>
-      <CardContent className="space-y-4 p-6">
-        <div className="text-lg font-semibold">訓練結果比較圖</div>
-        {mergedData.length === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            目前尚無訓練結果可比較。
+      <CardContent className="p-6 space-y-4">
+        <div className="space-y-1">
+          <h3 className="text-lg font-semibold">
+            訓練結果比較圖 {targetVersionId} ↔ {baseVersionId}
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            顯示兩版本的 Accuracy 與 Loss 隨 Epoch 變化
           </p>
-        ) : (
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={mergedData}>
+        </div>
+
+        {mergedData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={350}>
+            <LineChart
+              data={mergedData}
+              margin={{
+                bottom: 10,
+              }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="epoch"
-                label={{ value: "Epoch", position: "insideBottom", offset: -5 }}
+                label={{
+                  value: "Epoch",
+                  position: "insideBottomRight",
+                  offset: -5,
+                }}
               />
               <YAxis
+                yAxisId="left"
+                orientation="left"
                 label={{
-                  value: "Loss / Accuracy",
+                  value: "Accuracy",
                   angle: -90,
                   position: "insideLeft",
                 }}
               />
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                label={{ value: "Loss", angle: 90, position: "insideRight" }}
+              />
               <Tooltip />
-              <Legend />
+              <Legend verticalAlign="top" height={36} />
+
+              {/* Target version (比較版) */}
               <Line
-                type="monotone"
-                dataKey="base_loss"
-                name={`Loss (${baseVersionId})`}
-                stroke="#8884d8"
-                dot={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="base_acc"
-                name={`Accuracy (${baseVersionId})`}
-                stroke="#82ca9d"
-                dot={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="target_loss"
-                name={`Loss (${targetVersionId})`}
-                stroke="#ff7300"
-                strokeDasharray="5 5"
-                dot={false}
-              />
-              <Line
+                yAxisId="left"
                 type="monotone"
                 dataKey="target_acc"
                 name={`Accuracy (${targetVersionId})`}
-                stroke="#ffc658"
+                stroke="#60A5FA" // 藍色
                 strokeDasharray="5 5"
-                dot={false}
+                strokeWidth={2}
+                dot
+              />
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="target_loss"
+                name={`Loss (${targetVersionId})`}
+                stroke="#F87171" // 紅色
+                strokeDasharray="5 5"
+                strokeWidth={2}
+                dot
+              />
+
+              {/* Base version (最新版) */}
+              <Line
+                yAxisId="left"
+                type="monotone"
+                dataKey="base_acc"
+                name={`Accuracy (${baseVersionId})`}
+                stroke="#2563EB" // 深藍色
+                strokeWidth={2}
+                dot
+              />
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="base_loss"
+                name={`Loss (${baseVersionId})`}
+                stroke="#DC2626" // 深紅色
+                strokeWidth={2}
+                dot
               />
             </LineChart>
           </ResponsiveContainer>
+        ) : (
+          <div className="text-sm text-muted-foreground text-center py-8">
+            尚無訓練結果資料，請先執行訓練排程。
+          </div>
         )}
       </CardContent>
     </Card>
   );
-};
-
-export default TrainingResultCompareChart;
+}

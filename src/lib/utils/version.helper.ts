@@ -56,11 +56,11 @@ export function compareVersionString(a: string, b: string): number {
 }
 
 export function generatePreFilledVersion(
-  targetVersion: ModelVersion,
+  baseVersion: ModelVersion,
   insight?: TrainingInsight
 ): ModelVersion {
   const now = dayjs().format("YYYY-MM-DD HH:mm");
-  const nextVersion = getNextVersionString(targetVersion.version, "minor");
+  const nextVersion = getNextVersionString(baseVersion.version, "minor");
 
   const importantLabel = insight?.insights?.find(
     (item) => item.important
@@ -72,7 +72,7 @@ export function generatePreFilledVersion(
   ].filter(Boolean);
 
   return {
-    modelId: targetVersion.modelId,
+    modelId: baseVersion.modelId,
     version: nextVersion,
     modifiedDate: now,
     buildDate: now,
