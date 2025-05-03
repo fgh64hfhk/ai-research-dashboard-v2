@@ -32,9 +32,11 @@ export function ScheduleListPanel({
     <div className="space-y-8">
       {/* 最新排程 */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">最新排程</h2>
         {latest ? (
-          <ScheduleSummaryCard schedule={latest} />
+          <>
+            <h2 className="text-xl font-semibold mb-4">最新排程</h2>
+            <ScheduleSummaryCard schedule={latest} />
+          </>
         ) : (
           <EmptyState
             icon={<History className="w-10 h-10" />}

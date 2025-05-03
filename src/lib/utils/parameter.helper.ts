@@ -64,14 +64,45 @@ export function convertParamsToCompareItems(
   // 合併兩邊都有的 key
   const keys = Array.from(
     new Set([
-      ...Object.keys(baseParams || []),
-      ...Object.keys(targetParams || []),
+      ...Object.keys(baseParams || {}),
+      ...Object.keys(targetParams || {}),
     ])
-  );
+  ).filter((key) => key !== "modelVersionId"); // 排除 meta 欄位
 
   return keys.map((key) => ({
     key,
-    baseValue: baseParams?.[key] ?? "-",
-    targetValue: targetParams?.[key] ?? "-",
+    baseValue: baseParams && key in baseParams ? String(baseParams[key as keyof ModelParameters]) : "-",
+    targetValue: targetParams && key in targetParams ? String(targetParams[key as keyof ModelParameters]) : "-",
   }));
+}
+
+import { TrainingInsight } from "@/lib/utils/insight.helper";
+
+export function autoTuneParameters(
+  baseParams: ModelParameters,
+  insightSummary: TrainingInsight
+): ModelParameters {
+  const tuned: ModelParameters = { ...baseParams };
+
+  // 防呆
+  if (!baseParams || !insightSummary) return tuned;
+
+  const texts = insightSummary.insights.map((i) => i.label).join(" ");
+
+  // 大幅改善時，微調以增強穩定性
+  if (texts.includes("提升幅度") && texts.includes("改善幅度")) {
+    // 提升 batch size
+    if (typeof tuned.batchSize === "number") {
+      tuned.batchSize = Math.min(tuned.batchSize * 2, 128);
+    }
+    // 增加 epochs
+    if (typeof tuned.epochs === "number") {
+      tuned.epochs = tuned.epochs + 4;
+    }
+    // 開啟資料增強
+    tuned.augmentation = true;
+  }
+  tuned.datasetVersion = "Chinese-MedQA-v2";
+
+  return tuned;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import {
@@ -42,7 +42,13 @@ import { AlertCircle, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { ScheduleListPanel } from "@/components/schedule/ScheduleListPanel";
 
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
+import {
+  loadVersionPrefillData,
+  VersionPrefillData,
+} from "@/lib/utils/versionPrefill.helper";
+import YourPrefillGuideCard from "@/components/version/YourPrefillGuideCard";
+import { ModelParameters } from "@/types/parameters";
 
 export default function ModelVersionDetailPage() {
   // 路由模組
@@ -68,6 +74,30 @@ export default function ModelVersionDetailPage() {
     modelId,
     versionId
   );
+
+  // 狀態：是否來自比較頁？（控制導引卡片顯示）
+  const [isFromCompare, setIsFromCompare] = useState(false);
+
+  // 狀態：prefill 資料
+  const [prefillData, setPrefillData] = useState<VersionPrefillData | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (!modelId || !versionId) return;
+
+    // 嘗試讀取 prefill 資料
+    const data = loadVersionPrefillData(modelId, versionId);
+
+    if (data && data.fromComparePage) {
+      console.log("[版本詳細頁] 偵測到從比較頁導入", data);
+      setIsFromCompare(true);
+      setPrefillData(data);
+
+    } else {
+      console.log("[版本詳細頁] 無 prefill 資料或來源非比較頁");
+    }
+  }, [modelId, versionId]);
 
   // 新增參數模組
   const [openParamDialog, setOpenParamDialog] = useState(false);
@@ -139,6 +169,14 @@ export default function ModelVersionDetailPage() {
     router.push(`/models/${modelId}/`);
   };
 
+  function applyPrefillParams(params: ModelParameters) {
+    if (!params) return;
+    console.log("[版本詳細頁] 套用建議參數表到表單組件", params);
+    toast.success("已套用推薦參數", {
+      description: "請檢查參數表並進行微調。",
+    });
+  }
+
   return (
     <PageLoader isLoading={isLoading} fallback={<VersionDetailSkeleton />}>
       <PageIntroCard
@@ -178,6 +216,19 @@ export default function ModelVersionDetailPage() {
         onBack={handleBackPage}
       />
 
+      {isFromCompare && prefillData && (
+        <YourPrefillGuideCard
+          prefillData={prefillData}
+          onApplyPrefill={(params) => {
+            // 這裡呼叫你的參數設定方法
+            applyPrefillParams(params);
+
+            // 順便隱藏卡片
+            setIsFromCompare(false);
+          }}
+        />
+      )}
+
       {/* 參數區塊 */}
       {parameters && Object.keys(parameters).length > 0 ? (
         <ParameterView parameters={mapParametersToItems(parameters)} />
@@ -198,6 +249,7 @@ export default function ModelVersionDetailPage() {
         onOpenChange={setOpenParamDialog}
         modelId={modelId}
         version={versionId}
+        prefillParams={prefillData?.prefillParams || null}
       />
 
       {/* 新增排程的對話匡 */}

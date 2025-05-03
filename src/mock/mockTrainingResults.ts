@@ -107,15 +107,16 @@ export const mockTrainingResults: TrainingResult[] = [
     status: "completed",
     trainingTime: 180,
     metrics: {
-      accuracy: 0.86,
-      loss: 0.21,
+      accuracy: 0.91,
+      loss: 0.19,
     },
     logs: [
-      "Epoch 1/5 - acc: 0.69 - loss: 0.42",
-      "Epoch 2/5 - acc: 0.75 - loss: 0.33",
-      "Epoch 3/5 - acc: 0.72 - loss: 0.36", // 回跌
-      "Epoch 4/5 - acc: 0.80 - loss: 0.28",
-      "Epoch 5/5 - acc: 0.86 - loss: 0.21",
+      "Epoch 1/6 - acc: 0.69 - loss: 0.42",
+      "Epoch 2/6 - acc: 0.75 - loss: 0.33",
+      "Epoch 3/6 - acc: 0.72 - loss: 0.36", // 回跌
+      "Epoch 4/6 - acc: 0.80 - loss: 0.28",
+      "Epoch 5/6 - acc: 0.86 - loss: 0.24",
+      "Epoch 6/6 - acc: 0.91 - loss: 0.19",
     ],
     completedAt: "2025-05-06T13:00:00",
   },

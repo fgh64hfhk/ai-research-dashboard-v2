@@ -15,32 +15,52 @@ import {
 } from "@/components/compare";
 
 import { PageIntroCard } from "@/components/guidance/PageIntroCard";
+import { VersionActivateDialog } from "@/components/version/VersionActivateDialog";
 import { useModelById } from "@/hooks/model/model.hooks";
 import { useParameterByVersionKey } from "@/hooks/parameter/parameter.hooks";
 import { useSchedulesByVersionKey } from "@/hooks/schedule/schedule.hooks";
 import { useTrainingResultsByVersionKey } from "@/hooks/training/results.hooks";
 import { useLoadingGuard } from "@/hooks/useLoadingGuard";
-import { useVersionsByModelId } from "@/hooks/version/version.hooks";
+import {
+  useAddVersion,
+  useVersionsByModelId,
+} from "@/hooks/version/version.hooks";
 import {
   renderIntroDescriptionList,
   renderIntroTitle,
 } from "@/lib/utils/compare.helper";
 import { generateTrainingInsight } from "@/lib/utils/insight.helper";
-import { convertParamsToCompareItems } from "@/lib/utils/parameter.helper";
+import {
+  autoTuneParameters,
+  convertParamsToCompareItems,
+} from "@/lib/utils/parameter.helper";
 import { extractEpochMetricsFromLogs } from "@/lib/utils/result.helper";
 import { getLatestScheduleTask } from "@/lib/utils/schedule.helper";
-import { compareVersionString, generatePreFilledVersion } from "@/lib/utils/version.helper";
-import { useParams } from "next/navigation";
+import {
+  compareVersionString,
+  generatePreFilledVersion,
+} from "@/lib/utils/version.helper";
+import { VersionActivateFormValues } from "@/schemas/versionActivateSchema";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+
+import dayjs from "dayjs";
+import { ModelStatus, ModelVersion } from "@/types/model";
+import { toast } from "sonner";
+import { wait } from "@/lib/utils/async.helper";
+import { saveVersionPrefillData } from "@/lib/utils/versionPrefill.helper";
 
 export default function VersionComparePage() {
   // 1️⃣ 路由參數 --> ok
   const { modelId } = useParams<{ modelId: string }>();
+  const router = useRouter();
 
   // 2️⃣ 基本資料載入 --> ok
   const isLoading = useLoadingGuard(300);
   const model = useModelById(modelId);
   const versions = useVersionsByModelId(modelId);
+
+  const addVersion = useAddVersion();
 
   // 3️⃣ 排序版本，取出預設 base(最新) / target(次新) --> ok
   const sortedVersions = useMemo(() => {
@@ -60,6 +80,9 @@ export default function VersionComparePage() {
   // 設定狀態 --> ok
   const [baseVersionId, setBaseVersionId] = useState<string | undefined>();
   const [targetVersionId, setTargetVersionId] = useState<string | undefined>();
+
+  // 設定對話匡狀態 --> ok
+  const [activateDialogOpen, setActivateDialogOpen] = useState(false);
 
   // base 最新版 target 次新版
   useEffect(() => {
@@ -174,15 +197,84 @@ export default function VersionComparePage() {
   // console.log("[metrics summary]", summary);
   // console.log("[isLocked]", isLocked);
 
-  // 製作預填表單資料 --> ＴＯＤＯ
-  const prefilledVersion =
-    targetVersion &&
-    summary &&
-    generatePreFilledVersion(targetVersion, summary);
+  // 新增版本函數 --> 開啟對話匡
+  const handleOpenActivateDialog = () => {
+    setActivateDialogOpen(true);
+  };
 
-  console.log("[PreFilled Version:", prefilledVersion);
+  // 新增版本函數 --> 提交邏輯
+  const handleSubmitNewVersion = async (
+    formData: VersionActivateFormValues
+  ) => {
+    if (!modelId || !baseVersionId || !summary || !baseParams) {
+      toast.error("缺少必要資訊，無法建立新版本");
+      return;
+    }
 
-  function handleOpenCreateDialog() {}
+    try {
+      // Step 1. 建立完整的 payload
+      const now = dayjs().format();
+
+      const payload: ModelVersion = {
+        ...formData,
+        modifiedDate: now,
+        trainingTime: 0,
+        buildDate: now,
+        status: ModelStatus.INACTIVE,
+      };
+
+      console.log("[建立新版本] 提交的資料 payload：", payload);
+
+      // Step 2. 模擬後端回傳（通常是回傳版本資訊）
+      const simulatedResponse: ModelVersion = {
+        ...payload,
+        id: `ver_${Date.now()}`, // 模擬後端產生的版本 ID
+      };
+
+      console.log(
+        "[建立新版本] 後端模擬回應 simulatedResponse：",
+        simulatedResponse
+      );
+
+      // Step 3. TODO: 之後串接 createVersion API
+      // await createVersion(payload);
+
+      // Step 4. TODO: 更新全域的版本列表狀態（dispatch action or invalidate cache）
+      addVersion(simulatedResponse.modelId, simulatedResponse);
+      console.log("[建立新版本] 已更新全域 context");
+
+      // ✅ 成功提示
+      toast.success(
+        `新版本 ${simulatedResponse.version} _ ${simulatedResponse.id} 建立成功`,
+        {
+          description: "請繼續設定參數並建立訓練排程。",
+        }
+      );
+
+      await wait(300);
+
+      // Step 5-1. 暫存 prefill 資料
+      const autoTunedParams = autoTuneParameters(baseParams, summary);
+      saveVersionPrefillData({
+        fromComparePage: true,
+        modelId: simulatedResponse.modelId,
+        version: simulatedResponse.version,
+        prefillParams: autoTunedParams, // <-- 這是你剛剛分析微調出的建議參數
+        insightSummary: summary, // <-- 這是你訓練指標分析出來的摘要
+        createdAt: Date.now(),
+      });
+      console.log("[建立新版本] 已儲存 prefill data");
+
+      // Step 5-2. 成功後跳轉到新版本的詳細設定頁
+      router.push(
+        `/models/${simulatedResponse.modelId}/version/${simulatedResponse.version}`
+      );
+    } catch (error) {
+      console.error("[建立新版本] 發生錯誤：", error);
+      // ❌ 失敗提示
+      toast.error("建立新版本失敗，請稍後再試！");
+    }
+  };
 
   function handleReschedule(): void {
     throw new Error("Function not implemented.");
@@ -213,7 +305,7 @@ export default function VersionComparePage() {
 
       {versions.length === 1 && (
         <VersionActionPanel
-          onCreateNewVersion={handleOpenCreateDialog}
+          onCreateNewVersion={handleOpenActivateDialog}
           onReschedule={handleReschedule}
           onEditNote={handleEditNote}
           isLocked={isLocked}
@@ -230,7 +322,7 @@ export default function VersionComparePage() {
           isLocked={isLocked}
           onBaseChange={setBaseVersionId}
           onTargetChange={setTargetVersionId}
-          onCreateNewVersion={handleOpenCreateDialog}
+          // onCreateNewVersion={}
           onReschedule={handleReschedule} // 預留
           onInferenceTest={handleInference} // 預留
         />
@@ -281,6 +373,20 @@ export default function VersionComparePage() {
           />
           <TrainingResultInsightCard summary={summary} />
         </>
+      )}
+
+      {/* VersionActivateDialog 對話匡 */}
+      {baseVersionId && (
+        <VersionActivateDialog
+          open={activateDialogOpen}
+          onOpenChange={setActivateDialogOpen}
+          modelId={modelId}
+          defaultValues={generatePreFilledVersion({
+            modelId,
+            baseVersion: baseVersionId,
+          })}
+          onSubmit={handleSubmitNewVersion}
+        />
       )}
     </PageLoader>
   );

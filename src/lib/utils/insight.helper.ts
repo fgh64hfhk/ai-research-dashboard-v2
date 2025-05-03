@@ -322,12 +322,11 @@ export function computeCompositeScore(
   epochs_target: number
 ) {
   // 🔵 Accuracy 提升幅度（新版 vs 舊版）
-  const accDiff =
-    ((endAcc_base - endAcc_target) / (startAcc_target || 1)) * 100;
+  const accDiff = ((endAcc_base - endAcc_target) / (endAcc_target || 1)) * 100;
 
   // 🔵 Loss 降低幅度（舊版 vs 新版）
   const lossDiff =
-    ((endLoss_target - endLoss_base) / (startLoss_target || 1)) * 100;
+    ((endLoss_target - endLoss_base) / (endLoss_target || 1)) * 100;
 
   // 🔵 訓練輪數變化（新版 - 舊版）
   const epochDiff = epochs_base - epochs_target;
@@ -339,8 +338,11 @@ export function computeCompositeScore(
 
   const rawScore = weightedAcc + weightedLoss + weightedEpoch;
 
+  // 新增放大倍率
+  const scaledScore = rawScore * 8;
+
   // 🔵 分數正規化（限制在 0 ~ 100）
-  const finalScore = Math.min(Math.max(rawScore, 0), 100);
+  const finalScore = Math.min(Math.max(scaledScore, 0), 100);
 
   return finalScore;
 }

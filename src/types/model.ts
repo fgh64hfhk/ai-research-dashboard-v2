@@ -15,6 +15,7 @@ export type ModelVersion = {
   buildDate: string; // 構建日期
   status?: ModelStatus;
   description?: string;
+  id?: string;
 };
 
 export enum ModelStatus {

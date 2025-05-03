@@ -19,19 +19,13 @@ export interface VersionFormData {
   status?: "inactive" | "scheduled"; // 初始為 inactive（尚未訓練）
 }
 
-// 建立參數表所需資料結構（含 UI 輸入與系統欄位）
-export interface ParameterFormData {
-  // 使用者輸入欄位
-  learningRate: number;
-  batchSize: number;
-  epochs: number;
-  optimizer: "adam" | "sgd" | "rmsprop";
-  lossFunction: "crossentropy" | "mse" | "categorical_crossentropy";
-  datasetVersion: string;
-  pretrainedModel: boolean;
-  augmentation?: boolean;
+import { ModelParameterValues } from "@/types/parameters";
 
-  // 自動填入欄位
+// UI 表單型別（內含 meta，跟 react-hook-form 綁定用）
+export type ParameterFormValues = ModelParameterValues & {
   modelId: string;
   version: string;
-}
+};
+
+// 提交 API 的 payload
+export type ParameterFormData = ParameterFormValues;

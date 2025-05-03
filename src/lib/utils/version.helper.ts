@@ -1,7 +1,6 @@
 // lib/utils/version.helper.ts
-import { ModelModifiedType, ModelStatus, ModelVersion } from "@/types/model";
-import { TrainingInsight } from "./insight.helper";
-import dayjs from "dayjs";
+import { VersionActivateFormValues } from "@/schemas/versionActivateSchema";
+import { ModelVersion } from "@/types/model";
 
 export function getSortedVersions(
   versions: ModelVersion[],
@@ -55,30 +54,21 @@ export function compareVersionString(a: string, b: string): number {
   return aMinor - bMinor;
 }
 
-export function generatePreFilledVersion(
-  baseVersion: ModelVersion,
-  insight?: TrainingInsight
-): ModelVersion {
-  const now = dayjs().format("YYYY-MM-DD HH:mm");
-  const nextVersion = getNextVersionString(baseVersion.version, "minor");
+interface GeneratePreFilledVersionOptions {
+  modelId: string;
+  baseVersion: string; // 例如 v1.0
+}
 
-  const importantLabel = insight?.insights?.find(
-    (item) => item.important
-  )?.label;
-
-  const descriptionLines = [
-    importantLabel ? `⭐ 重點指標：${importantLabel}` : null,
-    insight?.recommendation ? `📌 建議：${insight.recommendation}` : null,
-  ].filter(Boolean);
+export function generatePreFilledVersion({
+  modelId,
+  baseVersion,
+}: GeneratePreFilledVersionOptions): VersionActivateFormValues {
+  const nextVersion = getNextVersionString(baseVersion, "minor");
 
   return {
-    modelId: baseVersion.modelId,
+    modelId,
     version: nextVersion,
-    modifiedDate: now,
-    buildDate: now,
-    modifiedType: ModelModifiedType.PARAMETER_TUNE,
-    description: descriptionLines.join("\n\n"),
-    trainingTime: 0,
-    status: ModelStatus.INACTIVE,
+    modifiedType: "激活比較功能",
+    description: "此版本用於激活模型版本比較功能",
   };
 }
