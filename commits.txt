@@ -1,4 +1,156 @@
-commit 517223f65cc97a9ca4150123a37539bc8bbca1ee
+commit 7dd88039400d24e8361c2784c9111fec9ad7fa07
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sun May 4 19:25:42 2025 +0800
+
+    feat: 新增與擴充模型版本演化功能
+    
+    - 新增 模型修改型別（ModelModifiedType）與新增版本模式型別
+    - 修正 版本表單的修改類別驗證型別
+    - 新增 版本假資料與訓練結果假資料
+    - 新增 GeneratePreFilledVersionOptions，支援雙版本模式
+    - 修正 generatePreFilledVersion 為單/雙版本模式，自動生成建議描述
+    - 修正 autoTuneParameters 支援雙版本模式，根據指標比較自動微調推薦參數表
+    - 修正 指標分析運算邏輯，新增優化比例指標並放大分數倍率
+    - 優化 預填導引卡片內容與顯示方式
+    - 擴充 新增版本對話匡 VersionActivateDialog，支援 initialActivation / postComparison 模式切換
+    - 擴充 新增版本表單 VersionActivateForm，支援動態切換修改類型與描述建議
+    - 新增 getDescriptionSuggestion 函式，根據修改類別自動生成描述建議
+    
+    - 修正 CompareActionSection 樣式，並新增返回模型頁面按鈕
+    - 整合 VersionActivateDialog 到頁面組件，修正條件判斷避免空值錯誤
+    - 修正 ComparePage 頁面組件的新增版本提交邏輯，完善 prefill 資料流（單雙版本模式）
+
+commit 4b0c210f07ffdee3935ddaeeda96c1ccfd9d0912
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sat May 3 16:53:27 2025 +0800
+
+    feat: 完成第二版導引與推薦參數表功能整合
+    
+    - 修正參數表數值與鍵值結構
+    - 修正參數表單驗證型別
+    - 修正參數表單提交 payload 結構
+    - 修正 convertParamsToCompareItems 以符合參數表鍵值
+    
+    - 新增 autoTuneParameters 自動調整建議參數表
+    - 新增 GeneratePreFilledVersionOptions，提供自動填寫的第二版本選項
+    - 新增 version prefilled 工具函數，儲存暫時的建議導引與推薦參數表
+    
+    - 新增設定導引與推薦參數表的卡片元件
+    - 新增一鍵套用推薦參數的功能
+    
+    - 新增啟用比較版本的表單組件（VersionActivateForm）
+    - 新增啟用比較版本的對話匡（VersionActivateDialog）
+    
+    - 擴充新增參數表單組件，接受初始版本或推薦參數表作為預設值
+    - 支援高亮變更欄位
+    - 暴露 resetForm 與 clearHighlight 功能
+    - 將動作按鈕（重設、提交）統一移到對話匡 footer
+    
+    - 接受推薦參數表物件
+    - 使用 ref 綁定子表單函數
+    - 統一管理 loading 狀態與表單 reset 行為
+    
+    - 新增版本的開啟對話匡與提交流程
+    - 儲存推薦參數表到 localStorage
+    - 跳轉到版本詳細頁並攜帶導引資料
+    
+    - 首次載入監聽 localStorage 暫存資料並寫入狀態
+    - 新增 applyPrefillParams 函式
+    - 整合導引卡片與推薦參數表傳遞
+
+commit 935c687ef0726f2cd62d9e4976d134b26662c6fc
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu May 1 23:24:35 2025 +0800
+
+    feat(compare): 完成版本比較頁面基礎重構與功能整合
+    
+    - 新增 訓練指標型別 TrainingMetric
+    - 新增 訓練指標分析 generateTrainingInsight，支援單版本與雙版本模式
+    - 新增 綜合評分函數 computeCompositeScore
+    - 新增 比較頁面導引文案函數 renderIntroTitle, renderIntroDescriptionList
+    - 修正 convertParamsToCompareItems，支援單雙版本通用
+    - 新增 預填創建第二版版本的工具函數
+    - 整合 compare action section 操作區塊，依版本數動態顯示
+    - 整合 導引卡片，依版本數自適應顯示
+    - 整合 顯示區塊，支援單雙版本差異化渲染
+    - 新增 無版本時返回模型卡片 ReturnModelCard
+    - 新增 只有初始版本時的版本操作區塊 VersionActionPanel
+    - 新增 多版本比較操作區塊 CompareActionSection
+    - 新增 單版本參數表組件 ParameterCompareCard + 預留比較位 Placeholder
+    - 新增 單版本訓練指標圖表 TrainingResultChartSingle
+    - 新增 雙版本訓練比較圖表 TrainingResultCompareChart
+    - 新增 訓練分析卡片 TrainingResultInsightCard，支援重要項目高亮
+    - 調整頁面資料流，固定 base 為最新版本，target 為次新版本
+    - 預留 版本創建與排程操作函數結構
+    
+    BREAKING CHANGE:
+    - 原 useVersionCompare hooks 廢除，改由頁面直接注入資料
+    - 頁面資料結構全面重組，確保後續擴充性與資料正確性
+
+commit 0008040e392ceca614818a90319244eb751c193c
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Apr 30 22:46:33 2025 +0800
+
+    feat(compare): 重構版本比較頁面與資料來源
+    
+    - 新增 v1.2 版本訓練結果圖表區塊與參數差異卡片
+    - 調整 ModelVersion 型別：加入 description，改用 enum 管理 modifiedType
+    - 新增 ModelModifiedType 列舉類型，用於標示版本變更類別
+    - 新增模型 m002 的假資料（版本、參數表、排程與訓練結果）
+    - 新增工具函數：
+      - getNextVersionString：進位版本號
+      - compareVersionString：版本排序比較
+      - generatePreFilledVersion：產生預設版本資料
+    - 移除 useVersionCompare hooks，改為直接在頁面注入資料避免 useEffect 條件錯誤
+    - 重寫 VersionComparePage：
+      - 資料注入流程明確
+      - 根據版本數量渲染不同組件配置
+      - 使用者操作流程分段處理（建立版本後跳轉詳細頁）
+
+commit 43c14a4bad96da784b1e1664e939f17badd834fd
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Apr 30 13:02:46 2025 +0800
+
+    feat(dialog): 修正 Dialog 中 Popover 日期選擇器失效問題
+    
+    - 在 Dialog 中嵌套 Popover 時，加入 modal={true} 解決焦點管理與浮層自動關閉問題
+    - 為 PopoverContent 增加 z-[1000] 與 forceMount，確保浮層穩定渲染並不受裁切
+    - 修正 Calendar 組件未綁定 selected/onSelect 導致無法點選日期的問題
+    - 優化 Calendar selected 值型別為 Date，避免 string 或 null 造成渲染錯誤
+    - 為 DialogContent 增加 overflow-visible，避免 Popover 被裁切
+    - 實作 Dialog + Popover + Calendar 測試組件，驗證互動完整性
+    - 補充技術討論整理與最佳實作參考，基於 Radix 官方建議與社群共識（modal prop）
+    
+    BREAKING CHANGE:
+    如有自定 shadcn Popover.tsx 並移除 Portal，請改為使用 modal 屬性以確保相容性與穩定性
+
+commit f6f4938c2b0deb5d27298ad5eaf360e0e74f43b0
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Tue Apr 29 17:45:41 2025 +0800
+
+    feat(schedule): 完成排程詳細頁面收斂與流程穩定化
+    
+    - 收斂排程詳細頁面核心流程
+    - 條件判斷整理：啟動時重置進度、連線狀態與完成標記
+    - 完成時正確更新結果、變更排程狀態並重置 isCompleted
+    - 調整 useTrainingSocket 初始化與清除邏輯，避免狀態污染
+    - 優化 useEffect 條件式設計：提早 return，分層清晰
+    - 完整處理 WebSocket 連線與清理流程
+    - 成功與失敗皆提供 toast 回饋與跳轉 anchor 指引
+
+commit f009f033238fbd8c94726755f0b8a3bc1eb083e1
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Mon Apr 28 18:49:35 2025 +0800
+
+    feat(schedule): 完成最新排程與歷史排程列表展示
+    
+    - 新增 ScheduleSummaryCard：使用 InfoRow + InfoRowGroup 統一排版
+    - 新增 ScheduleListPanel：最新排程直接展開，歷史排程以 Accordion 收合
+    - 實作 splitSchedules 工具函數，自動將 schedules 切分為最新與歷史
+    - 優化 Accordion 展開時自動滾動至歷史排程列表，提升使用者體驗
+    - 清理資料流與版面結構，保持排程展示單純與延伸性
+
+commit 81da9a0aaa03ba013e9a53e19265bc8b8fabeb93
 Author: Tony Lin <bear200806@gmail.com>
 Date:   Thu Apr 24 21:18:27 2025 +0800
 
@@ -88,7 +240,7 @@ Date:   Sat Apr 19 18:18:08 2025 +0800
     - 整合訓練結果模組至排程詳細頁
     - 整合空狀態組件至排程詳細頁以處理無資料情境
 
-＊＊commit 85048b8e3985d16550d4d8377b77952e2892e18a
+commit 85048b8e3985d16550d4d8377b77952e2892e18a
 Author: Tony Lin <bear200806@gmail.com>
 Date:   Fri Apr 18 17:55:00 2025 +0800
 
@@ -208,7 +360,7 @@ Date:   Wed Apr 16 19:07:15 2025 +0800
     - 根據版本訓練狀態進行引導按鈕跳轉
     - 加入參數設定、排程建立的快捷功能
 
-＊＊commit afe5fe492eeac3baaa10220aecca9e558db70e21
+commit afe5fe492eeac3baaa10220aecca9e558db70e21
 Author: Tony Lin <bear200806@gmail.com>
 Date:   Tue Apr 15 20:39:21 2025 +0800
 
@@ -307,7 +459,7 @@ Date:   Thu Apr 10 11:41:34 2025 +0800
       - 判斷狀態切換渲染進度卡或訓練結果卡
     - 修正原先違規的 Hook 使用方式（不能寫在 map/條件內）
 
-＊＊commit 61e8777a13ad57140e7e8727bf9cfb09f02bc6f6
+commit 61e8777a13ad57140e7e8727bf9cfb09f02bc6f6
 Author: Tony Lin <bear200806@gmail.com>
 Date:   Wed Apr 9 18:16:43 2025 +0800
 

@@ -71,8 +71,14 @@ export function convertParamsToCompareItems(
 
   return keys.map((key) => ({
     key,
-    baseValue: baseParams && key in baseParams ? String(baseParams[key as keyof ModelParameters]) : "-",
-    targetValue: targetParams && key in targetParams ? String(targetParams[key as keyof ModelParameters]) : "-",
+    baseValue:
+      baseParams && key in baseParams
+        ? String(baseParams[key as keyof ModelParameters])
+        : "-",
+    targetValue:
+      targetParams && key in targetParams
+        ? String(targetParams[key as keyof ModelParameters])
+        : "-",
   }));
 }
 
@@ -82,27 +88,85 @@ export function autoTuneParameters(
   baseParams: ModelParameters,
   insightSummary: TrainingInsight
 ): ModelParameters {
-  const tuned: ModelParameters = { ...baseParams };
+  const tunedParams: ModelParameters = { ...baseParams };
 
-  // 防呆
-  if (!baseParams || !insightSummary) return tuned;
+  if (!baseParams || !insightSummary) return tunedParams;
 
-  const texts = insightSummary.insights.map((i) => i.label).join(" ");
+  const isCompareMode = insightSummary.insights.some(
+    (item) => item.type === "compare"
+  );
 
-  // 大幅改善時，微調以增強穩定性
-  if (texts.includes("提升幅度") && texts.includes("改善幅度")) {
-    // 提升 batch size
-    if (typeof tuned.batchSize === "number") {
-      tuned.batchSize = Math.min(tuned.batchSize * 2, 128);
+  if (isCompareMode) {
+    /** ========== 基於比較結果（acc/loss）調整 ========== **/
+
+    if (
+      insightSummary.accImprove !== undefined &&
+      insightSummary.accImprove < 0
+    ) {
+      // Accuracy 下降：降 learningRate
+      tunedParams.learningRate = Math.max(
+        baseParams.learningRate * 0.8,
+        0.0001
+      );
     }
-    // 增加 epochs
-    if (typeof tuned.epochs === "number") {
-      tuned.epochs = tuned.epochs + 4;
+    if (
+      insightSummary.lossImprove !== undefined &&
+      insightSummary.lossImprove < 0
+    ) {
+      // Loss 上升：降 learningRate
+      tunedParams.learningRate = Math.max(
+        tunedParams.learningRate * 0.8,
+        0.0001
+      );
     }
-    // 開啟資料增強
-    tuned.augmentation = true;
+
+    /** ========== 基於新版本自身趨勢（label）調整 ========== **/
+    const baseInsightTexts = insightSummary.insights
+      .filter((i) => i.type === "base")
+      .map((i) => i.label)
+      .join(" ");
+
+    if (
+      baseInsightTexts.includes("提升幅度") &&
+      baseInsightTexts.includes("改善幅度")
+    ) {
+      // 如果有"提升幅度" && "改善幅度" 代表本版有明顯進步，可以加強訓練
+
+      if (typeof tunedParams.batchSize === "number") {
+        tunedParams.batchSize = Math.min(tunedParams.batchSize * 2, 128); // 提升 batchSize
+      }
+
+      if (typeof tunedParams.epochs === "number") {
+        tunedParams.epochs = tunedParams.epochs + 4; // 增加 epochs
+      }
+
+      tunedParams.augmentation = true; // 開啟資料增強
+
+      /** ========== 資料集版本升級（視需求決定是否開放） ========== **/
+
+      if (tunedParams.datasetVersion === "Chinese-MedQA-v2") {
+        tunedParams.datasetVersion = "Chinese-MedQA-v3";
+      }
+    }
+  } else {
+    /** ========== 基於初始版本自身趨勢（label）調整 ========== **/
+    const texts = insightSummary.insights.map((i) => i.label).join(" ");
+
+    // 大幅改善時，微調以增強穩定性
+    if (texts.includes("提升幅度") && texts.includes("改善幅度")) {
+      // 提升 batch size
+      if (typeof tunedParams.batchSize === "number") {
+        tunedParams.batchSize = Math.min(tunedParams.batchSize * 2, 128);
+      }
+      // 增加 epochs
+      if (typeof tunedParams.epochs === "number") {
+        tunedParams.epochs = tunedParams.epochs + 2;
+      }
+      // 開啟資料增強
+      tunedParams.augmentation = true;
+    }
+    tunedParams.datasetVersion = "Chinese-MedQA-v2";
   }
-  tuned.datasetVersion = "Chinese-MedQA-v2";
 
-  return tuned;
+  return tunedParams;
 }

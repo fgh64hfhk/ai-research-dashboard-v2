@@ -31,12 +31,15 @@ export enum ModelStatus {
 
 export enum ModelModifiedType {
   PARAMETER_TUNE = "參數調整",
-  DATASET_EXPANSION = "資料擴增",
-  STRUCTURE_CHANGE = "模型架構變更",
+  DATASET_EXPANSION = "資料集擴增",
+  STRUCTURE_CHANGE = "模型架構修改",
   LOSS_FUNCTION_TUNE = "損失函數調整",
   INITIAL = "初始化版本",
+  ACTIVATE_COMPARE = "激活比較功能",
   OTHER = "其他",
 }
+
+export type GenerateMode = "initialActivation" | "postComparison";
 
 // 用於首頁快速列出模型 + 最新版本摘要
 export type ModelWithVersion = Model & {

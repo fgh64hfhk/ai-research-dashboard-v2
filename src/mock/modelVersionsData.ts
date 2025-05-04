@@ -47,15 +47,15 @@ export const mockModels: ModelWithAllVersions[] = [
     language: "Java",
     description: "BERT fine-tuned for Chinese medical QA datasets.",
     modelVersion: [
-      // {
-      //   modelId: "m002",
-      //   version: "v1.2",
-      //   modifiedDate: "2025-05-07 18:00",
-      //   modifiedType: "dataset expansion",
-      //   trainingTime: 210,
-      //   buildDate: "2025-05-07 12:00",
-      //   status: ModelStatus.PENDING_DEPLOYMENT,
-      // },
+      {
+        modelId: "m002",
+        version: "v1.2",
+        modifiedDate: "2025-05-07 18:00",
+        modifiedType: "參數調整",
+        trainingTime: 210,
+        buildDate: "2025-05-07 12:00",
+        status: ModelStatus.COMPLETED,
+      },
       {
         modelId: "m002",
         version: "v1.1",
@@ -120,7 +120,7 @@ export const mockModelParameters: Record<string, ModelParameters> = {
     epochs: 8,
     optimizer: "adam",
     lossFunction: "crossentropy",
-    datasetVersion: "medqa-v1",
+    datasetVersion: "Chinese-MedQA-v1",
     pretrainedModel: false,
     augmentation: false,
   },
@@ -135,17 +135,17 @@ export const mockModelParameters: Record<string, ModelParameters> = {
     pretrainedModel: false,
     augmentation: true,
   },
-  // "m002_v1.2": {
-  //   modelVersionId: "m002_v1.2",
-  //   learningRate: 0.0004,
-  //   batchSize: 20,
-  //   epochs: 12,
-  //   optimizer: "adam",
-  //   lossFunction: "crossentropy",
-  //   datasetVersion: "medqa-v2",
-  //   pretrainedModel: true,
-  //   augmentation: true,
-  // },
+  "m002_v1.2": {
+    modelVersionId: "m002_v1.2",
+    learningRate: 0.0003,
+    batchSize: 128,
+    epochs: 24,
+    optimizer: "adam",
+    lossFunction: "crossentropy",
+    datasetVersion: "Chinese-MedQA-v3",
+    pretrainedModel: false,
+    augmentation: true,
+  },
 };
 
 export const mockSchedules: TrainingSchedule[] = [
@@ -221,16 +221,16 @@ export const mockSchedules: TrainingSchedule[] = [
     type: "auto",
     triggerTraining: false,
   },
-  // // m002_v1.2
-  // {
-  //   scheduleId: "s007",
-  //   modelId: "m002",
-  //   version: "v1.2",
-  //   buildDate: "2025-05-08T12:00:00",
-  //   runDate: "2025-05-09T12:00:00",
-  //   status: "completed",
-  //   createdAt: "2025-05-08T18:00:00",
-  //   type: "auto",
-  //   triggerTraining: true,
-  // },
+  // m002_v1.2
+  {
+    scheduleId: "s007",
+    modelId: "m002",
+    version: "v1.2",
+    buildDate: "2025-05-08T12:00:00",
+    runDate: "2025-05-09T12:00:00",
+    status: "completed",
+    createdAt: "2025-05-08T18:00:00",
+    type: "auto",
+    triggerTraining: true,
+  },
 ];

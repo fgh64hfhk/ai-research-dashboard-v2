@@ -1,15 +1,16 @@
 import { TrainingMetric } from "@/types/training";
 
-interface InsightItem {
-  type: string;
-  label: string;
-  important?: boolean;
-}
-
 export interface TrainingInsight {
   betterVersionId: string;
   insights: InsightItem[];
   recommendation?: string;
+  accImprove?: number;
+  lossImprove?: number;
+}
+export interface InsightItem {
+  type: "base" | "target" | "compare";
+  label: string;
+  important?: boolean;
 }
 
 export function generateTrainingInsight(
@@ -249,6 +250,8 @@ export function generateTrainingInsight(
           : `綜合評估分數為 ${compositeScore.toFixed(
               1
             )}，改善幅度不足，建議重新設計參數或資料集策略。`,
+      accImprove: accImprove,
+      lossImprove: lossReduce,
     };
   }
 

@@ -45,31 +45,37 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import dayjs from "dayjs";
-import { ModelStatus, ModelVersion } from "@/types/model";
+import {
+  GenerateMode,
+  ModelModifiedType,
+  ModelStatus,
+  ModelVersion,
+} from "@/types/model";
 import { toast } from "sonner";
 import { wait } from "@/lib/utils/async.helper";
 import { saveVersionPrefillData } from "@/lib/utils/versionPrefill.helper";
 
 export default function VersionComparePage() {
-  // 1️⃣ 路由參數 --> ok
+  // 1. 路由參數 --> ok
   const { modelId } = useParams<{ modelId: string }>();
   const router = useRouter();
 
-  // 2️⃣ 基本資料載入 --> ok
-  const isLoading = useLoadingGuard(300);
+  // 2. 基本資料載入 --> ok
+  const isLoading = useLoadingGuard(800);
   const model = useModelById(modelId);
   const versions = useVersionsByModelId(modelId);
 
+  // 2.1 新增版本的 hook --> ok
   const addVersion = useAddVersion();
 
-  // 3️⃣ 排序版本，取出預設 base(最新) / target(次新) --> ok
+  // 3. 排序版本，取出預設 base(最新) / target(次新) --> ok
   const sortedVersions = useMemo(() => {
     return versions
       .slice()
       .sort((a, b) => compareVersionString(a.version, b.version));
   }, [versions]);
 
-  // 設定推薦的比較版本 --> ok
+  // 4. 設定推薦的比較版本 --> ok
   const recommendedTargetVersion = useMemo(() => {
     // 取倒數第二個版本（次新版本）
     return sortedVersions.length >= 2
@@ -77,14 +83,14 @@ export default function VersionComparePage() {
       : "";
   }, [sortedVersions]);
 
-  // 設定狀態 --> ok
+  // 5. 設定狀態 --> ok
   const [baseVersionId, setBaseVersionId] = useState<string | undefined>();
   const [targetVersionId, setTargetVersionId] = useState<string | undefined>();
 
-  // 設定對話匡狀態 --> ok
+  // 6. 設定對話匡狀態 --> ok
   const [activateDialogOpen, setActivateDialogOpen] = useState(false);
 
-  // base 最新版 target 次新版
+  // 7. 監聽設定 base 最新版 target 次新版 --> ok
   useEffect(() => {
     if (sortedVersions.length >= 2) {
       setBaseVersionId(sortedVersions.at(-1)?.version);
@@ -95,9 +101,9 @@ export default function VersionComparePage() {
     }
   }, [sortedVersions]);
 
-  // 4️⃣ 當版本 ID 尚未就緒時中斷流程
+  // 當版本 ID 尚未就緒時中斷流程
 
-  // 5️⃣ 對應版本資料 -> ok
+  // 對應版本資料 -> ok
   const baseVersion = versions.find((v) => v.version === baseVersionId) || null;
   const targetVersion =
     versions.find((v) => v.version === targetVersionId) || null;
@@ -112,7 +118,6 @@ export default function VersionComparePage() {
     modelId,
     targetVersionId || ""
   );
-
   const baseSchedule = getLatestScheduleTask(baseSchedules);
   const targetSchedule = getLatestScheduleTask(targetSchedules);
 
@@ -123,7 +128,6 @@ export default function VersionComparePage() {
   const targetResults = useTrainingResultsByVersionKey(
     `${modelId}_${targetVersionId}_${targetSchedule?.scheduleId}`
   );
-
   const baseResult = baseResults.find((r) => r.status === "completed") || null;
   const targetResult =
     targetResults.find((r) => r.status === "completed") || null;
@@ -204,7 +208,8 @@ export default function VersionComparePage() {
 
   // 新增版本函數 --> 提交邏輯
   const handleSubmitNewVersion = async (
-    formData: VersionActivateFormValues
+    formData: VersionActivateFormValues,
+    mode: GenerateMode
   ) => {
     if (!modelId || !baseVersionId || !summary || !baseParams) {
       toast.error("缺少必要資訊，無法建立新版本");
@@ -253,39 +258,52 @@ export default function VersionComparePage() {
 
       await wait(300);
 
-      // Step 5-1. 暫存 prefill 資料
-      const autoTunedParams = autoTuneParameters(baseParams, summary);
-      saveVersionPrefillData({
-        fromComparePage: true,
-        modelId: simulatedResponse.modelId,
-        version: simulatedResponse.version,
-        prefillParams: autoTunedParams, // <-- 這是你剛剛分析微調出的建議參數
-        insightSummary: summary, // <-- 這是你訓練指標分析出來的摘要
-        createdAt: Date.now(),
-      });
-      console.log("[建立新版本] 已儲存 prefill data");
+      // Step 5. 根據 mode 決定 prefill 資料
+      if (mode === "postComparison") {
+        const autoTunedParams = autoTuneParameters(baseParams, summary);
+        saveVersionPrefillData({
+          fromComparePage: true,
+          modelId: simulatedResponse.modelId,
+          version: simulatedResponse.version,
+          prefillParams: autoTunedParams, // <-- 這是你剛剛分析微調出的建議參數
+          insightSummary: summary, // <-- 這是你訓練指標分析出來的摘要
+          createdAt: Date.now(),
+        });
+        console.log("[建立新版本] 已儲存 auto-tuned prefill data");
+      } else if (mode === "initialActivation") {
+        const autoTunedParams = autoTuneParameters(baseParams, summary);
+        // 初版情境 — 保持初版參數
+        saveVersionPrefillData({
+          fromComparePage: true,
+          modelId: simulatedResponse.modelId,
+          version: simulatedResponse.version,
+          prefillParams: autoTunedParams,
+          insightSummary: summary,
+          createdAt: Date.now(),
+        });
+        console.log("[建立新版本] 已儲存 initial prefill data");
+      }
 
-      // Step 5-2. 成功後跳轉到新版本的詳細設定頁
+      // Step 6. 跳轉到新版本的詳細設定頁
       router.push(
         `/models/${simulatedResponse.modelId}/version/${simulatedResponse.version}`
       );
     } catch (error) {
       console.error("[建立新版本] 發生錯誤：", error);
-      // ❌ 失敗提示
       toast.error("建立新版本失敗，請稍後再試！");
     }
   };
 
   function handleReschedule(): void {
-    throw new Error("Function not implemented.");
+    console.warn("尚未實作功能");
   }
 
   function handleInference(): void {
-    throw new Error("Function not implemented.");
+    console.warn("尚未實作功能");
   }
 
   function handleEditNote(): void {
-    throw new Error("Function not implemented.");
+    console.warn("尚未實作功能");
   }
 
   return (
@@ -301,7 +319,7 @@ export default function VersionComparePage() {
         )}
       />
       {/* 區塊二：操作區塊 */}
-      {versions.length === 0 && <ReturnToModelCard modelId={modelId} />}
+      {versions && versions.length === 0 && <ReturnToModelCard modelId={modelId} />}
 
       {versions.length === 1 && (
         <VersionActionPanel
@@ -322,7 +340,7 @@ export default function VersionComparePage() {
           isLocked={isLocked}
           onBaseChange={setBaseVersionId}
           onTargetChange={setTargetVersionId}
-          // onCreateNewVersion={}
+          onCreateNewVersion={handleOpenActivateDialog}
           onReschedule={handleReschedule} // 預留
           onInferenceTest={handleInference} // 預留
         />
@@ -335,6 +353,7 @@ export default function VersionComparePage() {
           description="請先返回模型頁面建立初始版本。"
         />
       )}
+
       {versions.length === 1 && (
         <div className="space-y-8">
           {/* 參數對照區塊（左有資料，右為占位提示） */}
@@ -357,7 +376,7 @@ export default function VersionComparePage() {
           <TrainingResultInsightCard summary={summary} />
         </div>
       )}
-
+      
       {versions.length > 1 && (
         <>
           <ParameterCompareCard
@@ -376,15 +395,27 @@ export default function VersionComparePage() {
       )}
 
       {/* VersionActivateDialog 對話匡 */}
-      {baseVersionId && (
+      {baseVersionId && summary && (
         <VersionActivateDialog
           open={activateDialogOpen}
           onOpenChange={setActivateDialogOpen}
           modelId={modelId}
-          defaultValues={generatePreFilledVersion({
-            modelId,
-            baseVersion: baseVersionId,
-          })}
+          mode={versions.length === 1 ? "initialActivation" : "postComparison"}
+          defaultValues={
+            versions.length === 1
+              ? generatePreFilledVersion({
+                  mode: "initialActivation",
+                  modelId,
+                  baseVersion: baseVersionId,
+                })
+              : generatePreFilledVersion({
+                  mode: "postComparison",
+                  modelId,
+                  baseVersion: baseVersionId,
+                  insightSummary: summary,
+                  modifiedType: ModelModifiedType.PARAMETER_TUNE,
+                })
+          }
           onSubmit={handleSubmitNewVersion}
         />
       )}

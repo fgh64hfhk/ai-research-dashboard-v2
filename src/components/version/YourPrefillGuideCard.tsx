@@ -15,7 +15,7 @@ export default function YourPrefillGuideCard({
   prefillData,
   onApplyPrefill,
 }: YourPrefillGuideCardProps) {
-  const { prefillParams, insightSummary } = prefillData;
+  const { prefillParams } = prefillData;
 
   return (
     <Card className="p-6 border-2 border-dashed border-primary bg-primary/5 space-y-6">
@@ -26,34 +26,20 @@ export default function YourPrefillGuideCard({
           <h2 className="text-lg font-semibold">推薦設定導引</h2>
         </div>
 
-        {/* 訓練指標摘要 */}
-        {insightSummary && (
-          <div className="space-y-2">
-            <h4 className="text-base font-semibold">訓練成果摘要</h4>
-            <ul className="list-disc list-inside text-sm text-muted-foreground">
-              {insightSummary.insights.map((item, idx) => (
-                <li
-                  key={idx}
-                  className={item.important ? "text-primary font-semibold" : ""}
-                >
-                  {item.label}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
         {/* 推薦參數預覽 */}
         {prefillParams && (
-          <div className="space-y-2">
-            <h4 className="text-base font-semibold">推薦參數表</h4>
-            <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
-              {Object.entries(prefillParams).map(([key, value]) => (
-                <div key={key} className="flex justify-between">
-                  <span className="font-medium">{key}</span>
-                  <span>{String(value)}</span>
-                </div>
-              ))}
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3 text-sm text-muted-foreground">
+              {Object.entries(prefillParams)
+                .filter(([key]) => key !== "modelVersionId")
+                .map(([key, value]) => (
+                  <div key={key} className="flex flex-col">
+                    <span className="text-xs font-medium">{key}</span>
+                    <span className="text-base font-semibold">
+                      {String(value)}
+                    </span>
+                  </div>
+                ))}
             </div>
           </div>
         )}
@@ -62,7 +48,7 @@ export default function YourPrefillGuideCard({
         {prefillParams && (
           <Button
             variant="default"
-            className="w-full"
+            className="w-full mt-2"
             onClick={() => onApplyPrefill(prefillParams)}
           >
             <SlidersHorizontal className="w-4 h-4 mr-2" />

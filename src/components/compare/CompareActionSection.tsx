@@ -7,6 +7,7 @@ import {
   PlayCircle,
   GitCompare,
   Lock,
+  ArrowLeft,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -34,6 +35,7 @@ interface CompareActionSectionProps {
   onCreateNewVersion?: () => void;
   onReschedule?: () => void;
   onInferenceTest?: () => void;
+  onBackToModelPage?: () => void;
 }
 
 export default function CompareActionSection({
@@ -46,6 +48,7 @@ export default function CompareActionSection({
   onCreateNewVersion,
   onReschedule,
   onInferenceTest,
+  onBackToModelPage,
 }: CompareActionSectionProps) {
   // 目標版本選項，過濾掉基礎版本本身與比基礎版本更新的版本
   const targetOptions = versionOptions.filter((v) => v !== baseVersionId);
@@ -65,7 +68,7 @@ export default function CompareActionSection({
             value={targetVersionId}
             onValueChange={(value) => onTargetChange?.(value)}
           >
-            <SelectTrigger className="px-2 py-5 font-medium">
+            <SelectTrigger className="px-4 py-4.5 font-medium w-[180px]">
               <SelectValue placeholder="選擇版本" />
             </SelectTrigger>
             <SelectContent>
@@ -89,7 +92,7 @@ export default function CompareActionSection({
           <div className="h-10 flex items-center">
             <Badge
               variant="outline"
-              className="h-10 px-4 text-sm flex items-center"
+              className="h-10 px-4 text-sm flex items-center w-[180px]"
             >
               {baseVersionId}
             </Badge>
@@ -112,8 +115,9 @@ export default function CompareActionSection({
       </div>
 
       {/* 🧭 操作功能按鈕 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         <TooltipProvider delayDuration={300}>
+          {/* 建立新版本 */}
           <Tooltip>
             <TooltipTrigger asChild>
               <div>
@@ -127,24 +131,57 @@ export default function CompareActionSection({
               </div>
             </TooltipTrigger>
             <TooltipContent side="top" align="center">
-              建議根據訓練結果持續優化，建立新版本以改善模型表現。
+              建議根據訓練結果持續優化，建立新版本以改善模型表現
             </TooltipContent>
           </Tooltip>
+
+          {/* 重新排程（預留） */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <ActionCard
+                  icon={<RefreshCcw className="w-5 h-5" />}
+                  label="重新排程（預留）"
+                  onClick={onReschedule}
+                  variant="default"
+                  disabled
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>此功能尚在開發中</TooltipContent>
+          </Tooltip>
+
+          {/* 推論測試（預留） */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <ActionCard
+                  icon={<PlayCircle className="w-5 h-5" />}
+                  label="推論測試（預留）"
+                  onClick={onInferenceTest}
+                  variant="default"
+                  disabled
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>此功能尚在開發中</TooltipContent>
+          </Tooltip>
+
+          {/* 返回模型管理頁 */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <ActionCard
+                  icon={<ArrowLeft className="w-5 h-5" />}
+                  label="返回模型管理頁"
+                  onClick={onBackToModelPage}
+                  variant="default"
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>回到模型清單頁面</TooltipContent>
+          </Tooltip>
         </TooltipProvider>
-        <ActionCard
-          icon={<RefreshCcw className="w-5 h-5" />}
-          label="重新排程（預留）"
-          onClick={onReschedule}
-          variant="default"
-          disabled
-        />
-        <ActionCard
-          icon={<PlayCircle className="w-5 h-5" />}
-          label="推論測試（預留）"
-          onClick={onInferenceTest}
-          variant="default"
-          disabled
-        />
       </div>
     </div>
   );

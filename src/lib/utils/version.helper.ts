@@ -1,6 +1,7 @@
 // lib/utils/version.helper.ts
 import { VersionActivateFormValues } from "@/schemas/versionActivateSchema";
-import { ModelVersion } from "@/types/model";
+import { ModelModifiedType, ModelVersion } from "@/types/model";
+import { TrainingInsight } from "./insight.helper";
 
 export function getSortedVersions(
   versions: ModelVersion[],
@@ -54,21 +55,70 @@ export function compareVersionString(a: string, b: string): number {
   return aMinor - bMinor;
 }
 
-interface GeneratePreFilledVersionOptions {
-  modelId: string;
-  baseVersion: string; // 例如 v1.0
+export type GeneratePreFilledVersionOptions =
+  | {
+      mode: "initialActivation";
+      modelId: string;
+      baseVersion: string;
+    }
+  | {
+      mode: "postComparison";
+      modelId: string;
+      baseVersion: string;
+      insightSummary: TrainingInsight;
+      modifiedType: ModelModifiedType;
+    };
+
+export function generatePreFilledVersion(
+  options: GeneratePreFilledVersionOptions
+): VersionActivateFormValues {
+  const nextVersion = getNextVersionString(options.baseVersion, "minor");
+
+  if (options.mode === "initialActivation") {
+    return {
+      modelId: options.modelId,
+      version: nextVersion,
+      modifiedType: ModelModifiedType.ACTIVATE_COMPARE,
+      description: "此版本用於激活模型版本比較功能。",
+    };
+  }
+
+  if (options.mode === "postComparison") {
+    const { insightSummary, modifiedType } = options;
+
+    if (!insightSummary || insightSummary.accImprove === undefined || insightSummary.lossImprove === undefined) {
+      throw new Error("generatePreFilledVersion: 無效或不完整的 summary 資料");
+    }
+
+    // 動態生成建議描述
+    const recommendedDescription = generateRecommendedDescription(
+      modifiedType,
+      insightSummary
+    );
+
+    return {
+      modelId: options.modelId,
+      version: nextVersion,
+      modifiedType: modifiedType,
+      description: recommendedDescription,
+    };
+  }
+
+  throw new Error("Invalid generatePreFilledVersion options");
 }
 
-export function generatePreFilledVersion({
-  modelId,
-  baseVersion,
-}: GeneratePreFilledVersionOptions): VersionActivateFormValues {
-  const nextVersion = getNextVersionString(baseVersion, "minor");
-
-  return {
-    modelId,
-    version: nextVersion,
-    modifiedType: "激活比較功能",
-    description: "此版本用於激活模型版本比較功能",
-  };
+function generateRecommendedDescription(
+  modifiedType: ModelModifiedType,
+  insightSummary: TrainingInsight
+) {
+  switch (modifiedType) {
+    case "參數調整":
+      return `基於指標分析（Accuracy ${insightSummary.accImprove?.toFixed(1)}% 提升），進行參數調整優化。`;
+    case "資料集擴增":
+      return `基於訓練損失未達預期（Loss ${insightSummary.lossImprove?.toFixed(1)}% 改善），建議擴增資料集。`;
+    case "模型架構修改":
+      return `基於現有模型表現，建議嘗試調整模型架構以提升效能。`;
+    default:
+      return "根據分析結果，進行優化更新。";
+  }
 }
