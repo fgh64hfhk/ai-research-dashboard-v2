@@ -55,7 +55,6 @@ The platform helps researchers systematically manage experiments and streamline 
 ├── public/
 │   └── guide/               # Images for guide cards
 │
-│   # （備註）原本 next.js 預設的 public 資料（如 next.svg、vercel.svg）將移除
 │   # 後續首頁會重新設計新的素材
 │
 ├── src/
@@ -141,8 +140,7 @@ The platform helps researchers systematically manage experiments and streamline 
 ```
 ## 🌐 Live Demo
 
-[Click here to view the demo on Vercel](#)  
-(*The link will be updated after deployment.*)
+[Click here to view the demo on Vercel](https://ai-research-dashboard-v2.vercel.app)
 
 ---
 

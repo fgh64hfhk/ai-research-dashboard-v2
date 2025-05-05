@@ -306,6 +306,10 @@ export default function VersionComparePage() {
     console.warn("尚未實作功能");
   }
 
+  function handleBack(): void {
+    router.push(`/models/${modelId}`);
+  }
+
   return (
     <PageLoader isLoading={isLoading} fallback={<ComparePageSkeleton />}>
       {/* 區塊一：導引卡片 */}
@@ -319,7 +323,9 @@ export default function VersionComparePage() {
         )}
       />
       {/* 區塊二：操作區塊 */}
-      {versions && versions.length === 0 && <ReturnToModelCard modelId={modelId} />}
+      {versions && versions.length === 0 && (
+        <ReturnToModelCard modelId={modelId} />
+      )}
 
       {versions.length === 1 && (
         <VersionActionPanel
@@ -343,6 +349,7 @@ export default function VersionComparePage() {
           onCreateNewVersion={handleOpenActivateDialog}
           onReschedule={handleReschedule} // 預留
           onInferenceTest={handleInference} // 預留
+          onBackToModelPage={handleBack}
         />
       )}
 
@@ -376,7 +383,7 @@ export default function VersionComparePage() {
           <TrainingResultInsightCard summary={summary} />
         </div>
       )}
-      
+
       {versions.length > 1 && (
         <>
           <ParameterCompareCard
