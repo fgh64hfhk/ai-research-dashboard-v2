@@ -40,7 +40,7 @@ import { createVersion } from "@/lib/api/version/create";
 import { scrollToAnchor } from "@/lib/utils/common.helper";
 import { toast } from "sonner";
 import { getModelStageFromData } from "@/lib/utils/model.helper";
-import { useLatestTrainingStatus } from "@/hooks/training/results.hooks";
+import { useLatestTrainingStatus } from "@/hooks/trainingResult/results.hooks";
 
 export default function ModelDetailPage() {
   // 路由模組

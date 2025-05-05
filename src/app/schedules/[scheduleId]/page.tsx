@@ -23,7 +23,7 @@ import { useTrainingSocket } from "@/hooks/socket/useTrainingSocket";
 import {
   useTrainingResultCreate,
   useTrainingResultsByVersionKey,
-} from "@/hooks/training/results.hooks";
+} from "@/hooks/trainingResult/results.hooks";
 
 import { startMockTrainingSocket } from "@/mock/socketMock";
 

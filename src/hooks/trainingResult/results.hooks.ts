@@ -1,4 +1,4 @@
-import { useTrainingResultContext } from "@/contexts/training/TrainingResultContext";
+import { useTrainingResultContext } from "@/contexts/trainingResult/TrainingResultContext";
 import { TrainingResult } from "@/types/training";
 import { useMemo } from "react";
 import { useSchedulesByVersionKey } from "../schedule/schedule.hooks";

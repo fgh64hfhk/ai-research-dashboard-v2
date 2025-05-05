@@ -19,7 +19,7 @@ import { VersionActivateDialog } from "@/components/version/VersionActivateDialo
 import { useModelById } from "@/hooks/model/model.hooks";
 import { useParameterByVersionKey } from "@/hooks/parameter/parameter.hooks";
 import { useSchedulesByVersionKey } from "@/hooks/schedule/schedule.hooks";
-import { useTrainingResultsByVersionKey } from "@/hooks/training/results.hooks";
+import { useTrainingResultsByVersionKey } from "@/hooks/trainingResult/results.hooks";
 import { useLoadingGuard } from "@/hooks/useLoadingGuard";
 import {
   useAddVersion,

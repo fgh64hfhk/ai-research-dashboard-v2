@@ -5,7 +5,7 @@ import { ModelProvider } from "@/contexts/model/ModelContext";
 import { VersionProvider } from "@/contexts/version/VersionContext";
 import { ParameterProvider } from "@/contexts/parameter/ParameterContext";
 import { ScheduleProvider } from "@/contexts/schedule/ScheduleContext";
-import { TrainingResultProvider } from "@/contexts/training/TrainingResultContext";
+import { TrainingResultProvider } from "@/contexts/trainingResult/TrainingResultContext";
 
 import { Toaster } from "@/components/ui/sonner";
 
